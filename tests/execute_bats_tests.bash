@@ -7,6 +7,8 @@
 #   $ bash ./tests/execute_bats_tests.bash
 #
 
+export BUILDKIT_PROGRESS=plain
+
 TESTS_DIRECTORY=${1:-'tests'}
 
 PROJECT_GIT_ROOT=$(git rev-parse --show-toplevel)
@@ -20,4 +22,4 @@ if [[ "$(basename $REPO_ROOT)" != "${PROJECT_GIT_NAME}" ]]; then
   exit 1
 fi
 
-docker run -it --rm -v "$REPO_ROOT:/code" bats/bats:latest "$TESTS_DIRECTORY"
+docker run --interactive --tty --rm --volume "$REPO_ROOT:/code" bats/bats:latest "$TESTS_DIRECTORY"
