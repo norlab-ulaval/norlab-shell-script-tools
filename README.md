@@ -6,7 +6,7 @@
 </a>
 <br>
 
-# _NorLab Project Template_
+# _NorLab Shell Script Tools_
 
 </div>
 
@@ -28,27 +28,39 @@
 
 Maintainer: [Luc Coupal](https://redleader962.github.io)
 
-**Note:** This template is for code project implementation. For `latex` project such as writing proposal or conference paper, see the following list of [NorLab `TeX` template repositories](https://github.com/norlab-ulaval?q=template&type=all&language=tex&sort=)  
 
-## How to use this repository template
+## How to use this repository
 
-### Step 1 › Generate the new repository
-1. Click on the green `Use this template` button
-2. Click on `Create a new repository`
-3. Find a meaningful name, don't worry you can change it latter (see BC Gov [Naming Repos](https://github.com/bcgov/BC-Policy-Framework-For-GitHub/blob/master/BC-Gov-Org-HowTo/Naming-Repos.md) recommendation for advice and best-practice)  
-
-### Step 2 › Configure the repository for your project type
-(ToDo) Execute `repository_configuration_script.bash` and follow the instructions. You will be asked what kind of project your planning to undergo (latex, ros, python, c++ ...) and the component you wish to add to your repository.
-
-### Step 3 › Configure the _GitHub_ repository settings
-(ToDo) Follow the `repository_configuration_checklist.md` steps.
-We strongly recommend you to configure repository your branching scheme following Gitflow
-
+Just clone the *norlab-shell-script-tools* superproject as a submodule in your project repository, in an arbitrary directory eg.: `my-project/utilities/`.    
 ```bash
-master ← dev ← feature 1
-             ↖ feature 2
-```
-with branch protection rule via pull-request enable for the `master` and the `dev` branches.
-The `master` branch is sacred. It must be deployable at any time.  
+cd my-project
 
----
+git submodule init
+
+git submodule \
+  add git@github.com:norlab-ulaval/norlab-shell-script-tools.git \
+  utilities/norlab-shell-script-tools
+
+# Commit the submodule to your repository
+git add .
+git commit -m 'Added norlab-shell-script-tools submodule to repository'
+```
+## Notes on submodule:
+
+To **clone** your repository and its submodule at the same time, use
+```bash
+git clone --recurse-submodules
+```
+
+Be advise, submodules are a snapshot at a specific commit of the *norlab-shell-script-tools* repository. To **update the submodule** to its latest commit, use
+```
+git submodule update --remote
+```
+
+To set the submodule to **point to a different branch**, use
+```bash
+git checkout --recurse-submodules the_feature_branch_name
+```
+
+#### References:
+- [Git Tools - Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
