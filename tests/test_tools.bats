@@ -54,7 +54,7 @@ fi
 # Livetemplate shortcut: @test
 
 @test "test me like a boss" {
-    echo "test 2"
+    echo "test 3"
 }
 
 @test 'fail()' {
