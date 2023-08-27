@@ -57,8 +57,8 @@ fi
     echo   
 }
 
-#@test 'fail()' {
-#  fail 'this test always fails'
-#}
+@test 'fail()' {
+  fail 'this test always fails'
+}
 
 
