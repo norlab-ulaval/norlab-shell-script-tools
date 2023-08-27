@@ -7,19 +7,25 @@
 #   $ bash ./tests/execute_bats_tests.bash
 #
 
-export BUILDKIT_PROGRESS=plain
-
 TESTS_DIRECTORY=${1:-'tests'}
 
+export BUILDKIT_PROGRESS=plain
+
+DOCKER_FLAG="--interactive --tty --rm"
+if [[ ${TEAMCITY_VERSION} ]] ; then
+  DOCKER_FLAG="--tty --rm"
+fi
+
 PROJECT_GIT_ROOT=$(git rev-parse --show-toplevel)
-PROJECT_GIT_NAME=$(basename ${PROJECT_GIT_ROOT})
+PROJECT_GIT_NAME=$(basename "${PROJECT_GIT_ROOT}")
 REPO_ROOT=$(pwd)
 
-if [[ "$(basename $REPO_ROOT)" != "${PROJECT_GIT_NAME}" ]]; then
+if [[ "$(basename "$REPO_ROOT")" != "${PROJECT_GIT_NAME}" ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] "$0" must be executed from the project root!"
   echo '(press any key to exit)'
   read -n 1
   exit 1
 fi
 
-docker run --interactive --tty --rm --volume "$REPO_ROOT:/code" bats/bats:latest "$TESTS_DIRECTORY"
+# shellcheck disable=SC2086
+docker run ${DOCKER_FLAG} --volume "$REPO_ROOT:/code" bats/bats:latest "$TESTS_DIRECTORY"
