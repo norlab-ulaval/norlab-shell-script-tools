@@ -1,0 +1,14 @@
+FROM bats/bats:latest
+
+# Note:
+#   Image purpose › source code isolation for CI build
+#   This container use a copy project source code strategy instead of using the mounting volume
+
+# ====Begin========================================================================================================
+COPY . /code/
+
+# ====End==========================================================================================================
+# Same as in the "bats" official image
+WORKDIR /code/
+ENTRYPOINT ["/tini", "--", "bash", "bats"]
+

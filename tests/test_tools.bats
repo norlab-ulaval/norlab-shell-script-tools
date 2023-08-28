@@ -4,6 +4,8 @@
 #   $ REPO_ROOT=$(pwd) && TESTS_DIRECTORY='tests'
 #   $ docker run -it --rm -v "$REPO_ROOT:/code" bats/bats:latest "$TESTS_DIRECTORY"
 #
+#   Note: "/code" is the working directory in the bats official image
+#
 # bats-core ref:
 #   - https://bats-core.readthedocs.io/en/stable/tutorial.html
 #   - https://bats-core.readthedocs.io/en/stable/writing-tests.html
@@ -23,7 +25,7 @@ if [[ -d ${BATS_HELPER_PATH} ]]; then
   load "${BATS_HELPER_PATH}/bats-file/load"
   #load "${BATS_HELPER_PATH}/bats-detik/load" # << Kubernetes support
 else
-  echo -e "\n[\033[1;31mERROR\033[0m] "$0" path to bats-core helper library unreachable at \"${BATS_HELPER_PATH}\"!"
+  echo -e "\n[\033[1;31mERROR\033[0m] $0 path to bats-core helper library unreachable at \"${BATS_HELPER_PATH}\"!"
   echo '(press any key to exit)'
   read -n 1
   exit 1
@@ -54,7 +56,7 @@ fi
 # Livetemplate shortcut: @test
 
 @test "test me like a boss" {
-    echo   
+    echo "test 3"
 }
 
 #@test 'fail()' {
