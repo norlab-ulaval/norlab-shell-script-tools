@@ -55,7 +55,7 @@ fi
 # ====Test casses==================================================================================================
 # Livetemplate shortcut: @test
 
-@test "test me like a boss › auto merge 5" {
+@test "test me like a boss › auto merge 6" {
     echo "test release"
 }
 
@@ -64,3 +64,9 @@ fi
 #}
 
 
+# ////scratch//////////////////////////////////////////////////////////////////////////////////////////////////////
+#On release PR to main › run test + publish status
+#tests/run_bats_tests_in_docker.bash
+
+#refs/heads/dev
+#NorLab-TeamCity-server auto merge | Updated the dev branch with the latest release (see PR %teamcity.pullRequest.number%)
