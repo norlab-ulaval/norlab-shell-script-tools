@@ -55,7 +55,7 @@ fi
 # ====Test casses==================================================================================================
 # Livetemplate shortcut: @test
 
-@test "test me like a boss › auto merge 8" {
+@test "test me like a boss › auto merge 9" {
     echo "test release"
 }
 
