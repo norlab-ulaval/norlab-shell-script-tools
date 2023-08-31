@@ -10,10 +10,10 @@
 #   ['<test-directory>']  The directory from which to start test, default to 'tests'
 #
 
-TESTS_DIRECTORY=${1:-'tests'}
+RUN_TESTS_IN_DIR=${1:-'tests'}
 
 # ....Option.......................................................................................................
-## Set Docker builder log output for debug
+## Set Docker builder log output for debug. Options: plain, tty or auto (default)
 #export BUILDKIT_PROGRESS=plain
 
 # ====Begin========================================================================================================
@@ -22,24 +22,29 @@ PROJECT_GIT_ROOT=$(git rev-parse --show-toplevel)
 PROJECT_GIT_NAME=$(basename "${PROJECT_GIT_ROOT}")
 REPO_ROOT=$(pwd)
 
-if [[ "$(basename "$REPO_ROOT")" != "${PROJECT_GIT_NAME}" ]]; then
+if [[ $(basename "$REPO_ROOT") != "$PROJECT_GIT_NAME" ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] $0 must be executed from the project root!"
   echo '(press any key to exit)'
   read -n 1
   exit 1
 fi
 
-DOCKER_FLAG="--tty --rm"
-if [[ ! ${TEAMCITY_VERSION} ]] ; then
-  # The '--interactive' flag is not compatible with TeamCity build agent
-  DOCKER_FLAG="--interactive ${DOCKER_FLAG}"
-fi
 
 # ....Execute docker steps..........................................................................................
-docker build --file ./tests/Dockerfile.bats-core-code-isolation --tag bats/bats-core-code-isolation .
+docker build \
+  --build-arg "PROJECT_ROOT=$(basename "${PROJECT_GIT_ROOT}")" \
+  --file ./tests/bats_testing_tools/Dockerfile.bats-core-code-isolation \
+  --tag bats/bats-core-code-isolation \
+  .
 
-# shellcheck disable=SC2086
-docker run ${DOCKER_FLAG} bats/bats-core-code-isolation "$TESTS_DIRECTORY"
+#clear
+echo -e "\n\n:: Starting bats-core test run :::::::::::::::::::::::::::::::::::::::::::::::\n"
+
+if [[ ${TEAMCITY_VERSION} ]] ; then
+  # The '--interactive' flag is not compatible with TeamCity build agent
+  docker run --tty --rm bats/bats-core-code-isolation "$RUN_TESTS_IN_DIR"
+else
+  docker run --interactive --tty --rm bats/bats-core-code-isolation "$RUN_TESTS_IN_DIR"
+fi
 
 # ====Teardown=====================================================================================================
-

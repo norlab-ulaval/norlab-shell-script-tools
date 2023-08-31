@@ -1,14 +1,22 @@
 FROM bats/bats:latest
 
+ARG PROJECT_ROOT
+ENV PROJECT_ROOT=${PROJECT_ROOT}
+ENV SRC_CODE_PATH="/code/${PROJECT_ROOT}/"
+
 # Note:
 #   Image purpose › source code isolation for CI build
 #   This container use a copy project source code strategy instead of using the mounting volume
 
 # ====Begin========================================================================================================
-COPY . /code/
+RUN apk --no-cache add \
+    git \
+    tree
+
+COPY . $SRC_CODE_PATH
+#RUN chown -R $(whoami) $SRC_CODE_PATH
 
 # ====End==========================================================================================================
-# Same as in the "bats" official image
-WORKDIR /code/
-ENTRYPOINT ["/tini", "--", "bash", "bats"]
+WORKDIR $SRC_CODE_PATH
 
+ENTRYPOINT [ "/tini", "--", "bash", "bats" ]
