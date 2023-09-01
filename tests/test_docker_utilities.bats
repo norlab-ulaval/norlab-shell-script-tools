@@ -129,4 +129,8 @@ teardown() {
 #  bats_print_run_env_variable
 }
 
+@test "add_user_to_the_docker_group ok" {
+  run add_user_to_the_docker_group "$(whoami)"
+  assert_success
+}
 

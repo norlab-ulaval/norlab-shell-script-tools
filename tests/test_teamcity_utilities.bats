@@ -76,5 +76,118 @@ teardown() {
   assert_success
 }
 
+@test "set_is_teamcity_run_environment_varibale ok" {
+  if [[ ! ${TEAMCITY_VERSION} ]]; then
+      local TEAMCITY_VERSION=fake
+  fi
+  run set_is_teamcity_run_environment_variable
+  assert_success
+  set_is_teamcity_run_environment_variable
+  assert_not_empty  "$IS_TEAMCITY_RUN"
+}
 
+# ----teamcity_service_msg_block------------------------------------------------------------------------------------
+@test "teamcity_service_msg_block › open and close ok" {
+  local TEST_MSG="Test message"
 
+  assert_empty "$CURRENT_BLOCK_SERVICE_MSG"
+  teamcity_service_msg_blockOpened "$TEST_MSG"
+  assert_not_empty "$CURRENT_BLOCK_SERVICE_MSG"
+  echo "Do something"
+  teamcity_service_msg_blockClosed "$TEST_MSG"
+  assert_empty "$CURRENT_BLOCK_SERVICE_MSG"
+}
+
+@test "teamcity_service_msg_blockOpened › expect fail" {
+  local TEST_MSG="Test message"
+  local "CURRENT_BLOCK_SERVICE_MSG"="$TEST_MSG"
+
+  run teamcity_service_msg_blockOpened "$TEST_MSG"
+  assert_failure
+}
+
+@test "teamcity_service_msg_blockClosed ok" {
+  local TEST_MSG="Test message"
+  local "CURRENT_BLOCK_SERVICE_MSG"="$TEST_MSG"
+
+  teamcity_service_msg_blockClosed
+  assert_empty "$CURRENT_BLOCK_SERVICE_MSG"
+}
+
+@test "teamcity_service_msg_blockOpened › output ok" {
+  local TEST_MSG="Test message"
+  local IS_TEAMCITY_RUN=false
+
+  run teamcity_service_msg_blockOpened "$TEST_MSG"
+  assert_output --partial "$TEST_MSG"
+}
+
+@test "teamcity_service_msg_blockOpened › output ok (teamcity casses)" {
+  local TEST_MSG="Test message"
+  local IS_TEAMCITY_RUN=true
+
+  run teamcity_service_msg_blockOpened "$TEST_MSG"
+  assert_output --regexp "\#\#teamcity\[blockOpened name='".*"\|\]".*"$TEST_MSG'\]"
+}
+
+@test "teamcity_service_msg_blockClosed › output ok (teamcity casses)" {
+  local TEST_MSG="Test message"
+  local "CURRENT_BLOCK_SERVICE_MSG"="$TEST_MSG"
+  local IS_TEAMCITY_RUN=true
+
+  run teamcity_service_msg_blockClosed
+  assert_output --regexp "\#\#teamcity\[blockClosed name='".*"\|\]".*"$TEST_MSG'\]"
+}
+
+# ----teamcity_service_msg_compilation------------------------------------------------------------------------------
+@test "teamcity_service_msg_compilation › open and close ok" {
+  local TEST_MSG="Test message"
+
+  assert_empty "$CURRENT_COMPILATION_SERVICE_MSG_COMPILER"
+  teamcity_service_msg_compilationStarted "$TEST_MSG"
+  assert_not_empty "$CURRENT_COMPILATION_SERVICE_MSG_COMPILER"
+  echo "Do something"
+  teamcity_service_msg_compilationFinished "$TEST_MSG"
+  assert_empty "$CURRENT_COMPILATION_SERVICE_MSG_COMPILER"
+}
+
+@test "teamcity_service_msg_compilationStarted › expect fail" {
+  local TEST_MSG="Test message"
+  local "CURRENT_COMPILATION_SERVICE_MSG_COMPILER"="$TEST_MSG"
+
+  run teamcity_service_msg_compilationStarted "$TEST_MSG"
+  assert_failure
+}
+
+@test "teamcity_service_msg_compilationFinished ok" {
+  local TEST_MSG="Test message"
+  local "CURRENT_COMPILATION_SERVICE_MSG_COMPILER"="$TEST_MSG"
+
+  teamcity_service_msg_compilationFinished
+  assert_empty "$CURRENT_COMPILATION_SERVICE_MSG_COMPILER"
+}
+
+@test "teamcity_service_msg_compilationStarted › output ok" {
+  local TEST_MSG="Test message"
+  local IS_TEAMCITY_RUN=false
+
+  run teamcity_service_msg_compilationStarted "$TEST_MSG"
+  assert_output --partial "$TEST_MSG"
+}
+
+@test "teamcity_service_msg_compilationStarted › output ok (teamcity casses)" {
+  local TEST_MSG="Test message"
+  local IS_TEAMCITY_RUN=true
+
+  run teamcity_service_msg_compilationStarted "$TEST_MSG"
+  assert_output --regexp "\#\#teamcity\[compilationStarted compiler='".*"\|\]".*"$TEST_MSG'\]"
+}
+
+@test "teamcity_service_msg_compilationFinished › output ok (teamcity casses)" {
+  local TEST_MSG="Test message"
+  local "CURRENT_COMPILATION_SERVICE_MSG_COMPILER"="$TEST_MSG"
+  local IS_TEAMCITY_RUN=true
+
+  run teamcity_service_msg_compilationFinished
+  assert_output --regexp "\#\#teamcity\[compilationFinished compiler='".*"\|\]".*"$TEST_MSG'\]"
+}

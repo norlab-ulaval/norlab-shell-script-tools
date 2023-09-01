@@ -9,6 +9,7 @@
 #   $ source ./teamcity_utilities.bash
 #
 
+
 # ....Pre-condition................................................................................................
 if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] 'teamcity_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'"
@@ -16,10 +17,6 @@ if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
   read -nr 1
   exit 1
 fi
-
-
-# ....Project root logic...........................................................................................
-TMP_CWD=$(pwd)
 
 # ....Load environment variables from file.........................................................................
 set -o allexport
@@ -30,6 +27,26 @@ set +o allexport
 
 # ....Load helper function.........................................................................................
 source ./prompt_utilities.bash
+
+# =================================================================================================================
+# Check if the script is executed in JetBrains TeamCity continuous integration/deployment server
+# and set the IS_TEAMCITY_RUN environment variable accordingly
+#
+# Usage:
+#   $ set_is_teamcity_run_environment_variable
+#
+# Globals:
+#   [Read]  'TEAMCITY_VERSION'
+#   [write] 'IS_TEAMCITY_RUN'
+# Returns:
+#   none
+# =================================================================================================================
+function set_is_teamcity_run_environment_variable() {
+  if [[ ${TEAMCITY_VERSION} ]] ; then
+    IS_TEAMCITY_RUN=true && export IS_TEAMCITY_RUN
+  fi
+}
+
 
 # =================================================================================================================
 # Send TeamCity blockOpened/blockClosed service message
@@ -52,6 +69,7 @@ source ./prompt_utilities.bash
 # Reference:
 #   - TeamCity doc: https://www.jetbrains.com/help/teamcity/service-messages.html#Blocks+of+Service+Messages
 #
+# ToDo: assessment >> consider adding the logic to check "if run in teamcity" inside this function instead of relying on the IS_TEAMCITY_RUN env variable
 # =================================================================================================================
 function teamcity_service_msg_blockOpened() {
   local THE_MSG=$1
@@ -97,6 +115,7 @@ function teamcity_service_msg_blockClosed() {
 # Reference:
 #   - TeamCity doc: https://www.jetbrains.com/help/teamcity/service-messages.html#Reporting+Compilation+Messages
 #
+# ToDo: assessment >> consider adding the logic to check "if run in teamcity" inside this function instead of relying on the IS_TEAMCITY_RUN env variable
 # =================================================================================================================
 function teamcity_service_msg_compilationStarted() {
   local THE_MSG=$1

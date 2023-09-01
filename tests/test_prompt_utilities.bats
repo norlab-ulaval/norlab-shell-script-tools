@@ -44,6 +44,7 @@ setup_file() {
 setup() {
   cd "src/function_library" || exit
   source ./$TESTED_FILE
+  TEST_TEMP_DIR="$(temp_make)"
 }
 
 # ====Teardown=====================================================================================================
@@ -215,4 +216,19 @@ teardown() {
     assert_success
 }
 
+@test "preview_file_in_promt ok" {
+  local TMP_TEST_FILE="${cwdTEST_TEMP_DIR}/.env.tmp_test_file"
+  touch "$TMP_TEST_FILE"
+
+  (
+      echo
+      echo "Test message"
+      echo
+    ) >> "$TMP_TEST_FILE"
+
+  run preview_file_in_promt "$TMP_TEST_FILE"
+  assert_success
+  assert_output --partial "Test message"
+#  bats_print_run_env_variable
+}
 

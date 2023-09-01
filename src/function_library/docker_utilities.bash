@@ -37,13 +37,12 @@ source ./prompt_utilities.bash
 #   $ show_and_execute_docker "run --name IamBuildSystemTester -t -i --rm lpm.ubuntu20.buildsystem.test"
 #
 # Globals:
-#   [Read] IS_TEAMCITY_RUN
+#   Read 'IS_TEAMCITY_RUN'
 # Outputs:
 #   Output to STDOUT or STDERR
 # Returns:
 #   Return docker command exit code
 # =================================================================================================================
-# ToDo: assessment >> consider adding the logic determine if run in teamcity in the script instead of relying on the IS_TEAMCITY_RUN env variable
 function show_and_execute_docker() {
   local FULL_DOCKER_COMMAND=$1
   local CI_TEST=${2:-false}
@@ -65,6 +64,7 @@ function show_and_execute_docker() {
     FAILURE_MSG="Command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT} exited with error (DOCKER_EXIT_CODE=${DOCKER_EXIT_CODE})!"
 
     if [[ ${DOCKER_EXIT_CODE} == 0 ]]; then
+      # ToDo: assessment >> consider adding the logic to check "if run in teamcity" inside this function instead of relying on the IS_TEAMCITY_RUN env variable
       if [[ ${IS_TEAMCITY_RUN} == true ]]; then
         # Report message to build log
         echo -e "##teamcity[message text='${MSG_BASE_TEAMCITY} ${SUCCESS_MSG}' status='NORMAL']"
@@ -83,3 +83,26 @@ function show_and_execute_docker() {
   fi
 }
 
+
+# =================================================================================================================
+# Add user to the docker group so that we dont have to preface docker command with sudo everytime
+# Ref: https://docs.docker.com/engine/install/linux-postinstall/
+#
+# Note: `newgrp docker` command to activate the new docker group now cause the script to logout
+#
+# Usage:
+#   $ add_user_to_the_docker_group <theUserName>
+#
+# Arguments:
+#    <theUserName> The user name to add
+# Outputs:
+#   Feedback on what was executed
+# =================================================================================================================
+function add_user_to_the_docker_group() {
+  local THE_USER=$1
+
+  print_msg "Manage Docker as a non-root user"
+
+  sudo groupadd --force docker
+  sudo usermod --append -G docker "${THE_USER}"
+}

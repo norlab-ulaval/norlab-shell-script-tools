@@ -18,9 +18,6 @@ if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
 fi
 
 
-# ....Project root logic...........................................................................................
-TMP_CWD=$(pwd)
-
 # ....Load environment variables from file.........................................................................
 set -o allexport
 source ../../.env.norlab_2st
@@ -31,3 +28,87 @@ set +o allexport
 # ....Load helper function.........................................................................................
 source ./prompt_utilities.bash
 
+
+# =================================================================================================================
+# Seek and modify a string in a file (modify in place)
+#
+# Usage:
+#   $ seek_and_modify_string_in_file "<string to seek>" "<change to string>" <path/to/file>
+#
+# Arguments:
+#   "<string to seek>"
+#   "<change to string>"
+#   <path/to/file>
+# Outputs:
+#   none
+# Returns:
+#   none
+# =================================================================================================================
+function seek_and_modify_string_in_file() {
+
+  local TMP_SEEK="${1}"
+  local TMP_CHANGE_FOR="${2}"
+  local TMP_FILE_PATH="${3}"
+
+  # Note: Character ';' is used as a delimiter
+  sudo sed --in-place "s;${TMP_SEEK};${TMP_CHANGE_FOR};" "${TMP_FILE_PATH}"
+
+}
+
+# =================================================================================================================
+# Check the current python version and set PYTHON3_VERSION environment variable
+#
+# Usage:
+#   $ set_which_python3_version
+#
+# Globals:
+#   write 'PYTHON3_VERSION'
+# =================================================================================================================
+# (NICE TO HAVE) ToDo: extend unit-test
+function set_which_python3_version() {
+    PYTHON3_VERSION=$(python3 -c 'import sys; version=sys.version_info; print(f"{version.major}.{version.minor}")')
+    export PYTHON3_VERSION
+}
+
+# =================================================================================================================
+# Check the host architecture plus OS type and set IMAGE_ARCH_AND_OS environment variable as either
+#       - IMAGE_ARCH_AND_OS=arm64\darwin
+#       - IMAGE_ARCH_AND_OS=x86\linux
+#       - IMAGE_ARCH_AND_OS=arm64\linux
+#       - IMAGE_ARCH_AND_OS=arm64\l4t
+# depending on which architecture and OS type the script is running:
+#     - ARCH: aarch64, arm64, x86_64
+#     - OS: Linux, Darwin, Window
+#
+# Usage:
+#   $ set_which_architecture_and_os
+#
+# Globals:
+#   write IMAGE_ARCH_AND_OS
+#
+# Returns:
+#   exit 1 in case of unsupported processor architecture
+# =================================================================================================================
+# (NICE TO HAVE) ToDo: extend unit-test
+# (NICE TO HAVE) ToDo: assessment >> check the convention used by docker >> os[/arch[/variant]]
+#       linux/arm64/v8
+#       darwin/arm64/v8
+#       l4t/arm64/v8
+#     ref: https://docs.docker.com/compose/compose-file/05-services/#platform
+function set_which_architecture_and_os() {
+  if [[ $(uname -m) == "aarch64" ]]; then
+    if [[ -n $(uname -r | grep tegra) ]]; then
+      export IMAGE_ARCH_AND_OS='l4t/arm64'
+    elif [[ $(uname) == "Linux" ]]; then
+        export IMAGE_ARCH_AND_OS='linux/arm64'
+    else
+      echo -e "${MSG_ERROR} Unsupported OS for aarch64 processor"
+    fi
+  elif [[ $(uname -m) == "arm64" ]] && [[ $(uname) == "Darwin" ]]; then
+    export IMAGE_ARCH_AND_OS='darwin/arm64'
+  elif [[ $(uname -m) == "x86_64" ]] && [[ $(uname) == "Linux" ]]; then
+    export IMAGE_ARCH_AND_OS='linux/x86'
+  else
+    print_msg_error_and_exit "Unsupported processor architecture"
+  fi
+}

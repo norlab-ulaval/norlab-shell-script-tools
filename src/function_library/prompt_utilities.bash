@@ -245,3 +245,28 @@ function print_formated_file_preview_end() {
   echo
 }
 
+
+# =================================================================================================================
+# Print file to console, formated in a way that standout from other console print
+#
+# Usage:
+#   $ preview_file_in_promt <path/to/file>
+#
+# Arguments:
+#   <path/to/file>
+# Outputs:
+#   Formated preview of a file
+# Returns:
+#   none
+# =================================================================================================================
+function preview_file_in_promt() {
+  local TMP_FILE_PATH="${1}"
+
+  print_formated_file_preview_begin "${TMP_FILE_PATH}"
+  echo
+  more "${TMP_FILE_PATH}"
+  echo
+  print_formated_file_preview_end
+
+}
+
