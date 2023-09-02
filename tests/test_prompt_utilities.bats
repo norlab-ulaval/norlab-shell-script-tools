@@ -127,8 +127,10 @@ teardown() {
 }
 
 @test "draw_horizontal_line_across_the_terminal_window ok" {
+    tput longname >&3
+
     printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
-    draw_horizontal_line_across_the_terminal_window "=" >&3
+#    draw_horizontal_line_across_the_terminal_window "=" >&3
 
     run draw_horizontal_line_across_the_terminal_window
     assert_success

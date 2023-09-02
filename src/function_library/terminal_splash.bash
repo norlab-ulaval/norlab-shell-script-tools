@@ -60,6 +60,7 @@ function echo_centering_str() {
 
   local terminal_width
 #  terminal_width=$(tput ${TPUT_FLAG} cols)
+  # shellcheck disable=SC2086
   terminal_width="${COLUMNS:-$(tput ${TPUT_FLAG} cols)}"
   local total_padding_len=$(( $terminal_width - $str_len ))
   local single_side_padding_len=$(( $total_padding_len / 2 ))
