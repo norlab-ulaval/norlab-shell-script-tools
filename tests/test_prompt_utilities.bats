@@ -39,7 +39,6 @@ setup_file() {
   BATS_DOCKER_WORKDIR=$(pwd) && export BATS_DOCKER_WORKDIR
 #  pwd >&3 && tree -L 1 -a -hug >&3
 #  printenv >&3
-  printenv | grep -i -e 'TERM' -e 'TPUT'  >&3
 }
 
 setup() {
@@ -128,6 +127,9 @@ teardown() {
 }
 
 @test "draw_horizontal_line_across_the_terminal_window ok" {
+    draw_horizontal_line_across_the_terminal_window "=" >&3
+    printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
+
     run draw_horizontal_line_across_the_terminal_window
     assert_success
 
