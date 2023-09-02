@@ -79,47 +79,38 @@ function source_dotenv_project() {
 
 # ----.env.msg_style------------------------------------------------------------------------------------------------
 @test ".env.msg_style › Env variable MSG_PROMPT_NAME › variable substitution › expect fail" {
-  assert_empty "$N2ST_PROMPT_NAME"
   assert_empty "$PROJECT_PROMPT_NAME"
+  assert_empty "$PROJECT_GIT_NAME"
 
   run source_dotenv_msg_style
   assert_failure
+  assert_output --regexp "ERROR: source .env.project before sourcing .env.msg_style!"
+#  bats_print_run_env_variable
+
 }
 
 @test ".env.msg_style › Env variable MSG_PROMPT_NAME › variable substitution to default" {
-  source_dotenv_norlab_2st
-
+  source_dotenv_project
   assert_empty "$PROJECT_PROMPT_NAME"
+  assert_not_empty "$PROJECT_GIT_NAME"
   run source_dotenv_msg_style
   assert_success
-
   source_dotenv_msg_style
-  assert_empty "$PROJECT_PROMPT_NAME"
-  assert_not_empty "$N2ST_PROMPT_NAME"
-  assert_not_empty "$MSG_PROMPT_NAME"
-  assert_equal "$MSG_PROMPT_NAME" "$N2ST_PROMPT_NAME"
+  assert_equal "$MSG_PROMPT_NAME" "$PROJECT_GIT_NAME"
 
 #  printenv  >&3
 #  bats_print_run_env_variable
 }
 
 @test ".env.msg_style › Env variable MSG_PROMPT_NAME › variable substitution to custom" {
-  assert_empty "$N2ST_PROMPT_NAME"
-  assert_empty "$PROJECT_PROMPT_NAME"
-
   source_dotenv_norlab_2st
-  assert_not_empty "$N2ST_PROMPT_NAME"
-
-  source_dotenv_project
   assert_not_empty "$PROJECT_PROMPT_NAME"
-
-  source_dotenv_msg_style
-  assert_not_empty "$MSG_PROMPT_NAME"
-  assert_equal "$MSG_PROMPT_NAME" "$PROJECT_PROMPT_NAME"
-
+  assert_not_empty "$PROJECT_GIT_NAME"
   run source_dotenv_msg_style
   assert_success
-#  printenv >&3
+  source_dotenv_msg_style
+  assert_equal "$MSG_PROMPT_NAME" "$PROJECT_PROMPT_NAME"
+
 }
 
 @test ".env.msg_style › Env variables MSG exists and are not empty " {
@@ -202,17 +193,18 @@ function source_dotenv_project() {
 # ----.env.norlab_2st----------------------------------------------------------------------------------------------
 @test ".env.norlab_2st › Env variables set ok" {
   source_dotenv_norlab_2st
-#  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' -e 'N2ST_' >&3
+#  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' >&3
 
-  assert_regex "${N2ST_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
-  assert_equal "${N2ST_PROJECT_GIT_NAME}" "norlab-shell-script-tools"
-  assert_equal "${N2ST_PROJECT_SRC_NAME}" "${N2ST_PROJECT_GIT_NAME}"
+  assert_not_empty "$PROJECT_PROMPT_NAME"
+  assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
+  assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
+  assert_equal "${PROJECT_SRC_NAME}" "${PROJECT_GIT_NAME}"
 }
 
 # ----.env.project-------------------------------------------------------------------------------------------------
 @test ".env.project › Env variables set ok" {
   source_dotenv_project
-#  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' -e 'N2ST_' >&3
+#  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' >&3
 
   assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
   assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
