@@ -46,7 +46,7 @@ function echo_centering_str() {
   fi
 
   # Ref https://bash.cyberciti.biz/guide/$TERM_variable
-  TPUT_FLAG=''
+  TPUT_FLAG="-T ${TERM}"
   if [[ -z ${TERM} ]]; then
     TPUT_FLAG='-T xterm-256color'
   elif [[ ${TERM} == dumb ]]; then

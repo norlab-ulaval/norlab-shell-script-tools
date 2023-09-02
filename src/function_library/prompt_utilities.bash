@@ -137,7 +137,7 @@ function draw_horizontal_line_across_the_terminal_window() {
   local pad
 
   # Ref https://bash.cyberciti.biz/guide/$TERM_variable
-  TPUT_FLAG="${TERM}"
+  TPUT_FLAG="-T $TERM"
   if [[ -z ${TERM} ]]; then
     TPUT_FLAG='-T xterm-256color'
   elif [[ ${TERM} == dumb ]]; then
