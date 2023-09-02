@@ -19,15 +19,9 @@ if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
   exit 1
 fi
 
-
-## ....Load environment variables from file.........................................................................
-#set -o allexport
-#source ../../.env.norlab_2st
-#source ../../.env.project
-#set +o allexport
-
 # ....Load helper function.........................................................................................
 TMP_CWD=$(pwd)
+source ../../.env.norlab_2st
 cd ../function_library || exit
 source ./prompt_utilities.bash
 source ./docker_utilities.bash

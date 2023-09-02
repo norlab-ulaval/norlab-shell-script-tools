@@ -19,8 +19,6 @@ fi
 
 # ....Load environment variables from file.........................................................................
 set -o allexport
-source ../../.env.norlab_2st
-source ../../.env.project
 source .env.msg_style
 set +o allexport
 

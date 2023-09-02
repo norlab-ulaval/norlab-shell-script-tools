@@ -59,7 +59,7 @@ teardown() {
 
 @test "sourcing terminal_splash.bash ok › expect pass" {
   cd "${BATS_DOCKER_WORKDIR}/src/function_library/"
-  run bash -c "source ./terminal_splash.bash"
+  run bash -c "PROJECT_GIT_NAME=$PROJECT_GIT_NAME && source ./terminal_splash.bash"
   assert_success
 }
 

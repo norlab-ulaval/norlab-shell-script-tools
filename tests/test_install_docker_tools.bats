@@ -71,8 +71,21 @@ teardown() {
 }
 
 @test "sourcing $TESTED_FILE from ok cwd › expect pass" {
-  skip "long test"
+  if [[ ! ${TEAMCITY_VERSION} ]] ; then
+    skip "long test"
+    echo
+  fi
   cd "${BATS_DOCKER_WORKDIR}/${TESTED_FILE_PATH}"
-  run bash -c "yes 1 | bash ./$TESTED_FILE"
+  run bash -c "yes 1 | bash ./$TESTED_FILE \
+    && docker buildx  version \
+    && docker compose version"
   assert_success
+
+  assert_output --partial "github.com/docker/buildx v"
+  assert_output --partial "Docker Compose version v"
+  source ../../.env.norlab_2st
+  assert_output --partial "$PROJECT_PROMPT_NAME"
+
+#  bats_print_run_env_variable
 }
+
