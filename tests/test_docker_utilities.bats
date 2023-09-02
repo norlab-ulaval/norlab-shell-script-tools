@@ -44,8 +44,10 @@ setup_file() {
 }
 
 setup() {
+  source .env.project
   cd $TESTED_FILE_PATH || exit
   source ./$TESTED_FILE
+
 }
 
 # ====Teardown=====================================================================================================
@@ -73,7 +75,7 @@ teardown() {
 
 @test "sourcing $TESTED_FILE from ok cwd › expect pass" {
   cd "${BATS_DOCKER_WORKDIR}/${TESTED_FILE_PATH}"
-  run bash -c "source ./$TESTED_FILE"
+  run bash -c "PROJECT_GIT_NAME=$PROJECT_GIT_NAME && source ./$TESTED_FILE"
   assert_success
 }
 

@@ -42,6 +42,7 @@ setup_file() {
 }
 
 setup() {
+  source .env.project
   cd "src/function_library" || exit
   source ./$TESTED_FILE
   TEST_TEMP_DIR="$(temp_make)"
@@ -72,8 +73,9 @@ teardown() {
 }
 
 @test "sourcing $TESTED_FILE from ok cwd › expect pass" {
+  assert_not_empty "$PROJECT_GIT_NAME"
   cd "${BATS_DOCKER_WORKDIR}/src/function_library/"
-  run bash -c "source ./$TESTED_FILE"
+  run bash -c "PROJECT_GIT_NAME=$PROJECT_GIT_NAME && source ./$TESTED_FILE"
   assert_success
 }
 
@@ -81,11 +83,11 @@ teardown() {
 @test "env variable fetching ok" {
   # Note: refer to 'test_dotenv_files.bats' for env variable test logic
 
-  #printenv | grep -i -e MSG_ -e PROJECT_ -e N2ST_ >&3
+  #printenv | grep -i -e MSG_ -e PROJECT_  >&3
 
   assert_empty "$PROJECT_PROMPT_NAME"
+  assert_not_empty "$PROJECT_GIT_NAME"
   assert_not_empty "$MSG_PROMPT_NAME"
-  assert_not_empty "$N2ST_PROMPT_NAME"
 }
 
 @test "all print_msg functions ok" {
