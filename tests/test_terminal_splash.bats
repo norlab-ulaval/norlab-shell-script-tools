@@ -103,10 +103,14 @@ teardown() {
   TERM=dumb
   run echo_centering_str "$CENTERED_STR" "$THE_STYLE" "$THE_PAD_CHAR"
   assert_success
+  assert_output --partial "$CENTERED_STR"
+  assert_output --partial "$THE_PAD_CHAR"
 
   unset TERM
   run echo_centering_str "$CENTERED_STR" "$THE_STYLE" "$THE_PAD_CHAR"
   assert_success
+  assert_output --partial "$CENTERED_STR"
+  assert_output --partial "$THE_PAD_CHAR"
 }
 
 @test "echo_centering_str teamcity special case ok" {

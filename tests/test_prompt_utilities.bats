@@ -127,10 +127,9 @@ teardown() {
 }
 
 @test "draw_horizontal_line_across_the_terminal_window ok" {
-    tput longname >&3
-
-    printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
+#    printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
 #    draw_horizontal_line_across_the_terminal_window "=" >&3
+#    tput longname >&3
 
     run draw_horizontal_line_across_the_terminal_window
     assert_success
@@ -146,10 +145,12 @@ teardown() {
     TERM=dumb
     run draw_horizontal_line_across_the_terminal_window
     assert_success
+    assert_output --partial "====="
 
     unset TERM
     run draw_horizontal_line_across_the_terminal_window
     assert_success
+    assert_output --partial "====="
 }
 
 @test "print_formated_script_header ok" {
