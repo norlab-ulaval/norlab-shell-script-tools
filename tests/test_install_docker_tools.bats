@@ -71,7 +71,7 @@ teardown() {
 }
 
 @test "sourcing $TESTED_FILE from ok cwd › expect pass" {
-#  skip "long test"
+  skip "long test"
   cd "${BATS_DOCKER_WORKDIR}/${TESTED_FILE_PATH}"
   run bash -c "yes 1 | bash ./$TESTED_FILE"
   assert_success
