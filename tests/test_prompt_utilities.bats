@@ -39,6 +39,7 @@ setup_file() {
   BATS_DOCKER_WORKDIR=$(pwd) && export BATS_DOCKER_WORKDIR
 #  pwd >&3 && tree -L 1 -a -hug >&3
 #  printenv >&3
+  printenv | grep -i -e 'TERM' -e 'TPUT'  >&3
 }
 
 setup() {

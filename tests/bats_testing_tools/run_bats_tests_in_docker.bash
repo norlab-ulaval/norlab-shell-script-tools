@@ -22,6 +22,8 @@ BATS_DOCKERFILE_DISTRO=${2:-'ubuntu'}
 # ....Project root logic...........................................................................................
 PROJECT_CLONE_GIT_ROOT=$(git rev-parse --show-toplevel)
 PROJECT_CLONE_GIT_NAME=$( basename "$PROJECT_CLONE_GIT_ROOT")
+PROJECT_GIT_REMOTE_URL=$(git remote get-url origin)
+PROJECT_GIT_NAME=$(basename "${PROJECT_GIT_REMOTE_URL/.git/}")
 REPO_ROOT=$(pwd)
 
 if [[ $( basename "$REPO_ROOT" ) != ${PROJECT_CLONE_GIT_NAME} ]]; then
@@ -39,7 +41,7 @@ fi
 #     Source https://docs.docker.com/build/building/context/#keep-git-directory
 
 docker build \
-  --build-arg "CONTAINER_PROJECT_ROOT_NAME=${PROJECT_CLONE_GIT_NAME}" \
+  --build-arg "CONTAINER_PROJECT_ROOT_NAME=${PROJECT_GIT_NAME}" \
   --build-arg BUILDKIT_CONTEXT_KEEP_GIT_DIR=1 \
   --file "./tests/bats_testing_tools/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
   --tag bats/bats-core-code-isolation \

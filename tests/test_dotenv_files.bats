@@ -202,19 +202,19 @@ function source_dotenv_project() {
 # ----.env.norlab_2st----------------------------------------------------------------------------------------------
 @test ".env.norlab_2st › Env variables set ok" {
   source_dotenv_norlab_2st
-#  printenv | grep -e 'PROJECT_' -e 'N2ST_' >&3
+#  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' -e 'N2ST_' >&3
 
-  assert_equal "https://github.com/norlab-ulaval/norlab-shell-script-tools.git" "${N2ST_GIT_REMOTE_URL}"
-  assert_equal "norlab-shell-script-tools" "${N2ST_PROJECT_GIT_NAME}"
+  assert_regex "${N2ST_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
+  assert_equal "${N2ST_PROJECT_GIT_NAME}" "norlab-shell-script-tools"
   assert_equal "${N2ST_PROJECT_SRC_NAME}" "${N2ST_PROJECT_GIT_NAME}"
 }
 
 # ----.env.project-------------------------------------------------------------------------------------------------
 @test ".env.project › Env variables set ok" {
   source_dotenv_project
-#  printenv | grep -e 'PROJECT_' -e 'N2ST_' >&3
+#  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' -e 'N2ST_' >&3
 
-  assert_equal "https://github.com/norlab-ulaval/norlab-shell-script-tools.git" "${PROJECT_GIT_REMOTE_URL}"
-  assert_equal "norlab-shell-script-tools" "${PROJECT_GIT_NAME}"
+  assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
+  assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
   assert_equal "${PROJECT_SRC_NAME}" "${PROJECT_GIT_NAME}"
 }
