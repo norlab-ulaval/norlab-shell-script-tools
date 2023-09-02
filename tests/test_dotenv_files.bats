@@ -47,6 +47,7 @@ setup_file() {
 
 teardown() {
   bats_print_run_env_variable_on_error
+#  printenv
 }
 
 #teardown_file() {
@@ -72,7 +73,7 @@ function source_dotenv_norlab_2st() {
   _source_dotenv ".env.norlab_2st"
 }
 
-function source_dotenv_main() {
+function source_dotenv_project() {
   _source_dotenv ".env.project"
 }
 
@@ -109,7 +110,7 @@ function source_dotenv_main() {
   source_dotenv_norlab_2st
   assert_not_empty "$N2ST_PROMPT_NAME"
 
-  source_dotenv_main
+  source_dotenv_project
   assert_not_empty "$PROJECT_PROMPT_NAME"
 
   source_dotenv_msg_style
@@ -199,12 +200,21 @@ function source_dotenv_main() {
 }
 
 # ----.env.norlab_2st----------------------------------------------------------------------------------------------
-@test ".env.norlab_2st › Env variables PROJECT_GIT returns ok" {
+@test ".env.norlab_2st › Env variables set ok" {
   source_dotenv_norlab_2st
-
-  assert_equal "${PROJECT_GIT_ROOT}" "/code/norlab-shell-script-tools"
-  assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
-  assert_equal "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools.git"
-
 #  printenv | grep -e 'PROJECT_' -e 'N2ST_' >&3
+
+  assert_equal "${N2ST_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools.git"
+  assert_equal "${N2ST_PROJECT_GIT_NAME}" "norlab-shell-script-tools"
+  assert_equal "${N2ST_PROJECT_GIT_NAME}" "${N2ST_PROJECT_SRC_NAME}"
+}
+
+# ----.env.project-------------------------------------------------------------------------------------------------
+@test ".env.project › Env variables set ok" {
+  source_dotenv_project
+#  printenv | grep -e 'PROJECT_' -e 'N2ST_' >&3
+
+  assert_equal "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools.git"
+  assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
+  assert_equal "${PROJECT_GIT_NAME}" "${PROJECT_SRC_NAME}"
 }

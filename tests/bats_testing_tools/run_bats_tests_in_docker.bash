@@ -20,8 +20,9 @@ BATS_DOCKERFILE_DISTRO=${2:-'ubuntu'}
 
 # ====Begin========================================================================================================
 # ....Project root logic...........................................................................................
-PROJECT_GIT_ROOT=$(git rev-parse --show-toplevel)
-PROJECT_GIT_NAME=$(basename "${PROJECT_GIT_ROOT}")
+#PROJECT_GIT_ROOT=$(git rev-parse --show-toplevel)
+PROJECT_GIT_REMOTE_URL=$(git remote get-url origin)
+PROJECT_GIT_NAME=$(basename "${PROJECT_GIT_REMOTE_URL/.git/}")
 REPO_ROOT=$(pwd)
 
 if [[ $(basename "$REPO_ROOT") != "$PROJECT_GIT_NAME" ]]; then
@@ -32,14 +33,14 @@ if [[ $(basename "$REPO_ROOT") != "$PROJECT_GIT_NAME" ]]; then
 fi
 
 
-# ....Execute docker steps..........................................................................................
+# ....Execute docker steps.........................................................................................
 # Note:
-#   - PROJECT_ROOT is for copying the source code including the repository root (i.e.: the project name)
+#   - CONTAINER_PROJECT_ROOT_NAME is for copying the source code including the repository root (i.e.: the project name)
 #   - BUILDKIT_CONTEXT_KEEP_GIT_DIR is for setting buildkit to keep the .git directory in the container
 #     Source https://docs.docker.com/build/building/context/#keep-git-directory
 
 docker build \
-  --build-arg "PROJECT_ROOT=$(basename "${PROJECT_GIT_ROOT}")" \
+  --build-arg "CONTAINER_PROJECT_ROOT_NAME=${PROJECT_GIT_NAME}" \
   --build-arg BUILDKIT_CONTEXT_KEEP_GIT_DIR=1 \
   --file "./tests/bats_testing_tools/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
   --tag bats/bats-core-code-isolation \

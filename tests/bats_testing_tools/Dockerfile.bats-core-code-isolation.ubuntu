@@ -6,14 +6,16 @@ FROM bats/bats:latest as bats-core-base-img
 
 FROM ubuntu:latest as final
 
-ARG PROJECT_ROOT
-ENV PROJECT_ROOT=${PROJECT_ROOT}
-ENV SRC_CODE_PATH="/code/${PROJECT_ROOT}/"
+ARG CONTAINER_PROJECT_ROOT_NAME
+ENV CONTAINER_PROJECT_ROOT_NAME=${CONTAINER_PROJECT_ROOT_NAME}
+ENV SRC_CODE_PATH="/code/${CONTAINER_PROJECT_ROOT_NAME}/"
 
 LABEL org.opencontainers.image.authors="luc.coupal.1@ulaval.ca"
 
 SHELL ["/bin/bash", "-e", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
+ENV TERM=${TERM:-"xterm-256color"}
+
 
 # ====Begin========================================================================================================
 # ....Setup timezone and localization..............................................................................

@@ -79,18 +79,13 @@ teardown() {
 
 
 @test "env variable fetching ok" {
+  # Note: refer to 'test_dotenv_files.bats' for env variable test logic
+
   #printenv | grep -i -e MSG_ -e PROJECT_ -e N2ST_ >&3
 
   assert_empty "$PROJECT_PROMPT_NAME"
   assert_not_empty "$MSG_PROMPT_NAME"
   assert_not_empty "$N2ST_PROMPT_NAME"
-
-  assert_not_empty "$MSG_EMPH_FORMAT"
-
-  assert_not_empty "$PROJECT_GIT_ROOT"
-  assert_not_empty "$PROJECT_GIT_NAME"
-  assert_not_empty "$PROJECT_GIT_REMOTE_URL"
-
 }
 
 @test "all print_msg functions ok" {
