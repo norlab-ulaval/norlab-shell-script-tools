@@ -38,7 +38,7 @@ cd my-project
 git submodule init
 
 git submodule \
-  add git@github.com:norlab-ulaval/norlab-shell-script-tools.git \
+  add https://github.com/norlab-ulaval/norlab-shell-script-tools.git \
   utilities/norlab-shell-script-tools
 
 # Commit the submodule to your repository
