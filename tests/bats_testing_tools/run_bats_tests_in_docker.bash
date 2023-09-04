@@ -74,9 +74,16 @@ if [[ ${TEAMCITY_VERSION} ]]; then
 else
   docker run --interactive --tty --rm bats/bats-core-code-isolation "$RUN_TESTS_IN_DIR"
 fi
+DOCKER_EXIT_CODE=$?
+
+if [[ ${TEAMCITY_VERSION} ]] && [[ $DOCKER_EXIT_CODE != 0 ]]; then
+  # Fail the build › Will appear on the TeamCity Build Results page
+  echo -e "##teamcity[buildProblem description='BUILD FAIL with docker exit code: ${DOCKER_EXIT_CODE}']"
+fi
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   echo -e "##teamcity[blockClosed name='${_MSG_BASE_TEAMCITY} Run bats-core tests']"
 fi
 
 # ====Teardown=====================================================================================================
+exit $DOCKER_EXIT_CODE
