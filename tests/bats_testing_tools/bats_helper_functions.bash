@@ -15,8 +15,8 @@ function _bats_run_env_variable_string(){
 ${MSG_DIMMED_FORMAT}Status=${MSG_END_FORMAT}${status}
 ${MSG_DIMMED_FORMAT}output=${MSG_END_FORMAT}${output}
 ${MSG_DIMMED_FORMAT}BATS_RUN_COMMAND=${MSG_END_FORMAT}${BATS_RUN_COMMAND}
-${MSG_DIMMED_FORMAT}lines=${MSG_END_FORMAT}${lines[*]}
 ‹‹‹‹‹‹"
+#${MSG_DIMMED_FORMAT}lines=${MSG_END_FORMAT}${lines[*]}
 }
 
 function bats_print_run_env_variable_on_error(){

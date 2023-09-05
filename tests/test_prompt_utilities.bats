@@ -28,7 +28,7 @@ if [[ -d ${BATS_HELPER_PATH} ]]; then
 else
   echo -e "\n[\033[1;31mERROR\033[0m] $0 path to bats-core helper library unreachable at \"${BATS_HELPER_PATH}\"!"
   echo '(press any key to exit)'
-  read -nr 1
+  read -r -n 1
   exit 1
 fi
 
