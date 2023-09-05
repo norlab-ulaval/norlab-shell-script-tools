@@ -13,7 +13,7 @@
 if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] 'general_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'"
   echo '(press any key to exit)'
-  read -nr 1
+  read -r -n 1
   exit 1
 fi
 
