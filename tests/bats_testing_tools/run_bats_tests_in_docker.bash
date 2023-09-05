@@ -26,6 +26,19 @@ PROJECT_CLONE_GIT_NAME=$(basename "$PROJECT_CLONE_GIT_ROOT" .git)
 PROJECT_GIT_REMOTE_URL=$(git remote get-url origin)
 PROJECT_GIT_NAME=$(basename "${PROJECT_GIT_REMOTE_URL}" .git)
 REPO_ROOT=$(pwd)
+N2ST_BATS_TESTING_TOOLS_ABS_PATH="$( cd "$( dirname "${0}" )" &> /dev/null && pwd )"
+N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=".${N2ST_BATS_TESTING_TOOLS_ABS_PATH/$REPO_ROOT/}"
+
+## ToDo: on task end >> mute next bloc ↓↓
+#echo "
+#N2ST_BATS_TESTING_TOOLS_ABS_PATH=$N2ST_BATS_TESTING_TOOLS_ABS_PATH
+#N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=$N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH
+#PROJECT_CLONE_GIT_ROOT=$PROJECT_CLONE_GIT_ROOT
+#PROJECT_CLONE_GIT_NAME=$PROJECT_CLONE_GIT_NAME
+#PROJECT_GIT_REMOTE_URL=$PROJECT_GIT_REMOTE_URL
+#PROJECT_GIT_NAME=$PROJECT_GIT_NAME
+#REPO_ROOT=$REPO_ROOT
+#"
 
 if [[ $(basename "$REPO_ROOT") != ${PROJECT_CLONE_GIT_NAME} ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] $0 must be executed from the project root!\nCurrent wordir: $(pwd)"
@@ -33,6 +46,8 @@ if [[ $(basename "$REPO_ROOT") != ${PROJECT_CLONE_GIT_NAME} ]]; then
   read -nr 1
   exit 1
 fi
+
+
 
 # Do not load MSG_BASE nor MSG_BASE_TEAMCITY from there .env file so that tested logic does not leak in that file
 _MSG_BASE="\033[1m[${PROJECT_GIT_NAME}]\033[0m"
@@ -53,7 +68,8 @@ fi
 docker build \
   --build-arg "CONTAINER_PROJECT_ROOT_NAME=${PROJECT_GIT_NAME}" \
   --build-arg BUILDKIT_CONTEXT_KEEP_GIT_DIR=1 \
-  --file "./tests/bats_testing_tools/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
+  --build-arg N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH="$N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH" \
+  --file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
   --tag bats/bats-core-code-isolation \
   .
 
