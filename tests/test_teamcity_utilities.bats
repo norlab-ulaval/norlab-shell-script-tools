@@ -78,9 +78,7 @@ teardown() {
 }
 
 @test "set_is_teamcity_run_environment_varibale ok" {
-  if [[ ! ${TEAMCITY_VERSION} ]]; then
-      local TEAMCITY_VERSION=fake
-  fi
+  fake_IS_TEAMCITY_RUN
   run set_is_teamcity_run_environment_variable
   assert_success
   set_is_teamcity_run_environment_variable

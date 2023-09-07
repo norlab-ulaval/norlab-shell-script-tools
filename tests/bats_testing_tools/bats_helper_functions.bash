@@ -41,3 +41,9 @@ function mock_docker_command_exit_error() {
       return 1
     }
 }
+
+function fake_IS_TEAMCITY_RUN() {
+    if [[ ! ${TEAMCITY_VERSION} ]]; then
+        TEAMCITY_VERSION=fake
+    fi
+}
