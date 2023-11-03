@@ -74,3 +74,5 @@ git checkout --recurse-submodules the_feature_branch_name
 
 #### References:
 - [Git Tools - Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
+- [Git Submodules: Tips for JetBrains IDEs](https://www.stevestreeting.com/2022/09/20/git-submodules-tips-for-jetbrains-ides/)
+- [Git submodule tutorial – from zero to hero](https://www.augmentedmind.de/2020/06/07/git-submodule-tutorial/)
