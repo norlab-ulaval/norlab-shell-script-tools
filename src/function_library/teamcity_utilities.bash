@@ -68,6 +68,7 @@ function set_is_teamcity_run_environment_variable() {
 #   - TeamCity doc: https://www.jetbrains.com/help/teamcity/service-messages.html#Blocks+of+Service+Messages
 #
 # ToDo: assessment >> consider adding the logic to check "if run in teamcity" inside this function instead of relying on the IS_TEAMCITY_RUN env variable
+# (NICE TO HAVE) ToDo: refactor (ref task NMO-341 refactor `teamcity_service_msg_blockOpened`  to use dynamic env variable name so that we can nest fct call)
 # =================================================================================================================
 function teamcity_service_msg_blockOpened() {
   local THE_MSG=$1

@@ -84,7 +84,7 @@ function source_dotenv_project() {
 
   run source_dotenv_msg_style
   assert_failure
-  assert_output --regexp "ERROR: source .env.project before sourcing .env.msg_style!"
+  assert_output --regexp "set PROJECT_PROMPT_NAME or source .env.project before sourcing .env.msg_style!"
 #  bats_print_run_env_variable
 
 }
