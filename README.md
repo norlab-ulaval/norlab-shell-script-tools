@@ -45,6 +45,7 @@ git submodule \
 git add .
 git commit -m 'Added norlab-shell-script-tools submodule to repository'
 ```
+
 ## Notes on submodule:
 
 To **clone** your repository and its submodule at the same time, use
@@ -72,7 +73,22 @@ cd <your/project/root>
 git checkout --recurse-submodules the_feature_branch_name
 ```
 
-#### References:
+---
+
+### References:
+
+#### Git Submodules
 - [Git Tools - Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
 - [Git Submodules: Tips for JetBrains IDEs](https://www.stevestreeting.com/2022/09/20/git-submodules-tips-for-jetbrains-ides/)
 - [Git submodule tutorial – from zero to hero](https://www.augmentedmind.de/2020/06/07/git-submodule-tutorial/)
+
+#### Bats shell script testing framework references
+- [bats-core on github](https://github.com/bats-core/bats-core)
+- [bats-core on readthedocs.io](https://bats-core.readthedocs.io)
+- `bats` helper library (pre-installed in `norlab-shell-script-tools` testing containers in the `tests/` dir)
+  - [bats-assert](https://github.com/bats-core/bats-assert)
+  - [bats-file](https://github.com/bats-core/bats-file)
+  - [bats-support](https://github.com/bats-core/bats-support)
+- Quick intro: 
+  - [testing bash scripts with bats](https://www.baeldung.com/linux/testing-bash-scripts-bats)
+
