@@ -33,18 +33,21 @@ else
 fi
 
 # ====Setup========================================================================================
-TESTED_FILE="general_utilities.bash"
+
+#TODO: setup the following variable
+TESTED_FILE="general_utilities.bash" 
 TESTED_FILE_PATH="src/function_library"
 
 setup_file() {
   BATS_DOCKER_WORKDIR=$(pwd) && export BATS_DOCKER_WORKDIR
+
+  ## Uncomment the following for debug, the ">&3" is for printing bats msg to stdin
 #  pwd >&3 && tree -L 1 -a -hug >&3
 #  printenv >&3
 }
 
 setup() {
-  source .env.project
-  cd $TESTED_FILE_PATH || exit
+  cd "$TESTED_FILE_PATH" || exit 
   source ./$TESTED_FILE
 }
 
@@ -61,6 +64,8 @@ teardown() {
 # ====Test casses==================================================================================
 
 @test "sourcing $TESTED_FILE from bad cwd › expect fail" {
+  skip "Template file: Comment this line to run this test"
+
   cd "${BATS_DOCKER_WORKDIR}/src/"
   # Note:
   #  - "echo 'Y'" is for sending an keyboard input to the 'read' command which expect a single character
@@ -72,47 +77,18 @@ teardown() {
 }
 
 @test "sourcing $TESTED_FILE from ok cwd › expect pass" {
+  skip "Template file: Comment this line to run this test"
+
   cd "${BATS_DOCKER_WORKDIR}/${TESTED_FILE_PATH}"
-  run bash -c "PROJECT_GIT_NAME=$PROJECT_GIT_NAME && source ./$TESTED_FILE"
+  run bash -c "source ./$TESTED_FILE"
   assert_success
 }
 
-@test "seek_and_modify_string_in_file ok" {
-  local TMP_TEST_FILE="${cwdTEST_TEMP_DIR}/.env.tmp_test_file"
-  local UNCHANGED_STR="TEST_PATH_1=/do/not/change/me/"
-  local LOOKUP_STR="TEST_PATH_2="
-  local ORIGINAL_STR="${LOOKUP_STR}/I/am/test/path/two"
-  local MODIFIED_STR="${LOOKUP_STR}/I/am/test/path/alt"
-  touch "$TMP_TEST_FILE"
-
-  (
-      echo
-      echo "${UNCHANGED_STR}"
-      echo "${ORIGINAL_STR}"
-      echo
-    ) >> "$TMP_TEST_FILE"
-
-  run seek_and_modify_string_in_file "${LOOKUP_STR}.*" "${MODIFIED_STR}" "$TMP_TEST_FILE"
-  assert_success
-  run preview_file_in_promt "$TMP_TEST_FILE"
-  assert_output --partial "${UNCHANGED_STR}"
-  refute_output --partial "${ORIGINAL_STR}"
-  assert_output --partial "${MODIFIED_STR}"
+@test "test me like a boss" {
+  echo "TODO: write some test"
 }
 
-@test "set_which_python3_version ok" {
-  run set_which_python3_version
-  assert_success
+#@test 'fail()' {
+#  fail 'this test always fails'
+#}
 
-  set_which_python3_version
-  assert_not_empty "$PYTHON3_VERSION"
-  echo "PYTHON3_VERSION=$PYTHON3_VERSION" >&3
-}
-
-@test "set_which_architecture_and_os ok" {
-  run set_which_architecture_and_os
-  assert_success
-
-  set_which_architecture_and_os
-  assert_not_empty "$IMAGE_ARCH_AND_OS"
-}
