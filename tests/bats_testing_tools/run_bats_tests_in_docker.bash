@@ -14,13 +14,13 @@
 RUN_TESTS_IN_DIR=${1:-'tests'}
 BATS_DOCKERFILE_DISTRO=${2:-'ubuntu'}
 
-# ....Option.......................................................................................................
+# ....Option.......................................................................................
 ## Set Docker builder log output for debug. Options: plain, tty or auto (default)
 #export BUILDKIT_PROGRESS=plain
 
-# ====Begin========================================================================================================
+# ====Begin========================================================================================
 
-# ....Project root logic...........................................................................................
+# ....Project root logic...........................................................................
 PROJECT_CLONE_GIT_ROOT=$(git rev-parse --show-toplevel)
 PROJECT_CLONE_GIT_NAME=$(basename "$PROJECT_CLONE_GIT_ROOT" .git)
 PROJECT_GIT_REMOTE_URL=$(git remote get-url origin)
@@ -53,7 +53,7 @@ fi
 _MSG_BASE="\033[1m[${PROJECT_GIT_NAME}]\033[0m"
 _MSG_BASE_TEAMCITY="|[${PROJECT_GIT_NAME}|]"
 
-# ....Execute docker steps.........................................................................................
+# ....Execute docker steps.........................................................................
 # Note:
 #   - CONTAINER_PROJECT_ROOT_NAME is for copying the source code including the repository root (i.e.: the project name)
 #   - BUILDKIT_CONTEXT_KEEP_GIT_DIR is for setting buildkit to keep the .git directory in the container
@@ -101,5 +101,5 @@ if [[ ${TEAMCITY_VERSION} ]]; then
   echo -e "##teamcity[blockClosed name='${_MSG_BASE_TEAMCITY} Run bats-core tests']"
 fi
 
-# ====Teardown=====================================================================================================
+# ====Teardown=====================================================================================
 exit $DOCKER_EXIT_CODE
