@@ -78,12 +78,18 @@ git checkout --recurse-submodules the_feature_branch_name
 ## Commiting to submodule from the main project (the one where the submodule is cloned)
 
 ### If you encounter `error: insufficient permission for adding an object to repository database ...`
-From your main project root 
 ```shell
-cd .git/
+# Change the `.git/objects` permissions
+cd <main/project/root>/.git/objects/
 chown -R $(id -un):$(id -gn) *
 #       <yourname>:<yourgroup>
+
+# Share the git repository (the submodule) with a Group
+cd ../../<the/submodule/root>/
+git config core.sharedRepository group
+# Note: dont replace the keyword "group"
 ```
+This should solve the problem permanently.
 
 ---
 
