@@ -74,6 +74,20 @@ git checkout --recurse-submodules the_feature_branch_name
 ```
 
 ---
+## Submodule troubleshooting
+ 
+### Commiting to submodule from main project (the one where the submodule is cloned)
+
+#### If you encounter `error: insufficient permission for adding an object to repository database ...`
+From your main project root 
+```shell
+cd .git/
+
+#       <yourname>:<yourgroup>
+chown -R $(id -un):$(id -gn) *
+```
+
+---
 
 ### References:
 
