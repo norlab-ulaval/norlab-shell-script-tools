@@ -46,7 +46,7 @@ git add .
 git commit -m 'Added norlab-shell-script-tools submodule to repository'
 ```
 
-## Notes on submodule:
+## Notes on submodule
 
 To **clone** your repository and its submodule at the same time, use
 ```bash
@@ -74,17 +74,15 @@ git checkout --recurse-submodules the_feature_branch_name
 ```
 
 ---
-## Submodule troubleshooting
  
-### Commiting to submodule from main project (the one where the submodule is cloned)
+## Commiting to submodule from the main project (the one where the submodule is cloned)
 
-#### If you encounter `error: insufficient permission for adding an object to repository database ...`
+### If you encounter `error: insufficient permission for adding an object to repository database ...`
 From your main project root 
 ```shell
 cd .git/
-
-#       <yourname>:<yourgroup>
 chown -R $(id -un):$(id -gn) *
+#       <yourname>:<yourgroup>
 ```
 
 ---
