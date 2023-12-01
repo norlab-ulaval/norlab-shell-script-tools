@@ -4,11 +4,13 @@
 #
 # Usage:
 #   $ cd my_project_root
-#   $ bash ./tests/run_bats_tests_in_docker.bash ['<test-directory>' ['<image-distro>']]
+#   $ bash ./tests/run_bats_tests_in_docker.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
 #
 # Arguments:
-#   - ['<test-directory>']  The directory from which to start test, default to 'tests'
-#   - ['<image-distro>'] ubuntu or alpine (default ubuntu)
+#   - ['<test-directory>']     The directory from which to start test, default to 'tests'
+#   - ['<test-directory>/<this-bats-test-file.bats>']  A specific bats file to run, default will
+#                                                      run all bats file in the test directory
+#   - ['<image-distro>']          ubuntu or alpine (default ubuntu)
 #
 
 RUN_TESTS_IN_DIR=${1:-'tests'}
@@ -28,17 +30,6 @@ PROJECT_GIT_NAME=$(basename "${PROJECT_GIT_REMOTE_URL}" .git)
 REPO_ROOT=$(pwd)
 N2ST_BATS_TESTING_TOOLS_ABS_PATH="$( cd "$( dirname "${0}" )" &> /dev/null && pwd )"
 N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=".${N2ST_BATS_TESTING_TOOLS_ABS_PATH/$REPO_ROOT/}"
-
-## ToDo: on task end >> mute next bloc ↓↓
-#echo "
-#N2ST_BATS_TESTING_TOOLS_ABS_PATH=$N2ST_BATS_TESTING_TOOLS_ABS_PATH
-#N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=$N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH
-#PROJECT_CLONE_GIT_ROOT=$PROJECT_CLONE_GIT_ROOT
-#PROJECT_CLONE_GIT_NAME=$PROJECT_CLONE_GIT_NAME
-#PROJECT_GIT_REMOTE_URL=$PROJECT_GIT_REMOTE_URL
-#PROJECT_GIT_NAME=$PROJECT_GIT_NAME
-#REPO_ROOT=$REPO_ROOT
-#"
 
 if [[ $(basename "$REPO_ROOT") != ${PROJECT_CLONE_GIT_NAME} ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] $0 must be executed from the project root!\nCurrent wordir: $(pwd)"
