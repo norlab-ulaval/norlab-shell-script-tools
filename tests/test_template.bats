@@ -35,7 +35,7 @@ fi
 # ====Setup========================================================================================
 
 #TODO: setup the following variable
-TESTED_FILE="general_utilities.bash" 
+TESTED_FILE="dummy.bash"
 TESTED_FILE_PATH="src/function_library"
 
 setup_file() {
@@ -47,7 +47,7 @@ setup_file() {
 }
 
 setup() {
-  cd "$TESTED_FILE_PATH" || exit 
+  cd "$TESTED_FILE_PATH" || exit
   source ./$TESTED_FILE
 }
 
@@ -57,38 +57,68 @@ teardown() {
   bats_print_run_env_variable_on_error
 }
 
-#teardown_file() {
-#    echo "executed once after finishing the last test"
-#}
+teardown_file() {
+    echo "'teardown_file': executed once after finishing the last test"
+}
 
 # ====Test casses==================================================================================
-
-@test "sourcing $TESTED_FILE from bad cwd › expect fail" {
-  skip "Template file: Comment this line to run this test"
-
-  cd "${BATS_DOCKER_WORKDIR}/src/"
-  # Note:
-  #  - "echo 'Y'" is for sending an keyboard input to the 'read' command which expect a single character
-  #    run bash -c "echo 'Y' | source ./function_library/$TESTED_FILE"
-  #  - Alt: Use the 'yes [n]' command which optionaly send n time
-  run bash -c "yes 1 | source ./function_library/$TESTED_FILE"
-  assert_failure 1
-  assert_output --partial "'$TESTED_FILE' script must be sourced from"
-}
-
-@test "sourcing $TESTED_FILE from ok cwd › expect pass" {
-  skip "Template file: Comment this line to run this test"
-
-  cd "${BATS_DOCKER_WORKDIR}/${TESTED_FILE_PATH}"
-  run bash -c "source ./$TESTED_FILE"
-  assert_success
-}
 
 @test "test me like a boss" {
   echo "TODO: write some test"
 }
 
-#@test 'fail()' {
-#  fail 'this test always fails'
-#}
+@test 'fail()' {
+  skip "Comment this line to run this test"
+  fail 'this test always fails'
+}
+
+@test "this_is_not_cool (explicitly source $TESTED_FILE) › expect fail" {
+  run bash -c "source ./$TESTED_FILE && this_is_not_cool"
+  assert_failure 1
+  assert_output --partial 'Noooooooooooooo!'
+}
+
+@test "this_is_not_cool (source at setup step) › expect fail" {
+  run this_is_not_cool
+  assert_failure 1
+  assert_output --partial 'Noooooooooooooo!'
+}
+
+@test "good_morning_norlab (environment variable not set) › expect fail" {
+  run "good_morning_norlab"
+  assert_failure 1
+  assert_output --partial 'Error: Environment variable not set'
+  unset GREETING
+}
+
+@test "good_morning_norlab (environment variable set) › expect pass" {
+  assert_empty $GREETING
+  export GREETING='Goooooooood morning NorLab'
+  assert_not_empty $GREETING
+
+  run "good_morning_norlab"
+  assert_success
+  assert_output --partial " ... there's nothing like the smell of a snow storm in the morning!"
+  unset GREETING
+}
+
+@test "good_morning_norlab (command executed in a subshell) › expect pass" {
+  assert_empty $GREETING
+  run bash -c "source ./$TESTED_FILE && GREETING='Goooooooood morning NorLab' && good_morning_norlab"
+  assert_empty $GREETING
+  assert_success
+  assert_output --partial "Goooooooood morning NorLab ... there's nothing like the smell of a snow storm in the morning!"
+}
+
+@test "talk_to_me_or_not › expect fail" {
+  # Note:
+  #  - "echo 'Y'" is for sending an keyboard input to the 'read' command which expect a single character
+  #    run bash -c "echo 'Y' | source ./function_library/$TESTED_FILE"
+  #  - Alt: Use the 'yes [n]' command which optionaly send n time
+#  run bash -c "yes 1 | talk_to_me_or_not"
+  run bash -c "source ./$TESTED_FILE && yes 1 | talk_to_me_or_not"
+  assert_failure 1
+  assert_output --partial '(press any key to exit)'
+}
+
 
