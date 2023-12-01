@@ -72,4 +72,4 @@ COPY "${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}/bats_helper_functions.bash" $SRC_
 # ====End==========================================================================================
 WORKDIR $SRC_CODE_PATH
 
-ENTRYPOINT [ "/usr/bin/tini", "--", "bash", "bats" ]
+ENTRYPOINT [ "/usr/bin/tini", "--", "bash", "bats", "--recursive", "--verbose-run", "--print-output-on-failure" ]
