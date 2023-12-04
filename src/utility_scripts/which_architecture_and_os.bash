@@ -33,10 +33,10 @@ fi
 # ....Load helper function.........................................................................................
 TMP_CWD=$(pwd)
 
-# (Priority) ToDo: validate!! (ref task NMO-388 fix: explicitly sourcing .env.norlab_2st cause conflicting problem when the repo is used as a lib)
+# (Priority) ToDo: validate!! (ref task NMO-388 fix: explicitly sourcing .env.n2st cause conflicting problem when the repo is used as a lib)
 if [[ -z $PROJECT_PROMPT_NAME ]] && [[ -z $PROJECT_GIT_NAME ]] ; then
   set -o allexport
-  source ../../.env.norlab_2st
+  source ../../.env.n2st
   set +o allexport
 fi
 
