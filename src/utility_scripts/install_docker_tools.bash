@@ -21,7 +21,7 @@ fi
 
 # ....Load helper function.........................................................................................
 TMP_CWD=$(pwd)
-source ../../.env.norlab_2st
+source ../../.env.n2st
 cd ../function_library || exit
 source ./prompt_utilities.bash
 source ./docker_utilities.bash

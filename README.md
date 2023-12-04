@@ -6,7 +6,7 @@
 </a>
 <br>
 
-# _NorLab Shell Script Tools (NS2T)_
+# _NorLab Shell Script Tools (N2ST)_
 
 </div>
 
@@ -25,6 +25,7 @@
 </p>  
 </div>
 
+**Note:** Be advise that the repository is still in beta stage and we might introduce breaking change without notice. 
 
 Maintainer: [Luc Coupal](https://redleader962.github.io)
 
@@ -115,7 +116,7 @@ This should solve the problem permanently.
 
 ---
 
-# NS2T shell script function/script library
+# N2ST shell script function/script library
 - Most code in this repository is tested using _**bats-core**_
 - Most code is well documented: each script header and each function definition 
 - Go to `src/function_library` for shell script functions:
@@ -132,7 +133,7 @@ This should solve the problem permanently.
 
 ---
 
-# NS2T testing tools for shell script development
+# N2ST testing tools for shell script development
 
 ## Setup
 
@@ -146,7 +147,7 @@ This should solve the problem permanently.
   convention `test_<logic_or_script_name>.bats`;
 - Note: That file is pre-configured to work out of the box, just missing your test logic.
 
-3. Use `run_bats_core_test_in_ns2t.bash` to execute your tests. They will be executed in isolation
+3. Use `run_bats_core_test_in_n2st.bash` to execute your tests. They will be executed in isolation
    in a docker container tailormade for
    testing shell script or command level logic in your codebase.
 
@@ -161,8 +162,8 @@ Execute your main repository shell script test via 'norlab-shell-script-tools' l
 Usage:
 
 ```shell
-NS2T_PATH="<path/to/submodule/norlab-shell-script-tools>"
-source run_bats_core_test_in_ns2t.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
+N2ST_PATH="<path/to/submodule/norlab-shell-script-tools>"
+source run_bats_core_test_in_n2st.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
 ```
 
 Arguments:

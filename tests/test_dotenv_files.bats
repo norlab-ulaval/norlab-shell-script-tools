@@ -69,8 +69,8 @@ function source_dotenv_msg_style() {
   _source_dotenv "src/function_library/.env.msg_style"
 }
 
-function source_dotenv_norlab_2st() {
-  _source_dotenv ".env.norlab_2st"
+function source_dotenv_n2st() {
+  _source_dotenv ".env.n2st"
 }
 
 function source_dotenv_project() {
@@ -103,7 +103,7 @@ function source_dotenv_project() {
 }
 
 @test ".env.msg_style › Env variable MSG_PROMPT_NAME › variable substitution to custom" {
-  source_dotenv_norlab_2st
+  source_dotenv_n2st
   assert_not_empty "$PROJECT_PROMPT_NAME"
   assert_not_empty "$PROJECT_GIT_NAME"
   run source_dotenv_msg_style
@@ -116,7 +116,7 @@ function source_dotenv_project() {
 @test ".env.msg_style › Env variables MSG exists and are not empty " {
   printenv | grep -e 'MSG_'
 
-  source_dotenv_norlab_2st
+  source_dotenv_n2st
   source_dotenv_msg_style
 
   assert_not_empty "${MSG_EMPH_FORMAT}"
@@ -137,7 +137,7 @@ function source_dotenv_project() {
 @test ".env.msg_style › Env variables MSG FORMAT have the proper escape character" {
   printenv | grep -e 'MSG_'
 
-  source_dotenv_norlab_2st
+  source_dotenv_n2st
   source_dotenv_msg_style
 
   # Bash regex ref https://www.gnu.org/software/bash/manual/bash.html#Conditional-Constructs
@@ -157,7 +157,7 @@ function source_dotenv_project() {
 @test ".env.msg_style › Env variables MSG FORMAT_TEAMCITY exists and are not empty" {
   printenv | grep -e 'MSG_'
 
-  source_dotenv_norlab_2st
+  source_dotenv_n2st
   source_dotenv_msg_style
 
   assert_not_empty "${MSG_DIMMED_FORMAT_TEAMCITY}"
@@ -174,7 +174,7 @@ function source_dotenv_project() {
 @test ".env.msg_style › Env variables MSG FORMAT_TEAMCITY match the teamcity escape character" {
   printenv | grep -e 'MSG_'
 
-  source_dotenv_norlab_2st
+  source_dotenv_n2st
   source_dotenv_msg_style
 
   # Bash regex ref https://www.gnu.org/software/bash/manual/bash.html#Conditional-Constructs
@@ -190,9 +190,9 @@ function source_dotenv_project() {
   assert_regex "${MSG_BASE_TEAMCITY}" "${TEAMCITY_ESCAPE_CHAR}"
 }
 
-# ----.env.norlab_2st----------------------------------------------------------------------------------------------
-@test ".env.norlab_2st › Env variables set ok" {
-  source_dotenv_norlab_2st
+# ----.env.n2st----------------------------------------------------------------------------------------------
+@test ".env.n2st › Env variables set ok" {
+  source_dotenv_n2st
 #  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' >&3
 
   assert_not_empty "$PROJECT_PROMPT_NAME"

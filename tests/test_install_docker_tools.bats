@@ -83,7 +83,7 @@ teardown() {
 
   assert_output --partial "github.com/docker/buildx v"
   assert_output --partial "Docker Compose version v"
-  source ../../.env.norlab_2st
+  source ../../.env.n2st
   assert_output --partial "$PROJECT_PROMPT_NAME"
 
 #  bats_print_run_env_variable
