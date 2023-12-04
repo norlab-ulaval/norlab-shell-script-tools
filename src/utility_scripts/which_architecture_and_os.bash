@@ -22,7 +22,7 @@
 #   exit 1 in case of unsupported processor architecture
 #
 
-# ....Pre-condition................................................................................................
+# ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] 'which_architecture_and_os.bash' script must be sourced from the 'utility_scripts/'!\n Curent working directory is '$(pwd)'"
   echo '(press any key to exit)'
@@ -30,7 +30,7 @@ if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
   exit 1
 fi
 
-# ....Load helper function.........................................................................................
+# ....Load helper function.........................................................................
 TMP_CWD=$(pwd)
 
 # (Priority) ToDo: validate!! (ref task NMO-388 fix: explicitly sourcing .env.n2st cause conflicting problem when the repo is used as a lib)
@@ -45,6 +45,6 @@ source ./general_utilities.bash
 
 cd "${TMP_CWD}"
 
-# ====Begin========================================================================================================
+# ====Begin========================================================================================
 set_which_architecture_and_os
 
