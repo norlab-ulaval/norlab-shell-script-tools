@@ -27,7 +27,7 @@ set +o allexport
 source ./prompt_utilities.bash
 
 
-# =================================================================================================================
+# =================================================================================================
 # Seek and modify a string in a file (modify in place)
 #
 # Usage:
@@ -41,7 +41,7 @@ source ./prompt_utilities.bash
 #   none
 # Returns:
 #   none
-# =================================================================================================================
+# =================================================================================================
 function seek_and_modify_string_in_file() {
 
   local TMP_SEEK="${1}"
@@ -53,7 +53,7 @@ function seek_and_modify_string_in_file() {
 
 }
 
-# =================================================================================================================
+# =================================================================================================
 # Check the current python version and set PYTHON3_VERSION environment variable
 #
 # Usage:
@@ -61,14 +61,14 @@ function seek_and_modify_string_in_file() {
 #
 # Globals:
 #   write 'PYTHON3_VERSION'
-# =================================================================================================================
+# =================================================================================================
 # (NICE TO HAVE) ToDo: extend unit-test
 function set_which_python3_version() {
     PYTHON3_VERSION=$(python3 -c 'import sys; version=sys.version_info; print(f"{version.major}.{version.minor}")')
     export PYTHON3_VERSION
 }
 
-# =================================================================================================================
+# =================================================================================================
 # Check the host architecture plus OS type and set IMAGE_ARCH_AND_OS environment variable as either
 #       - IMAGE_ARCH_AND_OS=arm64\darwin
 #       - IMAGE_ARCH_AND_OS=x86\linux
@@ -86,7 +86,7 @@ function set_which_python3_version() {
 #
 # Returns:
 #   exit 1 in case of unsupported processor architecture
-# =================================================================================================================
+# =================================================================================================
 # (NICE TO HAVE) ToDo: extend unit-test
 # (NICE TO HAVE) ToDo: assessment >> check the convention used by docker >> os[/arch[/variant]]
 #       linux/arm64/v8

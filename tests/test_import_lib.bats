@@ -34,9 +34,8 @@ fi
 
 # ====Setup========================================================================================
 
-#TODO: setup the following variable
-TESTED_FILE="dummy.bash"
-TESTED_FILE_PATH="src/function_library"
+TESTED_FILE="import_norlab_shell_script_tools_lib.bash"
+TESTED_FILE_PATH="./"
 
 # executed once before starting the first test (valide for all test in that file)
 setup_file() {
@@ -49,8 +48,9 @@ setup_file() {
 
 # executed before each test
 setup() {
+  source .env.project
+  assert_not_empty "$PROJECT_GIT_NAME"
   cd "$TESTED_FILE_PATH" || exit
-  source ./$TESTED_FILE
 }
 
 # ====Teardown=====================================================================================
@@ -62,67 +62,44 @@ teardown() {
 
 ## executed once after finishing the last test (valide for all test in that file)
 #teardown_file() {
-#
 #}
 
 # ====Test casses==================================================================================
 
-@test "test me like a boss" {
-  echo "TODO: write some test"
-}
+@test "source all script from 'src/function_library' directory (set environment variable check) › expect pass" {
+  assert_empty "${MSG_PROMPT_NAME}"
+  assert_not_empty "$PROJECT_GIT_NAME"
 
-@test 'fail()' {
-  skip "Comment this line to run this test"
-  fail 'this test always fails'
-}
-
-@test "n2st::this_is_not_cool (explicitly source $TESTED_FILE) › expect fail" {
-  run bash -c "source ./$TESTED_FILE && n2st::this_is_not_cool"
-  assert_failure 1
-  assert_output --partial 'Noooooooooooooo!'
-}
-
-@test "n2st::this_is_not_cool (source at setup step) › expect fail" {
-  run n2st::this_is_not_cool
-  assert_failure 1
-  assert_output --partial 'Noooooooooooooo!'
-}
-
-@test "n2st::good_morning_norlab (environment variable not set) › expect fail" {
-  run "n2st::good_morning_norlab"
-  assert_failure 1
-  assert_output --partial 'Error: Environment variable not set'
-  unset GREETING
-}
-
-@test "n2st::good_morning_norlab (environment variable set) › expect pass" {
-  assert_empty $GREETING
-  export GREETING='Goooooooood morning NorLab'
-  assert_not_empty $GREETING
-
-  run "n2st::good_morning_norlab"
+  source "${SRC_CODE_PATH}/$TESTED_FILE"
+#  run printenv >&3
+  run printenv
+  assert_not_empty "${MSG_PROMPT_NAME}"
   assert_success
-  assert_output --partial " ... there's nothing like the smell of a snow storm in the morning!"
-  unset GREETING
+  assert_output --partial "MSG_PROMPT_NAME=norlab-shell-script-tools"
 }
 
-@test "n2st::good_morning_norlab (command executed in a subshell) › expect pass" {
-  assert_empty $GREETING
-  run bash -c "source ./$TESTED_FILE && GREETING='Goooooooood morning NorLab' && n2st::good_morning_norlab"
-  assert_empty $GREETING
+@test "validate env var are not set between test run" {
+  assert_empty "${MSG_PROMPT_NAME}"
+  assert_empty "${NBS_ROOT_DIR}"
+  assert_empty "${NBS_TMP_TEST_LIB_SOURCING_ENV_EXPORT}"
+}
+
+@test "source all script from 'src/function_library' directory (import function check) › expect pass" {
+
+  source "${SRC_CODE_PATH}/$TESTED_FILE"
+  export GREETING="Hello NorLab"
+
+#  run n2st::good_morning_norlab >&3
+  run n2st::good_morning_norlab
   assert_success
-  assert_output --partial "Goooooooood morning NorLab ... there's nothing like the smell of a snow storm in the morning!"
-}
+  assert_output --partial "${GREETING} ... there's nothing like the smell of a snow storm in the morning!"
 
-@test "n2st::talk_to_me_or_not › expect fail" {
-  # Note:
-  #  - "echo 'Y'" is for sending an keyboard input to the 'read' command which expect a single character
-  #    run bash -c "echo 'Y' | source ./function_library/$TESTED_FILE"
-  #  - Alt: Use the 'yes [n]' command which optionaly send n time
-#  run bash -c "yes 1 | n2st::talk_to_me_or_not"
-  run bash -c "source ./$TESTED_FILE && yes 1 | n2st::talk_to_me_or_not"
-  assert_failure 1
-  assert_output --partial '(press any key to exit)'
-}
+#  run norlab_splash >&3
+  run norlab_splash
+  assert_success
 
+#  run set_which_architecture_and_os >&3
+  run set_which_architecture_and_os
+  assert_success
+}
 
