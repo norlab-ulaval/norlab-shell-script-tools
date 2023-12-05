@@ -61,7 +61,7 @@ docker build \
   --build-arg BUILDKIT_CONTEXT_KEEP_GIT_DIR=1 \
   --build-arg N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH="$N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH" \
   --file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
-  --tag bats/bats-core-code-isolation \
+  --tag n2st-bats-test-code-isolation/"${PROJECT_GIT_NAME}" \
   .
 
 if [[ ${TEAMCITY_VERSION} ]]; then
@@ -77,9 +77,9 @@ fi
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   # The '--interactive' flag is not compatible with TeamCity build agent
-  docker run --tty --rm bats/bats-core-code-isolation "$RUN_TESTS_IN_DIR"
+  docker run --tty --rm n2st-bats-test-code-isolation/"${PROJECT_GIT_NAME}" "$RUN_TESTS_IN_DIR"
 else
-  docker run --interactive --tty --rm bats/bats-core-code-isolation "$RUN_TESTS_IN_DIR"
+  docker run --interactive --tty --rm n2st-bats-test-code-isolation/"${PROJECT_GIT_NAME}" "$RUN_TESTS_IN_DIR"
 fi
 DOCKER_EXIT_CODE=$?
 
