@@ -9,7 +9,7 @@
 #set -v
 
 
-# =================================================================================================================
+# =================================================================================================
 # Dynamic printf centering tool. Centering based on the terminal screen width at runtime.
 #
 # Usage:
@@ -28,7 +28,7 @@
 #   Output the line to STDOUT
 # Returns:
 #   none
-# =================================================================================================================
+# =================================================================================================
 function echo_centering_str() {
   local the_str_pre=${1:?'Missing a mandatory parameter error'}
 #  local the_str=${1:?'Missing a mandatory parameter error'}
@@ -70,7 +70,7 @@ function echo_centering_str() {
 }
 
 
-# =================================================================================================================
+# =================================================================================================
 # SNOW terminal splash screen
 #
 # Credit: ASCII art generated using image generator at https://asciiart.club
@@ -103,7 +103,7 @@ function echo_centering_str() {
 #   $ source build_system/function_library/terminal_splash.bash \
 #      && snow_splash "NorLab" "https://github.com/norlab-ulaval"
 #
-# =================================================================================================================
+# =================================================================================================
 function snow_splash() {
   local TITLE=${1:-'NorLab'}
   local OPTIONAL_URL=${2:-'https://github.com/norlab-ulaval'}
@@ -151,7 +151,7 @@ function snow_splash() {
   echo " "
 }
 
-# =================================================================================================================
+# =================================================================================================
 # NorLab Terminal splash screen
 #
 # Credit: ASCII art generated using image generator at https://asciiart.club
@@ -185,7 +185,7 @@ function snow_splash() {
 #   $ source build_system/function_library/terminal_splash.bash \
 #      && norlab_splash "NorLab" "https://github.com/norlab-ulaval"
 #
-# =================================================================================================================
+# =================================================================================================
 function norlab_splash() {
   local TITLE=${1:-'NorLab'}
   local OPTIONAL_URL=${2:-'https://github.com/norlab-ulaval'}
