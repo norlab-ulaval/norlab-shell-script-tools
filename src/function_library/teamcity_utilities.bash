@@ -10,7 +10,7 @@
 #
 
 
-# ....Pre-condition................................................................................................
+# ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] 'teamcity_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'"
   echo '(press any key to exit)'
@@ -18,15 +18,15 @@ if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
   exit 1
 fi
 
-# ....Load environment variables from file.........................................................................
+# ....Load environment variables from file.........................................................
 set -o allexport
 source .env.msg_style
 set +o allexport
 
-# ....Load helper function.........................................................................................
+# ....Load helper function.........................................................................
 source ./prompt_utilities.bash
 
-# =================================================================================================================
+# =================================================================================================
 # Check if the script is executed in JetBrains TeamCity continuous integration/deployment server
 # and set the IS_TEAMCITY_RUN environment variable accordingly
 #
@@ -38,7 +38,7 @@ source ./prompt_utilities.bash
 #   [write] 'IS_TEAMCITY_RUN'
 # Returns:
 #   none
-# =================================================================================================================
+# =================================================================================================
 function set_is_teamcity_run_environment_variable() {
   if [[ ${TEAMCITY_VERSION} ]] ; then
     IS_TEAMCITY_RUN=true && export IS_TEAMCITY_RUN
@@ -46,7 +46,7 @@ function set_is_teamcity_run_environment_variable() {
 }
 
 
-# =================================================================================================================
+# =================================================================================================
 # Send TeamCity blockOpened/blockClosed service message
 #   or print the message to console when executed outside a TeamCity Agent run.
 #
@@ -69,7 +69,7 @@ function set_is_teamcity_run_environment_variable() {
 #
 # ToDo: assessment >> consider adding the logic to check "if run in teamcity" inside this function instead of relying on the IS_TEAMCITY_RUN env variable
 # (NICE TO HAVE) ToDo: refactor (ref task NMO-341 refactor `teamcity_service_msg_blockOpened`  to use dynamic env variable name so that we can nest fct call)
-# =================================================================================================================
+# =================================================================================================
 function teamcity_service_msg_blockOpened() {
   local THE_MSG=$1
   if [[ ${CURRENT_BLOCK_SERVICE_MSG} ]]; then
@@ -93,7 +93,7 @@ function teamcity_service_msg_blockClosed() {
   unset CURRENT_BLOCK_SERVICE_MSG
 }
 
-# =================================================================================================================
+# =================================================================================================
 # Send TeamCity compilationStarted/compilationFinished service message
 #   or print the message to console when executed outside a TeamCity Agent run.
 #
@@ -115,7 +115,7 @@ function teamcity_service_msg_blockClosed() {
 #   - TeamCity doc: https://www.jetbrains.com/help/teamcity/service-messages.html#Reporting+Compilation+Messages
 #
 # ToDo: assessment >> consider adding the logic to check "if run in teamcity" inside this function instead of relying on the IS_TEAMCITY_RUN env variable
-# =================================================================================================================
+# =================================================================================================
 function teamcity_service_msg_compilationStarted() {
   local THE_MSG=$1
   if [[ ${CURRENT_COMPILATION_SERVICE_MSG_COMPILER} ]]; then

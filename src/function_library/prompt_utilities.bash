@@ -10,7 +10,7 @@
 #
 
 
-# ....Pre-condition................................................................................................
+# ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] 'prompt_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'"
   echo '(press any key to exit)'
@@ -19,13 +19,13 @@ if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
 fi
 
 
-# ....Load environment variables from file.........................................................................
+# ....Load environment variables from file.........................................................
 set -o allexport
 source .env.msg_style
 set +o allexport
 
 
-# =================================================================================================================
+# =================================================================================================
 # Print formatted message to prompt
 #
 # Usage:
@@ -38,7 +38,7 @@ set +o allexport
 #   The formated message to stdout
 # Returns:
 #   none
-# =================================================================================================================
+# =================================================================================================
 function _print_msg_formater() {
   local MSG_TYPE=${1}
   local MSG=${2}
@@ -79,7 +79,7 @@ function print_msg_awaiting_input() {
     _print_msg_formater "AWAITING_INPUT" "${MSG}"
 }
 
-# =================================================================================================================
+# =================================================================================================
 # Print formatted error message to prompt
 #
 # Usage:
@@ -93,7 +93,7 @@ function print_msg_awaiting_input() {
 #   The formatted error message to to stderr
 # Returns:
 #   none
-# =================================================================================================================
+# =================================================================================================
 function print_msg_error_and_exit() {
   local ERROR_MSG=$1
 
@@ -114,7 +114,7 @@ function print_msg_error() {
 }
 
 
-# =================================================================================================================
+# =================================================================================================
 # Draw horizontal line the entire width of the terminal
 # Source: https://web.archive.org/web/20230402083320/http://wiki.bash-hackers.org/snipplets/print_horizontal_line#a_line_across_the_entire_width_of_the_terminal
 #
@@ -129,7 +129,7 @@ function print_msg_error() {
 #   The screen wide line
 # Returns:
 #   none
-# =================================================================================================================
+# =================================================================================================
 function draw_horizontal_line_across_the_terminal_window() {
   local SYMBOL="${1:-=}"
   local terminal_width
@@ -158,7 +158,7 @@ function draw_horizontal_line_across_the_terminal_window() {
   printf -- "${pad}\n"
 }
 
-# =================================================================================================================
+# =================================================================================================
 # Print a formatted script header or footer
 #
 # Usage:
@@ -172,7 +172,7 @@ function draw_horizontal_line_across_the_terminal_window() {
 #   Print formated string to stdout
 # Returns:
 #   none
-# =================================================================================================================
+# =================================================================================================
 function print_formated_script_header() {
   local SCRIPT_NAME="${1}"
   local SYMBOL="${2:-=}"
@@ -192,7 +192,7 @@ function print_formated_script_footer() {
 }
 
 
-# =================================================================================================================
+# =================================================================================================
 # Print formated 'back to script' message
 #
 # Usage:
@@ -205,7 +205,7 @@ function print_formated_script_footer() {
 #   Print formated string to stdout
 # Returns:
 #   none
-# =================================================================================================================
+# =================================================================================================
 function print_formated_back_to_script_msg() {
   local SCRIPT_NAME="${1}"
   local SYMBOL="${2:-=}"
@@ -215,7 +215,7 @@ function print_formated_back_to_script_msg() {
   echo
 }
 
-# =================================================================================================================
+# =================================================================================================
 # Print formatted file preview
 #
 # Usage:
@@ -229,7 +229,7 @@ function print_formated_back_to_script_msg() {
 #   Print formated file preview to stdout
 # Returns:
 #   none
-# =================================================================================================================
+# =================================================================================================
 function print_formated_file_preview_begin() {
   local FILE_NAME="${1}"
   echo
@@ -246,7 +246,7 @@ function print_formated_file_preview_end() {
 }
 
 
-# =================================================================================================================
+# =================================================================================================
 # Print file to console, formated in a way that standout from other console print
 #
 # Usage:
@@ -258,7 +258,7 @@ function print_formated_file_preview_end() {
 #   Formated preview of a file
 # Returns:
 #   none
-# =================================================================================================================
+# =================================================================================================
 function preview_file_in_promt() {
   local TMP_FILE_PATH="${1}"
 

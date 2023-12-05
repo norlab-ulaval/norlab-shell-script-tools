@@ -9,7 +9,7 @@
 #   $ source ./docker_utilities.bash
 #
 
-# ....Pre-condition................................................................................................
+# ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] 'docker_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'"
   echo '(press any key to exit)'
@@ -17,15 +17,15 @@ if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
   exit 1
 fi
 
-# ....Load environment variables from file.........................................................................
+# ....Load environment variables from file.........................................................
 set -o allexport
 source .env.msg_style
 set +o allexport
 
-# ....Load helper function.........................................................................................
+# ....Load helper function.........................................................................
 source ./prompt_utilities.bash
 
-# =================================================================================================================
+# =================================================================================================
 # Show docker command and execute it. Just enclose the command with argument in quote.
 #
 # Usage:
@@ -40,7 +40,7 @@ source ./prompt_utilities.bash
 #   Output to STDOUT or STDERR
 # Returns:
 #   Return docker command exit code
-# =================================================================================================================
+# =================================================================================================
 function show_and_execute_docker() {
   local FULL_DOCKER_COMMAND=$1
   local CI_TEST=${2:-false}
@@ -82,7 +82,7 @@ function show_and_execute_docker() {
 }
 
 
-# =================================================================================================================
+# =================================================================================================
 # Add user to the docker group so that we dont have to preface docker command with sudo everytime
 # Ref: https://docs.docker.com/engine/install/linux-postinstall/
 #
@@ -95,7 +95,7 @@ function show_and_execute_docker() {
 #    <theUserName> The user name to add
 # Outputs:
 #   Feedback on what was executed
-# =================================================================================================================
+# =================================================================================================
 function add_user_to_the_docker_group() {
   local THE_USER=$1
 
