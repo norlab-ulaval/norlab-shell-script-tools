@@ -43,20 +43,20 @@ source ./prompt_utilities.bash
 # =================================================================================================
 function show_and_execute_docker() {
   local FULL_DOCKER_COMMAND=$1
-  local CI_TEST=${2:-false}
+  local MOCK_DOCKER=${2:-false}
   unset DOCKER_EXIT_CODE
 
-  if [ -f /.dockerenv ] && [[ $CI_TEST = false ]]; then
+  if [ -f /.dockerenv ] && [[ $MOCK_DOCKER = false ]]; then
     echo
     print_msg_warning "Skipping the execution of Docker command\n
       ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}\n\nsince the script is executed inside a docker container ... and starting Docker daemon inside a container is complicated to setup and overkill for our testing case."
+    DOCKER_EXIT_CODE=0
   else
     print_msg "Execute command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}"
 
     # shellcheck disable=SC2086
     docker ${FULL_DOCKER_COMMAND}
     DOCKER_EXIT_CODE=$?
-    export DOCKER_EXIT_CODE
 
     SUCCESS_MSG="Command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT} completed successfully and exited docker."
     FAILURE_MSG="Command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT} exited with error (DOCKER_EXIT_CODE=${DOCKER_EXIT_CODE})!"
@@ -79,6 +79,8 @@ function show_and_execute_docker() {
     fi
 
   fi
+
+  export DOCKER_EXIT_CODE
 }
 
 
