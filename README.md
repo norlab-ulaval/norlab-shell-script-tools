@@ -29,10 +29,12 @@
 Maintainer: [Luc Coupal](https://redleader962.github.io)
 
 #### `v2.0.0` release note: 
-- Functions are available with and without the `n2st::` prefix for maintaing legacy v1 API support. 
+- Functions are available with and without the `n2st::` prefix for maintaining legacy v1 API support. 
+
+--- 
 
 <details>
-  <summary style="font-weight: bolder;font-size: x-large;">How to use this repository as a git submodule</summary>
+  <summary style="font-weight: bolder;font-size: x-large;"> How to use this repository as a git submodule </summary>
 
 Just clone the *norlab-shell-script-tools* as a submodule in your project repository (ie the
 _superproject_), in an arbitrary directory eg.: `my-project/utilities/`.
@@ -135,8 +137,7 @@ This should solve the problem permanently.
   - script that output the host architecture and os 
   - script that output which python version
 
-
----
+  
 
 # N2ST testing tools for shell script development
 
