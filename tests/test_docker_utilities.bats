@@ -79,14 +79,72 @@ teardown() {
   assert_success
 }
 
-@test "show_and_execute_docker › docker in docker › expect skip" {
+@test "n2st::show_and_execute_docker › docker in docker › expect skip" {
+  assert_exist "/.dockerenv"
+  run n2st::show_and_execute_docker "--version"
+  assert_output --regexp "\]".*"Skipping the execution of Docker command".*"docker".*"${DOCKER_CMD}".*
+  assert_success
+}
+
+@test "n2st::show_and_execute_docker › mock docker command › expect pass" {
+  local DOCKER_CMD="--version"
+  mock_docker_command_exit_ok
+  assert_exist "/.dockerenv"
+  run n2st::show_and_execute_docker "${DOCKER_CMD}" true
+  assert_success
+  assert_output --regexp "\]".*"Execute command".*"docker".*"${DOCKER_CMD}".*
+  assert_output --regexp "done\]".*"Command".*"docker".*"${DOCKER_CMD}".*"completed successfully and exited docker"
+}
+
+@test "n2st::show_and_execute_docker › mock docker command › expect pass (teamcity casses)" {
+  local DOCKER_CMD="--version"
+  local IS_TEAMCITY_RUN=true
+  mock_docker_command_exit_ok
+  assert_exist "/.dockerenv"
+  run n2st::show_and_execute_docker "${DOCKER_CMD}" true
+  assert_success
+  assert_output --regexp "\]".*"Execute command".*"docker".*"${DOCKER_CMD}".*
+  assert_output --regexp "\#\#teamcity\[message text='".*"\|\]".*"Command".*"docker".*"${DOCKER_CMD}".*"completed successfully and exited docker".*"' status='NORMAL'\]"
+#  bats_print_run_env_variable
+}
+
+@test "n2st::show_and_execute_docker › mock docker command › expect fail (teamcity casses)" {
+  local DOCKER_CMD="--version"
+  local IS_TEAMCITY_RUN=true
+  mock_docker_command_exit_error
+  assert_exist "/.dockerenv"
+  run n2st::show_and_execute_docker "${DOCKER_CMD}" true
+  assert_success
+  assert_output --regexp "\]".*"Execute command".*"docker".*"${DOCKER_CMD}".*
+  assert_output --regexp "\#\#teamcity\[message text='".*"\|\]".*"Command".*"docker".*"${DOCKER_CMD}".*"exited with error \(DOCKER_EXIT_CODE=1\)\!".*"' errorDetails='1' status='ERROR'\]"
+#  bats_print_run_env_variable
+}
+
+@test "n2st::show_and_execute_docker › mock docker command › expect fail" {
+  local DOCKER_CMD="--version"
+  mock_docker_command_exit_error
+  assert_exist "/.dockerenv"
+  run n2st::show_and_execute_docker "${DOCKER_CMD}" true
+  assert_success
+  assert_output --regexp "\]".*"Execute command".*"docker".*"${DOCKER_CMD}".*
+  assert_output --regexp .*"\]".*"Command".*"docker".*"${DOCKER_CMD}".*"exited with error \(DOCKER_EXIT_CODE=1\)\!".*
+#  bats_print_run_env_variable
+}
+
+@test "n2st::add_user_to_the_docker_group ok" {
+  run n2st::add_user_to_the_docker_group "$(whoami)"
+  assert_success
+}
+
+# ====legacy API support testing===================================================================
+@test "(legacy API support testing) show_and_execute_docker › docker in docker › expect skip" {
   assert_exist "/.dockerenv"
   run show_and_execute_docker "--version"
   assert_output --regexp "\]".*"Skipping the execution of Docker command".*"docker".*"${DOCKER_CMD}".*
   assert_success
 }
 
-@test "show_and_execute_docker › mock docker command › expect pass" {
+@test "(legacy API support testing) show_and_execute_docker › mock docker command › expect pass" {
   local DOCKER_CMD="--version"
   mock_docker_command_exit_ok
   assert_exist "/.dockerenv"
@@ -96,43 +154,7 @@ teardown() {
   assert_output --regexp "done\]".*"Command".*"docker".*"${DOCKER_CMD}".*"completed successfully and exited docker"
 }
 
-@test "show_and_execute_docker › mock docker command › expect pass (teamcity casses)" {
-  local DOCKER_CMD="--version"
-  local IS_TEAMCITY_RUN=true
-  mock_docker_command_exit_ok
-  assert_exist "/.dockerenv"
-  run show_and_execute_docker "${DOCKER_CMD}" true
-  assert_success
-  assert_output --regexp "\]".*"Execute command".*"docker".*"${DOCKER_CMD}".*
-  assert_output --regexp "\#\#teamcity\[message text='".*"\|\]".*"Command".*"docker".*"${DOCKER_CMD}".*"completed successfully and exited docker".*"' status='NORMAL'\]"
-#  bats_print_run_env_variable
-}
-
-@test "show_and_execute_docker › mock docker command › expect fail (teamcity casses)" {
-  local DOCKER_CMD="--version"
-  local IS_TEAMCITY_RUN=true
-  mock_docker_command_exit_error
-  assert_exist "/.dockerenv"
-  run show_and_execute_docker "${DOCKER_CMD}" true
-  assert_success
-  assert_output --regexp "\]".*"Execute command".*"docker".*"${DOCKER_CMD}".*
-  assert_output --regexp "\#\#teamcity\[message text='".*"\|\]".*"Command".*"docker".*"${DOCKER_CMD}".*"exited with error \(DOCKER_EXIT_CODE=1\)\!".*"' errorDetails='1' status='ERROR'\]"
-#  bats_print_run_env_variable
-}
-
-@test "show_and_execute_docker › mock docker command › expect fail" {
-  local DOCKER_CMD="--version"
-  mock_docker_command_exit_error
-  assert_exist "/.dockerenv"
-  run show_and_execute_docker "${DOCKER_CMD}" true
-  assert_success
-  assert_output --regexp "\]".*"Execute command".*"docker".*"${DOCKER_CMD}".*
-  assert_output --regexp .*"\]".*"Command".*"docker".*"${DOCKER_CMD}".*"exited with error \(DOCKER_EXIT_CODE=1\)\!".*
-#  bats_print_run_env_variable
-}
-
-@test "add_user_to_the_docker_group ok" {
+@test "(legacy API support testing) add_user_to_the_docker_group ok" {
   run add_user_to_the_docker_group "$(whoami)"
   assert_success
 }
-

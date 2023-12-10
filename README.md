@@ -25,16 +25,17 @@
 </p>  
 </div>
 
-**Note:** Be advise that the repository is still in beta stage and we might introduce breaking change without notice. 
 
 Maintainer: [Luc Coupal](https://redleader962.github.io)
 
+#### `v2.0.0` release note: 
+- Functions are available with and without the `n2st::` prefix for maintaing legacy v1 API support. 
 
 <details>
   <summary style="font-weight: bolder;font-size: x-large;">How to use this repository as a git submodule</summary>
 
-Just clone the *norlab-shell-script-tools* superproject as a submodule in your project repository,
-in an arbitrary directory eg.: `my-project/utilities/`.
+Just clone the *norlab-shell-script-tools* as a submodule in your project repository (ie the
+_superproject_), in an arbitrary directory eg.: `my-project/utilities/`.
 
 Procedure
 ```bash
@@ -47,8 +48,12 @@ git submodule \
   add https://github.com/norlab-ulaval/norlab-shell-script-tools.git \
   utilities/norlab-shell-script-tools
 
+# Traverse the submodule recursively to fetch any sub-submodule
+git submodule update --remote --recursive --init
+
 # Commit the submodule to your repository
-git add .
+git add .gitmodules
+git add utilities/norlab-shell-script-tools
 git commit -m 'Added norlab-shell-script-tools submodule to repository'
 ```
 
