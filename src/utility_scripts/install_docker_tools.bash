@@ -32,7 +32,7 @@ n2st::print_formated_script_header 'install_docker_tools.bash'
 
 # .................................................................................................
 echo
-print_msg "Install utilities"
+n2st::print_msg "Install utilities"
 echo
 
 sudo apt-get update &&
@@ -47,7 +47,7 @@ sudo apt-get update &&
 
 # .................................................................................................
 echo
-print_msg "Install Docker tools"
+n2st::print_msg "Install Docker tools"
 
 # . . Add Docker’s official GPG key:. . . . . . . . . . . . . . . . . . . . . . . . . . .
 sudo mkdir -m 0755 -p /etc/apt/keyrings
@@ -70,7 +70,7 @@ sudo apt-get update &&
 
 # .................................................................................................
 echo
-print_msg "Configure docker"
+n2st::print_msg "Configure docker"
 echo
 
 n2st::add_user_to_the_docker_group "$(whoami)"

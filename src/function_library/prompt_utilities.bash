@@ -62,7 +62,7 @@ function _print_msg_formater() {
 #  echo ""
 }
 
-function print_msg() {
+function n2st::print_msg() {
     local MSG=${1}
     _print_msg_formater "BASE" "${MSG}"
 }
@@ -271,8 +271,8 @@ function n2st::preview_file_in_promt() {
 }
 
 # ====legacy API support===========================================================================
-function set_which_architecture_and_os() {
-  n2st::set_which_architecture_and_os "$@"
+function print_msg() {
+  n2st::print_msg "$@"
 }
 
 function print_msg_done() {

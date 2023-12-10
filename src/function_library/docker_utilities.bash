@@ -52,7 +52,7 @@ function n2st::show_and_execute_docker() {
       ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}\n\nsince the script is executed inside a docker container ... and starting Docker daemon inside a container is complicated to setup and overkill for our testing case."
     DOCKER_EXIT_CODE=0
   else
-    print_msg "Execute command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}"
+    n2st::print_msg "Execute command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}"
 
     # shellcheck disable=SC2086
     docker ${FULL_DOCKER_COMMAND}
@@ -101,7 +101,7 @@ function n2st::show_and_execute_docker() {
 function n2st::add_user_to_the_docker_group() {
   local THE_USER=$1
 
-  print_msg "Manage Docker as a non-root user"
+  n2st::print_msg "Manage Docker as a non-root user"
 
   sudo groupadd --force docker
   sudo usermod --append -G docker "${THE_USER}"

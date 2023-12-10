@@ -81,7 +81,7 @@ function n2st::teamcity_service_msg_blockOpened() {
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
     echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} ${THE_MSG}']"
   else
-    echo && print_msg "${THE_MSG}" && echo
+    echo && n2st::print_msg "${THE_MSG}" && echo
   fi
 }
 
@@ -127,7 +127,7 @@ function n2st::teamcity_service_msg_compilationStarted() {
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
     echo -e "##teamcity[compilationStarted compiler='${MSG_BASE_TEAMCITY} ${THE_MSG}']"
   else
-    echo && print_msg "${THE_MSG}" && echo
+    echo && n2st::print_msg "${THE_MSG}" && echo
   fi
 }
 
