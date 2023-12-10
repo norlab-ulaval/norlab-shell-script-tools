@@ -32,7 +32,7 @@ else
   exit 1
 fi
 
-# ====Setup========================================================================================================
+# ====Setup========================================================================================
 TESTED_FILE="prompt_utilities.bash"
 
 setup_file() {
@@ -48,7 +48,7 @@ setup() {
   TEST_TEMP_DIR="$(temp_make)"
 }
 
-# ====Teardown=====================================================================================================
+# ====Teardown=====================================================================================
 
 teardown() {
   bats_print_run_env_variable_on_error
@@ -58,7 +58,7 @@ teardown() {
 #    echo "executed once after finishing the last test"
 #}
 
-# ====Test casses==================================================================================================
+# ====Test casses==================================================================================
 
 @test "sourcing $TESTED_FILE from bad cwd › expect fail" {
   cd "${BATS_DOCKER_WORKDIR}/src/"
@@ -98,105 +98,105 @@ teardown() {
     assert_output --partial "$TEST_MSG"
 
 
-    run print_msg_done "$TEST_MSG"
+    run n2st::print_msg_done "$TEST_MSG"
     assert_success
     assert_output --partial "$TEST_MSG"
     assert_output --partial "done"
 
-    run print_msg_warning "$TEST_MSG"
+    run n2st::print_msg_warning "$TEST_MSG"
     assert_success
     assert_output --partial "$TEST_MSG"
     assert_output --partial "warning"
 
-    run print_msg_awaiting_input "$TEST_MSG"
+    run n2st::print_msg_awaiting_input "$TEST_MSG"
     assert_success
     assert_output --partial "$TEST_MSG"
     assert_output --partial "awaiting input"
 }
 
-@test "all print_msg_error_and_exit functions ok" {
+@test "all n2st::print_msg_error_and_exit functions ok" {
     local TEST_MSG='test error message'
 
-    run print_msg_error_and_exit "$TEST_MSG"
+    run n2st::print_msg_error_and_exit "$TEST_MSG"
     assert_output --partial "$TEST_MSG"
     assert_output --partial "error"
     assert_failure 1
 
-    run print_msg_error "$TEST_MSG"
+    run n2st::print_msg_error "$TEST_MSG"
     assert_output --partial "$TEST_MSG"
     assert_output --partial "error"
     assert_success
 }
 
-@test "draw_horizontal_line_across_the_terminal_window ok" {
+@test "n2st::draw_horizontal_line_across_the_terminal_window ok" {
 #    printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
-#    draw_horizontal_line_across_the_terminal_window "=" >&3
+#    n2st::draw_horizontal_line_across_the_terminal_window "=" >&3
 #    tput longname >&3
 
-    run draw_horizontal_line_across_the_terminal_window
+    run n2st::draw_horizontal_line_across_the_terminal_window
     assert_success
 
-    run draw_horizontal_line_across_the_terminal_window '.'
+    run n2st::draw_horizontal_line_across_the_terminal_window '.'
     assert_success
     assert_output --partial "....."
 
-    run draw_horizontal_line_across_the_terminal_window ':'
+    run n2st::draw_horizontal_line_across_the_terminal_window ':'
     assert_success
     assert_output --partial ":::::"
 
     TERM=dumb
-    run draw_horizontal_line_across_the_terminal_window
+    run n2st::draw_horizontal_line_across_the_terminal_window
     assert_success
     assert_output --partial "====="
 
     unset TERM
-    run draw_horizontal_line_across_the_terminal_window
+    run n2st::draw_horizontal_line_across_the_terminal_window
     assert_success
     assert_output --partial "====="
 }
 
-@test "print_formated_script_header ok" {
+@test "n2st::print_formated_script_header ok" {
     local MAIN_MSG="Starting"
     local SCRIPT_NAME="Script name"
 
-    run print_formated_script_header
+    run n2st::print_formated_script_header
     assert_success
     assert_line --index 0 --partial "="
     assert_line --index 1 --partial "$MAIN_MSG"
 
-    run print_formated_script_header "$SCRIPT_NAME" ':'
+    run n2st::print_formated_script_header "$SCRIPT_NAME" ':'
     assert_line --index 0 --partial ":::"
     assert_line --index 1 --partial "$MAIN_MSG"
     assert_line --index 1 --partial "$SCRIPT_NAME"
     assert_success
 }
 
-@test "print_formated_script_footer ok" {
+@test "n2st::print_formated_script_footer ok" {
     local MAIN_MSG="Completed"
     local SCRIPT_NAME="Script name"
 
-    run print_formated_script_footer
+    run n2st::print_formated_script_footer
     assert_success
     assert_line --index 0 --partial "$MAIN_MSG"
     assert_line --index 1 --partial "="
 
-    run print_formated_script_footer "$SCRIPT_NAME" ':'
+    run n2st::print_formated_script_footer "$SCRIPT_NAME" ':'
     assert_line --index 0 --partial "$MAIN_MSG"
     assert_line --index 0 --partial "$SCRIPT_NAME"
     assert_line --index 1 --partial ":::"
     assert_success
 }
 
-@test "print_formated_back_to_script_msg ok" {
+@test "n2st::print_formated_back_to_script_msg ok" {
     local MAIN_MSG="Back to "
     local SCRIPT_NAME="Script name"
 
-    run print_formated_back_to_script_msg
+    run n2st::print_formated_back_to_script_msg
     assert_success
     assert_line --index 0 --partial "="
     assert_line --index 1 --partial "$MAIN_MSG"
 
-    run print_formated_back_to_script_msg "$SCRIPT_NAME" ':'
+    run n2st::print_formated_back_to_script_msg "$SCRIPT_NAME" ':'
     assert_line --index 0 --partial ":::"
     assert_line --index 1 --partial "$MAIN_MSG"
     assert_line --index 1 --partial "$SCRIPT_NAME"
@@ -207,19 +207,19 @@ teardown() {
     local MAIN_MSG="EOF"
     local SCRIPT_NAME="Test message"
 
-    run print_formated_file_preview_begin "$SCRIPT_NAME"
+    run n2st::print_formated_file_preview_begin "$SCRIPT_NAME"
     assert_success
     assert_line --index 1 --partial "."
     assert_line --index 2 --partial "$MAIN_MSG"
     assert_line --index 2 --partial "$SCRIPT_NAME"
 
-    run print_formated_file_preview_end
+    run n2st::print_formated_file_preview_end
     assert_line --index 0 --partial "$MAIN_MSG"
     assert_line --index 1 --partial "."
     assert_success
 }
 
-@test "preview_file_in_promt ok" {
+@test "n2st::preview_file_in_promt ok" {
   local TMP_TEST_FILE="${cwdTEST_TEMP_DIR}/.env.tmp_test_file"
   touch "$TMP_TEST_FILE"
 
@@ -229,9 +229,10 @@ teardown() {
       echo
     ) >> "$TMP_TEST_FILE"
 
-  run preview_file_in_promt "$TMP_TEST_FILE"
+  run n2st::preview_file_in_promt "$TMP_TEST_FILE"
   assert_success
   assert_output --partial "Test message"
 #  bats_print_run_env_variable
 }
 
+# ====legacy API support testing===================================================================

@@ -94,12 +94,12 @@ teardown() {
   assert_success
   assert_output --partial "${GREETING} ... there's nothing like the smell of a snow storm in the morning!"
 
-#  run norlab_splash >&3
-  run norlab_splash
+#  run n2st::norlab_splash >&3
+  run n2st::norlab_splash
   assert_success
 
-#  run set_which_architecture_and_os >&3
-  run set_which_architecture_and_os
+#  run n2st::set_which_architecture_and_os >&3
+  run n2st::set_which_architecture_and_os
   assert_success
 }
 

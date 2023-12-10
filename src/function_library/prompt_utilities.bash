@@ -66,15 +66,15 @@ function print_msg() {
     local MSG=${1}
     _print_msg_formater "BASE" "${MSG}"
 }
-function print_msg_done() {
+function n2st::print_msg_done() {
     local MSG=${1}
     _print_msg_formater "DONE" "${MSG}"
 }
-function print_msg_warning() {
+function n2st::print_msg_warning() {
     local MSG=${1}
     _print_msg_formater "WARNING" "${MSG}"
 }
-function print_msg_awaiting_input() {
+function n2st::print_msg_awaiting_input() {
     local MSG=${1}
     _print_msg_formater "AWAITING_INPUT" "${MSG}"
 }
@@ -83,9 +83,9 @@ function print_msg_awaiting_input() {
 # Print formatted error message to prompt
 #
 # Usage:
-#     $ print_msg_error_and_exit "<error msg string>"
+#     $ n2st::print_msg_error_and_exit "<error msg string>"
 #   or
-#     $ print_msg_error "<error msg string>"
+#     $ n2st::print_msg_error "<error msg string>"
 #
 # Arguments:
 #   <error msg string>  The error message to print
@@ -94,7 +94,7 @@ function print_msg_awaiting_input() {
 # Returns:
 #   none
 # =================================================================================================
-function print_msg_error_and_exit() {
+function n2st::print_msg_error_and_exit() {
   local ERROR_MSG=$1
 
   echo ""
@@ -105,7 +105,7 @@ function print_msg_error_and_exit() {
   exit 1
 }
 
-function print_msg_error() {
+function n2st::print_msg_error() {
   local ERROR_MSG=$1
 
   echo ""
@@ -119,7 +119,7 @@ function print_msg_error() {
 # Source: https://web.archive.org/web/20230402083320/http://wiki.bash-hackers.org/snipplets/print_horizontal_line#a_line_across_the_entire_width_of_the_terminal
 #
 # Usage:
-#   $ draw_horizontal_line_across_the_terminal_window [<SYMBOL>]
+#   $ n2st::draw_horizontal_line_across_the_terminal_window [<SYMBOL>]
 #
 # Globals:
 #   Read 'TERM' and 'COLUMNS' if available
@@ -130,7 +130,7 @@ function print_msg_error() {
 # Returns:
 #   none
 # =================================================================================================
-function draw_horizontal_line_across_the_terminal_window() {
+function n2st::draw_horizontal_line_across_the_terminal_window() {
   local SYMBOL="${1:-=}"
   local terminal_width
   local pad
@@ -162,8 +162,8 @@ function draw_horizontal_line_across_the_terminal_window() {
 # Print a formatted script header or footer
 #
 # Usage:
-#   $ print_formated_script_header "<script name>" [<SYMBOL>]
-#   $ print_formated_script_footer "<script name>" [<SYMBOL>]
+#   $ n2st::print_formated_script_header "<script name>" [<SYMBOL>]
+#   $ n2st::print_formated_script_footer "<script name>" [<SYMBOL>]
 #
 # Arguments:
 #   <script name>   The name of the script that is executing the function. Will be print in the header
@@ -173,21 +173,21 @@ function draw_horizontal_line_across_the_terminal_window() {
 # Returns:
 #   none
 # =================================================================================================
-function print_formated_script_header() {
+function n2st::print_formated_script_header() {
   local SCRIPT_NAME="${1}"
   local SYMBOL="${2:-=}"
   echo
-  draw_horizontal_line_across_the_terminal_window "${SYMBOL}"
+  n2st::draw_horizontal_line_across_the_terminal_window "${SYMBOL}"
   echo -e "Starting ${MSG_DIMMED_FORMAT}${SCRIPT_NAME}${MSG_END_FORMAT}"
   echo
 }
 
-function print_formated_script_footer() {
+function n2st::print_formated_script_footer() {
   local SCRIPT_NAME="${1}"
   local SYMBOL="${2:-=}"
   echo
   echo -e "Completed ${MSG_DIMMED_FORMAT}${SCRIPT_NAME}${MSG_END_FORMAT}"
-  draw_horizontal_line_across_the_terminal_window "${SYMBOL}"
+  n2st::draw_horizontal_line_across_the_terminal_window "${SYMBOL}"
   echo
 }
 
@@ -196,7 +196,7 @@ function print_formated_script_footer() {
 # Print formated 'back to script' message
 #
 # Usage:
-#   $ print_formated_back_to_script_msg "<script name>" [<SYMBOL>]
+#   $ n2st::print_formated_back_to_script_msg "<script name>" [<SYMBOL>]
 #
 # Arguments:
 #   <script name>   The name of the script that is executing the function. Will be print in the header
@@ -206,11 +206,11 @@ function print_formated_script_footer() {
 # Returns:
 #   none
 # =================================================================================================
-function print_formated_back_to_script_msg() {
+function n2st::print_formated_back_to_script_msg() {
   local SCRIPT_NAME="${1}"
   local SYMBOL="${2:-=}"
   echo
-  draw_horizontal_line_across_the_terminal_window "${SYMBOL}"
+  n2st::draw_horizontal_line_across_the_terminal_window "${SYMBOL}"
   echo -e "Back to ${MSG_DIMMED_FORMAT}${SCRIPT_NAME}${MSG_END_FORMAT}"
   echo
 }
@@ -219,9 +219,9 @@ function print_formated_back_to_script_msg() {
 # Print formatted file preview
 #
 # Usage:
-#   $ print_formated_file_preview_begin "<file name>"
+#   $ n2st::print_formated_file_preview_begin "<file name>"
 #   $ <the_command_which_echo_the_file>
-#   $ print_formated_file_preview_end
+#   $ n2st::print_formated_file_preview_end
 #
 # Arguments:
 #   <file name>   The name of the file
@@ -230,17 +230,17 @@ function print_formated_back_to_script_msg() {
 # Returns:
 #   none
 # =================================================================================================
-function print_formated_file_preview_begin() {
+function n2st::print_formated_file_preview_begin() {
   local FILE_NAME="${1}"
   echo
   echo -e "${MSG_DIMMED_FORMAT}"
-  draw_horizontal_line_across_the_terminal_window .
+  n2st::draw_horizontal_line_across_the_terminal_window .
   echo "${FILE_NAME} <<< EOF"
 }
 
-function print_formated_file_preview_end() {
+function n2st::print_formated_file_preview_end() {
   echo "EOF"
-  draw_horizontal_line_across_the_terminal_window .
+  n2st::draw_horizontal_line_across_the_terminal_window .
   echo -e "${MSG_END_FORMAT}"
   echo
 }
@@ -250,7 +250,7 @@ function print_formated_file_preview_end() {
 # Print file to console, formated in a way that standout from other console print
 #
 # Usage:
-#   $ preview_file_in_promt <path/to/file>
+#   $ n2st::preview_file_in_promt <path/to/file>
 #
 # Arguments:
 #   <path/to/file>
@@ -259,14 +259,66 @@ function print_formated_file_preview_end() {
 # Returns:
 #   none
 # =================================================================================================
-function preview_file_in_promt() {
+function n2st::preview_file_in_promt() {
   local TMP_FILE_PATH="${1}"
 
-  print_formated_file_preview_begin "${TMP_FILE_PATH}"
+  n2st::print_formated_file_preview_begin "${TMP_FILE_PATH}"
   echo
   more "${TMP_FILE_PATH}"
   echo
-  print_formated_file_preview_end
+  n2st::print_formated_file_preview_end
 
 }
 
+# ====legacy API support===========================================================================
+function set_which_architecture_and_os() {
+  n2st::set_which_architecture_and_os "$@"
+}
+
+function print_msg_done() {
+  n2st::print_msg_done "$@"
+}
+
+function print_msg_warning() {
+  n2st::print_msg_warning "$@"
+}
+
+function print_msg_awaiting_input() {
+  n2st::print_msg_awaiting_input "$@"
+}
+
+function print_msg_error_and_exit() {
+  n2st::print_msg_error_and_exit "$@"
+}
+
+function print_msg_error() {
+  n2st::print_msg_error "$@"
+}
+
+function draw_horizontal_line_across_the_terminal_window() {
+  n2st::draw_horizontal_line_across_the_terminal_window "$@"
+}
+
+function print_formated_script_header() {
+  n2st::print_formated_script_header "$@"
+}
+
+function print_formated_script_footer() {
+  n2st::print_formated_script_footer "$@"
+}
+
+function print_formated_back_to_script_msg() {
+  n2st::print_formated_back_to_script_msg "$@"
+}
+
+function print_formated_file_preview_begin() {
+  n2st::print_formated_file_preview_begin "$@"
+}
+
+function print_formated_file_preview_end() {
+  n2st::print_formated_file_preview_end "$@"
+}
+
+function preview_file_in_promt() {
+  n2st::preview_file_in_promt "$@"
+}

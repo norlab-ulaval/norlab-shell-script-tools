@@ -9,7 +9,7 @@
 #   $ source ./general_utilities.bash
 #
 
-# ....Pre-condition................................................................................................
+# ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] 'general_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'"
   echo '(press any key to exit)'
@@ -18,12 +18,12 @@ if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
 fi
 
 
-# ....Load environment variables from file.........................................................................
+# ....Load environment variables from file.........................................................
 set -o allexport
 source .env.msg_style
 set +o allexport
 
-# ....Load helper function.........................................................................................
+# ....Load helper function.........................................................................
 source ./prompt_utilities.bash
 
 
@@ -31,7 +31,7 @@ source ./prompt_utilities.bash
 # Seek and modify a string in a file (modify in place)
 #
 # Usage:
-#   $ seek_and_modify_string_in_file "<string to seek>" "<change to string>" <path/to/file>
+#   $ n2st::seek_and_modify_string_in_file "<string to seek>" "<change to string>" <path/to/file>
 #
 # Arguments:
 #   "<string to seek>"
@@ -42,7 +42,7 @@ source ./prompt_utilities.bash
 # Returns:
 #   none
 # =================================================================================================
-function seek_and_modify_string_in_file() {
+function n2st::seek_and_modify_string_in_file() {
 
   local TMP_SEEK="${1}"
   local TMP_CHANGE_FOR="${2}"
@@ -57,13 +57,13 @@ function seek_and_modify_string_in_file() {
 # Check the current python version and set PYTHON3_VERSION environment variable
 #
 # Usage:
-#   $ set_which_python3_version
+#   $ n2st::set_which_python3_version
 #
 # Globals:
 #   write 'PYTHON3_VERSION'
 # =================================================================================================
 # (NICE TO HAVE) ToDo: extend unit-test
-function set_which_python3_version() {
+function n2st::set_which_python3_version() {
     PYTHON3_VERSION=$(python3 -c 'import sys; version=sys.version_info; print(f"{version.major}.{version.minor}")')
     export PYTHON3_VERSION
 }
@@ -79,7 +79,7 @@ function set_which_python3_version() {
 #     - OS: Linux, Darwin, Window
 #
 # Usage:
-#   $ set_which_architecture_and_os
+#   $ n2st::set_which_architecture_and_os
 #
 # Globals:
 #   write IMAGE_ARCH_AND_OS
@@ -93,7 +93,7 @@ function set_which_python3_version() {
 #       darwin/arm64/v8
 #       l4t/arm64/v8
 #     ref: https://docs.docker.com/compose/compose-file/05-services/#platform
-function set_which_architecture_and_os() {
+function n2st::set_which_architecture_and_os() {
   if [[ $(uname -m) == "aarch64" ]]; then
     if [[ -n $(uname -r | grep tegra) ]]; then
       export IMAGE_ARCH_AND_OS='l4t/arm64'
@@ -107,6 +107,19 @@ function set_which_architecture_and_os() {
   elif [[ $(uname -m) == "x86_64" ]] && [[ $(uname) == "Linux" ]]; then
     export IMAGE_ARCH_AND_OS='linux/x86'
   else
-    print_msg_error_and_exit "Unsupported processor architecture"
+    n2st::print_msg_error_and_exit "Unsupported processor architecture"
   fi
+}
+
+# ====legacy API support===========================================================================
+function seek_and_modify_string_in_file() {
+  n2st::seek_and_modify_string_in_file "$@"
+}
+
+function set_which_python3_version() {
+  n2st::set_which_python3_version "$@"
+}
+
+function set_which_architecture_and_os() {
+  n2st::set_which_architecture_and_os "$@"
 }

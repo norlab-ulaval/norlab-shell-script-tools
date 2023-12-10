@@ -77,7 +77,48 @@ teardown() {
   assert_success
 }
 
-@test "seek_and_modify_string_in_file ok" {
+@test "n2st::seek_and_modify_string_in_file ok" {
+  local TMP_TEST_FILE="${cwdTEST_TEMP_DIR}/.env.tmp_test_file"
+  local UNCHANGED_STR="TEST_PATH_1=/do/not/change/me/"
+  local LOOKUP_STR="TEST_PATH_2="
+  local ORIGINAL_STR="${LOOKUP_STR}/I/am/test/path/two"
+  local MODIFIED_STR="${LOOKUP_STR}/I/am/test/path/alt"
+  touch "$TMP_TEST_FILE"
+
+  (
+      echo
+      echo "${UNCHANGED_STR}"
+      echo "${ORIGINAL_STR}"
+      echo
+    ) >> "$TMP_TEST_FILE"
+
+  run n2st::seek_and_modify_string_in_file "${LOOKUP_STR}.*" "${MODIFIED_STR}" "$TMP_TEST_FILE"
+  assert_success
+  run n2st::preview_file_in_promt "$TMP_TEST_FILE"
+  assert_output --partial "${UNCHANGED_STR}"
+  refute_output --partial "${ORIGINAL_STR}"
+  assert_output --partial "${MODIFIED_STR}"
+}
+
+@test "n2st::set_which_python3_version ok" {
+  run n2st::set_which_python3_version
+  assert_success
+
+  n2st::set_which_python3_version
+  assert_not_empty "$PYTHON3_VERSION"
+  echo "PYTHON3_VERSION=$PYTHON3_VERSION" >&3
+}
+
+@test "n2st::set_which_architecture_and_os ok" {
+  run n2st::set_which_architecture_and_os
+  assert_success
+
+  n2st::set_which_architecture_and_os
+  assert_not_empty "$IMAGE_ARCH_AND_OS"
+}
+
+# ====legacy API support testing===================================================================
+@test "(legacy API support testing) seek_and_modify_string_in_file ok" {
   local TMP_TEST_FILE="${cwdTEST_TEMP_DIR}/.env.tmp_test_file"
   local UNCHANGED_STR="TEST_PATH_1=/do/not/change/me/"
   local LOOKUP_STR="TEST_PATH_2="
@@ -94,13 +135,13 @@ teardown() {
 
   run seek_and_modify_string_in_file "${LOOKUP_STR}.*" "${MODIFIED_STR}" "$TMP_TEST_FILE"
   assert_success
-  run preview_file_in_promt "$TMP_TEST_FILE"
+  run n2st::preview_file_in_promt "$TMP_TEST_FILE"
   assert_output --partial "${UNCHANGED_STR}"
   refute_output --partial "${ORIGINAL_STR}"
   assert_output --partial "${MODIFIED_STR}"
 }
 
-@test "set_which_python3_version ok" {
+@test "(legacy API support testing) set_which_python3_version ok" {
   run set_which_python3_version
   assert_success
 
@@ -109,7 +150,7 @@ teardown() {
   echo "PYTHON3_VERSION=$PYTHON3_VERSION" >&3
 }
 
-@test "set_which_architecture_and_os ok" {
+@test "(legacy API support testing) set_which_architecture_and_os ok" {
   run set_which_architecture_and_os
   assert_success
 

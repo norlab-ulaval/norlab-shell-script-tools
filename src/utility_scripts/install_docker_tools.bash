@@ -28,7 +28,7 @@ source ./docker_utilities.bash
 cd "${TMP_CWD}"
 
 # ====Begin========================================================================================
-print_formated_script_header 'install_docker_tools.bash'
+n2st::print_formated_script_header 'install_docker_tools.bash'
 
 # .................................................................................................
 echo
@@ -73,8 +73,8 @@ echo
 print_msg "Configure docker"
 echo
 
-add_user_to_the_docker_group "$(whoami)"
+n2st::add_user_to_the_docker_group "$(whoami)"
 
-print_formated_script_footer 'install_docker_tools.bash'
+n2st::print_formated_script_footer 'install_docker_tools.bash'
 # ====Teardown=====================================================================================================
 cd "${TMP_CWD}"  || exit
