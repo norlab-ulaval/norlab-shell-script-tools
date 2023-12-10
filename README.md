@@ -48,8 +48,12 @@ git submodule \
   add https://github.com/norlab-ulaval/norlab-shell-script-tools.git \
   utilities/norlab-shell-script-tools
 
+# Traverse the submodule recursively to fetch any sub-submodule
+git submodule update --remote --recursive --init
+
 # Commit the submodule to your repository
-git add .
+git add .gitmodules
+git add utilities/norlab-shell-script-tools
 git commit -m 'Added norlab-shell-script-tools submodule to repository'
 ```
 
