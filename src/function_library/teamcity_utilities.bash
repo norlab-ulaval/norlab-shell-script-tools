@@ -31,7 +31,7 @@ source ./prompt_utilities.bash
 # and set the IS_TEAMCITY_RUN environment variable accordingly
 #
 # Usage:
-#   $ set_is_teamcity_run_environment_variable
+#   $ n2st::set_is_teamcity_run_environment_variable
 #
 # Globals:
 #   [Read]  'TEAMCITY_VERSION'
@@ -39,7 +39,7 @@ source ./prompt_utilities.bash
 # Returns:
 #   none
 # =================================================================================================
-function set_is_teamcity_run_environment_variable() {
+function n2st::set_is_teamcity_run_environment_variable() {
   if [[ ${TEAMCITY_VERSION} ]] ; then
     IS_TEAMCITY_RUN=true && export IS_TEAMCITY_RUN
   fi
@@ -51,9 +51,9 @@ function set_is_teamcity_run_environment_variable() {
 #   or print the message to console when executed outside a TeamCity Agent run.
 #
 # Usage:
-#   $ teamcity_service_msg_blockOpened "<theMessage>"
+#   $ n2st::teamcity_service_msg_blockOpened "<theMessage>"
 #   $ ... many steps ...
-#   $ teamcity_service_msg_blockClosed
+#   $ n2st::teamcity_service_msg_blockClosed
 #
 # Globals:
 #   Read        'IS_TEAMCITY_RUN'
@@ -62,18 +62,18 @@ function set_is_teamcity_run_environment_variable() {
 #   Output either
 #     - a TeamCity blockOpened/blockClosed service message
 #     - or print to console
-#     - or an error if teamcity_service_msg_blockOpened is not closed using teamcity_service_msg_blockClosed
+#     - or an error if n2st::teamcity_service_msg_blockOpened is not closed using n2st::teamcity_service_msg_blockClosed
 #
 # Reference:
 #   - TeamCity doc: https://www.jetbrains.com/help/teamcity/service-messages.html#Blocks+of+Service+Messages
 #
 # ToDo: assessment >> consider adding the logic to check "if run in teamcity" inside this function instead of relying on the IS_TEAMCITY_RUN env variable
-# (NICE TO HAVE) ToDo: refactor (ref task NMO-341 refactor `teamcity_service_msg_blockOpened`  to use dynamic env variable name so that we can nest fct call)
+# (NICE TO HAVE) ToDo: refactor (ref task NMO-341 refactor `n2st::teamcity_service_msg_blockOpened`  to use dynamic env variable name so that we can nest fct call)
 # =================================================================================================
-function teamcity_service_msg_blockOpened() {
+function n2st::teamcity_service_msg_blockOpened() {
   local THE_MSG=$1
   if [[ ${CURRENT_BLOCK_SERVICE_MSG} ]]; then
-    print_msg_error_and_exit "The TeamCity bloc service message ${MSG_DIMMED_FORMAT}${CURRENT_BLOCK_SERVICE_MSG}${MSG_END_FORMAT} was not closed using function ${MSG_DIMMED_FORMAT}teamcity_service_msg_blockClosed${MSG_END_FORMAT}."
+    n2st::print_msg_error_and_exit "The TeamCity bloc service message ${MSG_DIMMED_FORMAT}${CURRENT_BLOCK_SERVICE_MSG}${MSG_END_FORMAT} was not closed using function ${MSG_DIMMED_FORMAT}n2st::teamcity_service_msg_blockClosed${MSG_END_FORMAT}."
   else
     export CURRENT_BLOCK_SERVICE_MSG="${THE_MSG}"
   fi
@@ -81,11 +81,11 @@ function teamcity_service_msg_blockOpened() {
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
     echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} ${THE_MSG}']"
   else
-    echo && print_msg "${THE_MSG}" && echo
+    echo && n2st::print_msg "${THE_MSG}" && echo
   fi
 }
 
-function teamcity_service_msg_blockClosed() {
+function n2st::teamcity_service_msg_blockClosed() {
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
     echo -e "##teamcity[blockClosed name='${MSG_BASE_TEAMCITY} ${CURRENT_BLOCK_SERVICE_MSG}']"
   fi
@@ -98,9 +98,9 @@ function teamcity_service_msg_blockClosed() {
 #   or print the message to console when executed outside a TeamCity Agent run.
 #
 # Usage:
-#   $ teamcity_service_msg_compilationStarted "<theMessage>"
+#   $ n2st::teamcity_service_msg_compilationStarted "<theMessage>"
 #   $ ... many compilation steps ...
-#   $ teamcity_service_msg_compilationFinished
+#   $ n2st::teamcity_service_msg_compilationFinished
 #
 # Globals:
 #   Read        'IS_TEAMCITY_RUN'
@@ -109,17 +109,17 @@ function teamcity_service_msg_blockClosed() {
 #   Output either
 #     - a TeamCity compilationStarted/compilationFinished service message
 #     - or print to console
-#     - or an error if teamcity_service_msg_compilationStarted is not closed using teamcity_service_msg_compilationFinished
+#     - or an error if n2st::teamcity_service_msg_compilationStarted is not closed using n2st::teamcity_service_msg_compilationFinished
 #
 # Reference:
 #   - TeamCity doc: https://www.jetbrains.com/help/teamcity/service-messages.html#Reporting+Compilation+Messages
 #
 # ToDo: assessment >> consider adding the logic to check "if run in teamcity" inside this function instead of relying on the IS_TEAMCITY_RUN env variable
 # =================================================================================================
-function teamcity_service_msg_compilationStarted() {
+function n2st::teamcity_service_msg_compilationStarted() {
   local THE_MSG=$1
   if [[ ${CURRENT_COMPILATION_SERVICE_MSG_COMPILER} ]]; then
-    print_msg_error_and_exit "The TeamCity compilation service message ${MSG_DIMMED_FORMAT}${CURRENT_COMPILATION_SERVICE_MSG_COMPILER}${MSG_END_FORMAT} was not closed using function ${MSG_DIMMED_FORMAT}teamcity_service_msg_compilationFinished${MSG_END_FORMAT}."
+    n2st::print_msg_error_and_exit "The TeamCity compilation service message ${MSG_DIMMED_FORMAT}${CURRENT_COMPILATION_SERVICE_MSG_COMPILER}${MSG_END_FORMAT} was not closed using function ${MSG_DIMMED_FORMAT}n2st::teamcity_service_msg_compilationFinished${MSG_END_FORMAT}."
   else
     export CURRENT_COMPILATION_SERVICE_MSG_COMPILER="${THE_MSG}"
   fi
@@ -127,14 +127,37 @@ function teamcity_service_msg_compilationStarted() {
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
     echo -e "##teamcity[compilationStarted compiler='${MSG_BASE_TEAMCITY} ${THE_MSG}']"
   else
-    echo && print_msg "${THE_MSG}" && echo
+    echo && n2st::print_msg "${THE_MSG}" && echo
   fi
 }
 
-function teamcity_service_msg_compilationFinished() {
+function n2st::teamcity_service_msg_compilationFinished() {
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
     echo -e "##teamcity[compilationFinished compiler='${MSG_BASE_TEAMCITY} ${CURRENT_COMPILATION_SERVICE_MSG_COMPILER}']"
   fi
   # Reset the variable since the bloc is closed
   unset CURRENT_COMPILATION_SERVICE_MSG_COMPILER
 }
+
+
+# ====legacy API support===========================================================================
+function set_is_teamcity_run_environment_variable() {
+  n2st::set_is_teamcity_run_environment_variable "$@"
+}
+
+function teamcity_service_msg_blockOpened() {
+  n2st::teamcity_service_msg_blockOpened "$@"
+}
+
+function teamcity_service_msg_blockClosed() {
+  n2st::teamcity_service_msg_blockClosed "$@"
+}
+
+function teamcity_service_msg_compilationStarted() {
+  n2st::teamcity_service_msg_compilationStarted "$@"
+}
+
+function teamcity_service_msg_compilationFinished() {
+  n2st::teamcity_service_msg_compilationFinished "$@"
+}
+

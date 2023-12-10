@@ -29,10 +29,10 @@ source ./prompt_utilities.bash
 # Show docker command and execute it. Just enclose the command with argument in quote.
 #
 # Usage:
-#   $ show_and_execute_docker "<docker command with argument>"
+#   $ n2st::show_and_execute_docker "<docker command with argument>"
 #
 #   Example usage:
-#   $ show_and_execute_docker "run --name IamBuildSystemTester -t -i --rm lpm.ubuntu20.buildsystem.test"
+#   $ n2st::show_and_execute_docker "run --name IamBuildSystemTester -t -i --rm lpm.ubuntu20.buildsystem.test"
 #
 # Globals:
 #   Read 'IS_TEAMCITY_RUN'
@@ -41,22 +41,22 @@ source ./prompt_utilities.bash
 # Returns:
 #   Return docker command exit code
 # =================================================================================================
-function show_and_execute_docker() {
+function n2st::show_and_execute_docker() {
   local FULL_DOCKER_COMMAND=$1
-  local CI_TEST=${2:-false}
+  local MOCK_DOCKER=${2:-false}
   unset DOCKER_EXIT_CODE
 
-  if [ -f /.dockerenv ] && [[ $CI_TEST = false ]]; then
+  if [ -f /.dockerenv ] && [[ $MOCK_DOCKER = false ]]; then
     echo
-    print_msg_warning "Skipping the execution of Docker command\n
+    n2st::print_msg_warning "Skipping the execution of Docker command\n
       ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}\n\nsince the script is executed inside a docker container ... and starting Docker daemon inside a container is complicated to setup and overkill for our testing case."
+    DOCKER_EXIT_CODE=0
   else
-    print_msg "Execute command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}"
+    n2st::print_msg "Execute command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}"
 
     # shellcheck disable=SC2086
     docker ${FULL_DOCKER_COMMAND}
     DOCKER_EXIT_CODE=$?
-    export DOCKER_EXIT_CODE
 
     SUCCESS_MSG="Command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT} completed successfully and exited docker."
     FAILURE_MSG="Command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT} exited with error (DOCKER_EXIT_CODE=${DOCKER_EXIT_CODE})!"
@@ -67,18 +67,20 @@ function show_and_execute_docker() {
         # Report message to build log
         echo -e "##teamcity[message text='${MSG_BASE_TEAMCITY} ${SUCCESS_MSG}' status='NORMAL']"
       else
-        print_msg_done "${SUCCESS_MSG}"
+        n2st::print_msg_done "${SUCCESS_MSG}"
       fi
     else
       if [[ ${IS_TEAMCITY_RUN} == true ]]; then
         # Report message to build log
         echo -e "##teamcity[message text='${MSG_BASE_TEAMCITY} ${FAILURE_MSG}' errorDetails='$DOCKER_EXIT_CODE' status='ERROR']"
       else
-        print_msg_error "${FAILURE_MSG}"
+        n2st::print_msg_error "${FAILURE_MSG}"
       fi
     fi
 
   fi
+
+  export DOCKER_EXIT_CODE
 }
 
 
@@ -89,18 +91,27 @@ function show_and_execute_docker() {
 # Note: `newgrp docker` command to activate the new docker group now cause the script to logout
 #
 # Usage:
-#   $ add_user_to_the_docker_group <theUserName>
+#   $ n2st::add_user_to_the_docker_group <theUserName>
 #
 # Arguments:
 #    <theUserName> The user name to add
 # Outputs:
 #   Feedback on what was executed
 # =================================================================================================
-function add_user_to_the_docker_group() {
+function n2st::add_user_to_the_docker_group() {
   local THE_USER=$1
 
-  print_msg "Manage Docker as a non-root user"
+  n2st::print_msg "Manage Docker as a non-root user"
 
   sudo groupadd --force docker
   sudo usermod --append -G docker "${THE_USER}"
+}
+
+# ====legacy API support===========================================================================
+function show_and_execute_docker() {
+  n2st::show_and_execute_docker "$@"
+}
+
+function add_user_to_the_docker_group() {
+  n2st::add_user_to_the_docker_group "$@"
 }

@@ -46,5 +46,5 @@ source ./general_utilities.bash
 cd "${TMP_CWD}"
 
 # ====Begin========================================================================================
-set_which_architecture_and_os
+n2st::set_which_architecture_and_os
 
