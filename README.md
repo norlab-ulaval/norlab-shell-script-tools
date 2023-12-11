@@ -120,18 +120,7 @@ This should solve the problem permanently.
 
 ---
 
-# N2ST library import
-At the repository root, execute
-```shell
-cd <path/to/norlab-shell-script-tools>
-
-set -o allexport &&  source .env.project && set +o allexport
-
-bash import_norlab_shell_script_tools_lib.bash
-```
-All norlab-shell-script-tools functions are now sourced in your current shell. 
-They are prefixed with `n2st`, i.e.: `n2st::<any_lib_function_name>`
-
+![](visual/N2ST_slash.jpg)
 
 # N2ST shell script function/script library
 - Most code in this repository is tested using _**bats-core**_
@@ -147,6 +136,17 @@ They are prefixed with `n2st`, i.e.: `n2st::<any_lib_function_name>`
   - script that output the host architecture and os 
   - script that output which python version
 
+### N2ST library import
+To import the library functions, execute the following
+```shell
+cd <path/to/norlab-shell-script-tools>
+
+set -o allexport &&  source .env.project && set +o allexport
+
+bash import_norlab_shell_script_tools_lib.bash
+# All norlab-shell-script-tools functions are now sourced in your current shell. 
+```
+Note: `` function are prefixed with `n2st`, i.e.: `n2st::<function_name>`
   
 
 # N2ST testing tools for shell script development
@@ -209,4 +209,4 @@ Arguments:
   - [bats-support](https://github.com/bats-core/bats-support)
 - Quick intro:
   - [testing bash scripts with bats](https://www.baeldung.com/linux/testing-bash-scripts-bats)
-
+ 
