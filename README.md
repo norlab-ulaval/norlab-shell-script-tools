@@ -118,10 +118,20 @@ This should solve the problem permanently.
 
 </details>
 
-
-
-
 ---
+
+# N2ST library import
+At the repository root, execute
+```shell
+cd <path/to/norlab-shell-script-tools>
+
+set -o allexport &&  source .env.project && set +o allexport
+
+bash import_norlab_shell_script_tools_lib.bash
+```
+All norlab-shell-script-tools functions are now sourced in your current shell. 
+They are prefixed with `n2st`, i.e.: `n2st::<any_lib_function_name>`
+
 
 # N2ST shell script function/script library
 - Most code in this repository is tested using _**bats-core**_
