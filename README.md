@@ -23,12 +23,16 @@
 (Docker Hub) &nbsp;
 </sup>
 </p>  
-</div>
 
+`N2ST` is library of shell function and shell script as well as a shell testing tools leveraging bats-core and docker to speed up shell script development.
 
 Maintainer: [Luc Coupal](https://redleader962.github.io)
 
-#### `v2.0.0` release note: 
+</div>
+
+<br>
+
+#### `v2.0.1` release note: 
 - Functions are available with and without the `n2st::` prefix for maintaining legacy v1 API support. 
 
 --- 
