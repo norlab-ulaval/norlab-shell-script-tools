@@ -29,7 +29,8 @@ Maintainer: [Luc Coupal](https://redleader962.github.io)
 
 
 
-`N2ST` is a library of shell script functions as well as a shell testing tools leveraging _**bats-core**_ and _**docker**_ and aim at speeding up shell script development and improve reliability.
+`N2ST` is a library of shell script functions as well as a shell testing tools leveraging _**bats-core**_ and _**docker**_. 
+`N2ST` purpose is to speed up shell script development and improve reliability.
 
 </div>
 
