@@ -21,10 +21,15 @@
 (VPN or intranet access) &nbsp; • &nbsp;  
 <a href="https://hub.docker.com/repositories/norlabulaval">norlabulaval</a>
 (Docker Hub) &nbsp;
+<small>
+
+Maintainer: [Luc Coupal](https://redleader962.github.io)
+
+</small>
 </sup>
 </p>  
 
-Maintainer: [Luc Coupal](https://redleader962.github.io)
+
 
 `N2ST` is library of shell function and shell script as well as a shell testing tools leveraging bats-core
 and docker to speed up shell script development.
