@@ -162,7 +162,7 @@ Note: `NBS` functions are prefixed with `n2st`, i.e.: `n2st::<function_name>`
 ## Setup
 
 1. Copy the `norlab-shell-script-tools/tests/tests_template/` directory in your main project top
-   directory and rename it, e.g. `tests_template/` >> `tests_shell/` ( recommand using the
+   directory and rename it, e.g. `tests_template/` → `tests_shell/` ( recommand using the
    convention `tests/`);
 2. Add project test code in this new test directory.
 
