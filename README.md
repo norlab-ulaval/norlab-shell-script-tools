@@ -21,11 +21,9 @@
 (VPN or intranet access) &nbsp; • &nbsp;  
 <a href="https://hub.docker.com/repositories/norlabulaval">norlabulaval</a>
 (Docker Hub) &nbsp;
-<small>
 
 Maintainer: [Luc Coupal](https://redleader962.github.io)
 
-</small>
 </sup>
 </p>  
 
