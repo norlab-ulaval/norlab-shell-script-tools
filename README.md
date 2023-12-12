@@ -29,8 +29,8 @@ Maintainer: [Luc Coupal](https://redleader962.github.io)
 
 
 
-`N2ST` is a library of shell script functions as well as a shell testing tools leveraging _**bats-core**_ and _**docker**_. 
-`N2ST` purpose is to speed up shell script development and improve reliability.
+`N2ST` is a library of shell script functions and a shell testing tools leveraging both _**bats-core**_ and _**docker**_. 
+This library purposes is to speed up shell script development and improve reliability.
 
 </div>
 
@@ -154,7 +154,7 @@ set -o allexport &&  source .env.project && set +o allexport
 bash import_norlab_shell_script_tools_lib.bash
 # All norlab-shell-script-tools functions are now sourced in your current shell. 
 ```
-Note: `` function are prefixed with `n2st`, i.e.: `n2st::<function_name>`
+Note: `NBS` functions are prefixed with `n2st`, i.e.: `n2st::<function_name>`
   
 
 # N2ST testing tools for shell script development
