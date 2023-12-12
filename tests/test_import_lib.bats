@@ -80,7 +80,7 @@ teardown() {
 
 @test "validate env var are not set between test run" {
   assert_empty "${MSG_PROMPT_NAME}"
-  assert_empty "${NBS_ROOT_DIR}"
+  assert_empty "${NBS_PATH}"
   assert_empty "${NBS_TMP_TEST_LIB_SOURCING_ENV_EXPORT}"
 }
 
