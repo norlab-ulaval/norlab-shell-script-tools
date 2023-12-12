@@ -187,7 +187,7 @@ Usage:
 
 ```shell
 N2ST_PATH="<path/to/submodule/norlab-shell-script-tools>"
-source run_bats_core_test_in_n2st.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
+bash "${N2ST_PATH}"/run_bats_core_test_in_n2st.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
 ```
 
 Arguments:
