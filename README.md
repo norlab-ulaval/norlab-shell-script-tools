@@ -181,7 +181,7 @@ Note: `NBS` functions are prefixed with `n2st`, i.e.: `n2st::<function_name>`
 
 ## To execute shell script tests
 
-Execute your main repository shell script test via 'norlab-shell-script-tools' library
+Execute your superproject shell scripts `bats` test via 'norlab-shell-script-tools' library
 
 Usage:
 
