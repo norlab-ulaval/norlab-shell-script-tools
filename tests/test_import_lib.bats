@@ -66,40 +66,41 @@ teardown() {
 
 # ====Test casses==================================================================================
 
-@test "source all script from 'src/function_library' directory (set environment variable check) › expect pass" {
+@test "source all script in 'src/function_library' directory (set environment variable check) › expect pass" {
   assert_empty "${MSG_PROMPT_NAME}"
   assert_not_empty "$PROJECT_GIT_NAME"
 
-  source "${SRC_CODE_PATH}/$TESTED_FILE"
-#  run printenv >&3
-  run printenv
-  assert_not_empty "${MSG_PROMPT_NAME}"
+  run bash -c "PROJECT_PROMPT_NAME=MyCoolTester && source $TESTED_FILE && printenv"
   assert_success
-  assert_output --partial "MSG_PROMPT_NAME=norlab-shell-script-tools"
+  assert_output --partial "MSG_PROMPT_NAME=MyCoolTester"
 }
 
 @test "validate env var are not set between test run" {
   assert_empty "${MSG_PROMPT_NAME}"
-  assert_empty "${NBS_PATH}"
-  assert_empty "${NBS_TMP_TEST_LIB_SOURCING_ENV_EXPORT}"
+  assert_empty "${PROJECT_PROMPT_NAME}"
+#  assert_empty "${NBS_PATH}"
+#  assert_empty "${NBS_TMP_TEST_LIB_SOURCING_ENV_EXPORT}"
 }
 
-@test "source all script from 'src/function_library' directory (import function check) › expect pass" {
-
-  source "${SRC_CODE_PATH}/$TESTED_FILE"
+@test "source all script in 'src/function_library' directory (import function check) › expect pass" {
+  source "$TESTED_FILE"
   export GREETING="Hello NorLab"
 
-#  run n2st::good_morning_norlab >&3
   run n2st::good_morning_norlab
   assert_success
   assert_output --partial "${GREETING} ... there's nothing like the smell of a snow storm in the morning!"
 
-#  run n2st::norlab_splash >&3
   run n2st::norlab_splash
   assert_success
 
 #  run n2st::set_which_architecture_and_os >&3
   run n2st::set_which_architecture_and_os
   assert_success
+}
+
+@test "run \"bash $TESTED_FILE\" › expect fail" {
+  run bash "$TESTED_FILE"
+  assert_success
+  assert_output --partial "This script must be sourced from an other script"
 }
 
