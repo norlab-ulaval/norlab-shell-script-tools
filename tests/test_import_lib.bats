@@ -100,7 +100,7 @@ teardown() {
 
 @test "run \"bash $TESTED_FILE\" › expect fail" {
   run bash "$TESTED_FILE"
-  assert_success
-  assert_output --partial "This script must be sourced from an other script"
+  assert_failure
+  assert_output --regexp "[ERROR]".*"This script must be sourced i.e.:".*"source".*"$TESTED_FILE"
 }
 
