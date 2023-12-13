@@ -15,6 +15,11 @@
 #   $ source import_norlab_shell_script_tools_lib.bash
 #
 #
+
+MSG_DIMMED_FORMAT="\033[1;2m"
+MSG_ERROR_FORMAT="\033[1;31m"
+MSG_END_FORMAT="\033[0m"
+
 function n2st::source_lib(){
   local TMP_CWD
   TMP_CWD=$(pwd)
