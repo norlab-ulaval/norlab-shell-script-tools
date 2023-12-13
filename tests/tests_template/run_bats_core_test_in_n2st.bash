@@ -25,11 +25,11 @@ function n2st::run_n2st_testsing_tools(){
   TMP_CWD=$(pwd)
 
   # ....Project root logic.........................................................................
-  NBS_PATH=$(git rev-parse --show-toplevel)
+  SUPERPROJECT_PATH=$(git rev-parse --show-toplevel)
   N2ST_PATH=${N2ST_PATH:-"./utilities/norlab-shell-script-tools"}
 
   # ....Execute N2ST run_bats_tests_in_docker.bash.................................................
-  cd "$NBS_PATH"
+  cd "$SUPERPROJECT_PATH"
   bash "${N2ST_PATH}/tests/bats_testing_tools/run_bats_tests_in_docker.bash" "$OPTIONS"
 
   # ....Teardown...................................................................................
