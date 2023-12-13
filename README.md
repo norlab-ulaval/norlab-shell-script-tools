@@ -29,8 +29,8 @@ Maintainer: [Luc Coupal](https://redleader962.github.io)
 
 
 
-`N2ST` is a library of shell script functions as well as a shell testing tools leveraging _**bats-core**_ and _**docker**_. 
-`N2ST` purpose is to speed up shell script development and improve reliability.
+`N2ST` is a library of shell script functions and a shell testing tools leveraging both _**bats-core**_ and _**docker**_. 
+This library purposes is to speed up shell script development and improve reliability.
 
 </div>
 
@@ -154,7 +154,7 @@ set -o allexport &&  source .env.project && set +o allexport
 bash import_norlab_shell_script_tools_lib.bash
 # All norlab-shell-script-tools functions are now sourced in your current shell. 
 ```
-Note: `` function are prefixed with `n2st`, i.e.: `n2st::<function_name>`
+Note: `N2ST` functions are prefixed with `n2st`, i.e.: `n2st::<function_name>`
   
 
 # N2ST testing tools for shell script development
@@ -162,7 +162,7 @@ Note: `` function are prefixed with `n2st`, i.e.: `n2st::<function_name>`
 ## Setup
 
 1. Copy the `norlab-shell-script-tools/tests/tests_template/` directory in your main project top
-   directory and rename it, e.g. `tests_template/` >> `tests_shell/` ( recommand using the
+   directory and rename it, e.g. `tests_template/` → `tests_shell/` ( recommand using the
    convention `tests/`);
 2. Add project test code in this new test directory.
 
@@ -181,13 +181,13 @@ Note: `` function are prefixed with `n2st`, i.e.: `n2st::<function_name>`
 
 ## To execute shell script tests
 
-Execute your main repository shell script test via 'norlab-shell-script-tools' library
+Execute your superproject shell scripts `bats` test via 'norlab-shell-script-tools' library
 
 Usage:
 
 ```shell
 N2ST_PATH="<path/to/submodule/norlab-shell-script-tools>"
-source run_bats_core_test_in_n2st.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
+bash "${N2ST_PATH}"/run_bats_core_test_in_n2st.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
 ```
 
 Arguments:
