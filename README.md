@@ -154,7 +154,7 @@ set -o allexport &&  source .env.project && set +o allexport
 bash import_norlab_shell_script_tools_lib.bash
 # All norlab-shell-script-tools functions are now sourced in your current shell. 
 ```
-Note: `NBS` functions are prefixed with `n2st`, i.e.: `n2st::<function_name>`
+Note: `N2ST` functions are prefixed with `n2st`, i.e.: `n2st::<function_name>`
   
 
 # N2ST testing tools for shell script development
