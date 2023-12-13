@@ -1,14 +1,25 @@
 #!/bin/bash
-
+#
+# Import norlab-shell-script-tools function library and dependencies
+#
+# Usage:
+#   $ cd <my/superproject/root>
+#   $ PROJECT_PROMPT_NAME=MySuperProject
+#   $ source import_norlab_shell_script_tools_lib.bash
+#
+#   $ cd <my/superproject/root>
+#   $ set -o allexport && source ./utilities/norlab-shell-script-tools/.env.project && set +o allexport
+#   $ source import_norlab_shell_script_tools_lib.bash
+#
+#
 function n2st::source_lib(){
   local TMP_CWD
   TMP_CWD=$(pwd)
 
   # ====Begin======================================================================================
-  N2ST_PATH_TO_SRC_SCRIPT="$(realpath "${BASH_SOURCE[0]}")"
-  N2ST_ROOT_DIR="$(dirname "${N2ST_PATH_TO_SRC_SCRIPT}")"
+  N2ST_PATH=$(git rev-parse --show-toplevel)
 
-  cd "${N2ST_ROOT_DIR}/src/function_library"
+  cd "${N2ST_PATH}/src/function_library" || exit
   for each_file in "$(pwd)"/*.bash ; do
       source "${each_file}"
   done
@@ -21,4 +32,12 @@ function n2st::source_lib(){
   cd "${TMP_CWD}"
 }
 
-n2st::source_lib
+
+if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+  # This script is being run, ie: __name__="__main__"
+  echo "${MSG_ERROR_FORMAT}[ERROR]${MSG_END_FORMAT} This script must be sourced from an other script"
+else
+  # This script is being sourced, ie: __name__="__source__"
+  n2st::source_lib
+fi
+
