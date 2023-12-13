@@ -3,12 +3,15 @@
 # Import norlab-shell-script-tools function library and dependencies
 #
 # Usage:
-#   $ cd <my/superproject/root>
+#   $ cd <path/to/norlab-shell-script-tools/root>
 #   $ PROJECT_PROMPT_NAME=MySuperProject
 #   $ source import_norlab_shell_script_tools_lib.bash
 #
+#   alternate way
+#
 #   $ cd <my/superproject/root>
 #   $ set -o allexport && source ./utilities/norlab-shell-script-tools/.env.project && set +o allexport
+#   $ cd ./utilities/norlab-shell-script-tools
 #   $ source import_norlab_shell_script_tools_lib.bash
 #
 #
