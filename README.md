@@ -27,8 +27,6 @@ Maintainer: [Luc Coupal](https://redleader962.github.io)
 </sup>
 </p>  
 
-
-
 `N2ST` is a library of shell script functions and a shell testing tools leveraging both _**bats-core**_ and _**docker**_. 
 This library purposes is to speed up shell script development and improve reliability.
 
@@ -36,13 +34,9 @@ This library purposes is to speed up shell script development and improve reliab
 
 <br>
 
-#### `v2.0.1` release note: 
-- Functions are available with and without the `n2st::` prefix for maintaining legacy v1 API support. 
-
---- 
 
 <details>
-  <summary style="font-weight: bolder;font-size: x-large;"> How to use this repository as a git submodule </summary>
+  <summary style="font-weight: bolder;font-size: x-large;"> Install instructions and git submodule usage notes </summary>
 
 Just clone the *norlab-shell-script-tools* as a submodule in your project repository (ie the
 _superproject_), in an arbitrary directory eg.: `my-project/utilities/`.
@@ -128,6 +122,14 @@ This should solve the problem permanently.
 
 ---
 
+#### `v2.0.1` release note:
+
+- Functions are available with and without the `n2st::` prefix for maintaining legacy v1 API
+  support.
+
+--- 
+
+
 ![](visual/N2ST_slash.jpg)
 
 # N2ST shell script function/script library
@@ -204,20 +206,19 @@ myCoolSuperProject
 ┗━━ README.md
 ```
 
-## To execute shell script tests
+## To execute your superproject shell script tests
 
-Execute your superproject shell scripts `bats` test via 'norlab-shell-script-tools' library
-
-Usage:
+To execute your superproject shell scripts `bats` test via 'norlab-shell-script-tools' library,
+just run the following from your repository root 
 
 ```shell
-N2ST_PATH="<path/to/submodule/norlab-shell-script-tools"
-bash "${N2ST_PATH}"/tests/run_bats_core_test_in_n2st.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
+cd "<path/to/superproject>/tests"
+bash run_bats_core_test_in_n2st.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
 ```
 
 Arguments:
 
-- `['<test-directory>']`        The directory from which to start test, default to 'tests'
+- `['<test-directory>']`            The directory from which to start test, default to 'tests'
 - `['/<this-bats-test-file.bats>']`  A specific bats file to run, default will run all bats file in
   the test directory
 
