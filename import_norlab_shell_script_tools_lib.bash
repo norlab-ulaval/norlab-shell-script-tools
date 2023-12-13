@@ -20,7 +20,10 @@ function n2st::source_lib(){
   TMP_CWD=$(pwd)
 
   # ====Begin======================================================================================
-  N2ST_PATH=$(git rev-parse --show-toplevel)
+#  N2ST_PATH=$(git rev-parse --show-toplevel)
+  _PATH_TO_SCRIPT="$(realpath "${BASH_SOURCE[0]:-'.'}")"
+  N2ST_PATH="$(dirname "${_PATH_TO_SCRIPT}")"
+
 
   cd "${N2ST_PATH}/src/function_library" || exit
   for each_file in "$(pwd)"/*.bash ; do
