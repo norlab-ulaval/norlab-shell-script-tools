@@ -18,7 +18,7 @@
 #   Read N2ST_PATH    Default to "./utilities/norlab-shell-script-tools"
 #
 # =================================================================================================
-function nbs::run_n2st_testsing_tools(){
+function n2st::run_n2st_testsing_tools(){
   local TMP_CWD
   TMP_CWD=$(pwd)
 
@@ -34,5 +34,5 @@ function nbs::run_n2st_testsing_tools(){
   cd "$TMP_CWD"
   }
 
-nbs::run_n2st_testsing_tools
+n2st::run_n2st_testsing_tools
 
