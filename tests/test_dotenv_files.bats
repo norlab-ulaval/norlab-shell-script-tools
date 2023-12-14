@@ -119,6 +119,7 @@ function source_dotenv_project() {
   source_dotenv_n2st
   source_dotenv_msg_style
 
+  # ....Tests......................................................................................
   assert_not_empty "${MSG_EMPH_FORMAT}"
   assert_not_empty "${MSG_DIMMED_FORMAT}"
   assert_not_empty "${MSG_BASE_FORMAT}"
@@ -140,6 +141,7 @@ function source_dotenv_project() {
   source_dotenv_n2st
   source_dotenv_msg_style
 
+  # ....Tests......................................................................................
   # Bash regex ref https://www.gnu.org/software/bash/manual/bash.html#Conditional-Constructs
   # The Patern "\033\[".* escape both | and [ which must be quoted and then math any number of char
   # shellcheck disable=SC2125
@@ -160,6 +162,7 @@ function source_dotenv_project() {
   source_dotenv_n2st
   source_dotenv_msg_style
 
+  # ....Tests......................................................................................
   assert_not_empty "${MSG_DIMMED_FORMAT_TEAMCITY}"
   assert_not_empty "${MSG_BASE_FORMAT_TEAMCITY}"
   assert_not_empty "${MSG_ERROR_FORMAT_TEAMCITY}"
@@ -177,6 +180,7 @@ function source_dotenv_project() {
   source_dotenv_n2st
   source_dotenv_msg_style
 
+  # ....Tests......................................................................................
   # Bash regex ref https://www.gnu.org/software/bash/manual/bash.html#Conditional-Constructs
   # The Patern "\|\[".* escape both | and [ which must be quoted and then math any number of char
   # shellcheck disable=SC2125
@@ -192,10 +196,24 @@ function source_dotenv_project() {
 
 # ----.env.n2st------------------------------------------------------------------------------------
 @test ".env.n2st › Env variables set ok" {
-  assert_empty "$N2ST_PATH"
+  # ....Pre-condition..............................................................................
+  assert_empty ${PROJECT_PROMPT_NAME}
+  assert_empty ${PROJECT_GIT_REMOTE_URL}
+  assert_empty ${PROJECT_GIT_NAME}
+  assert_empty ${PROJECT_SRC_NAME}
+  assert_empty ${PROJECT_PATH}
+
+  assert_empty ${N2ST_PROMPT_NAME}
+  assert_empty ${N2ST_GIT_REMOTE_URL}
+  assert_empty ${N2ST_GIT_NAME}
+  assert_empty ${N2ST_SRC_NAME}
+  assert_empty ${N2ST_PATH}
+
+  # ....Source .env.project........................................................................
   source_dotenv_n2st
 #  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' >&3
 
+  # ....Tests......................................................................................
   assert_equal "${PROJECT_PROMPT_NAME}" "N2ST"
   assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
   assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
@@ -221,32 +239,52 @@ function source_dotenv_project() {
 }
 
 @test ".env.project › Source in a superproject › Env variables set ok" {
-  N2ST_PATH="/code/norlab-shell-script-tools"
+  TEST_N2ST_PATH="/code/norlab-shell-script-tools"
   SUPERPROJECT_NAME="dockerized-norlab-project-mock"
   SUPERPROJECT_PATH="/code/${SUPERPROJECT_NAME}"
 
-  assert_equal "$(pwd)" "$N2ST_PATH"
+  # ....Pre-condition..............................................................................
+  assert_empty ${PROJECT_PROMPT_NAME}
+  assert_empty ${PROJECT_GIT_REMOTE_URL}
+  assert_empty ${PROJECT_GIT_NAME}
+  assert_empty ${PROJECT_SRC_NAME}
+  assert_empty ${PROJECT_PATH}
+
+  assert_empty ${N2ST_PROMPT_NAME}
+  assert_empty ${N2ST_GIT_REMOTE_URL}
+  assert_empty ${N2ST_GIT_NAME}
+  assert_empty ${N2ST_SRC_NAME}
+  assert_empty ${N2ST_PATH}
+
+  # ....Setup superproject.........................................................................
+  assert_equal "$(pwd)" "$TEST_N2ST_PATH"
   cd ..
   assert_equal "$(pwd)" "/code"
 
   git clone "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}.git"
+  assert_dir_exist "${SUPERPROJECT_NAME}"
 
 #  # Visualise the testing directories
 #  (echo && pwd && tree -L 2 -a) >&3
 
-  assert_dir_exist "${SUPERPROJECT_NAME}"
+
+  # ....Source .env.project........................................................................
   cd "${SUPERPROJECT_NAME}"
   assert_equal "$(pwd)" "${SUPERPROJECT_PATH}"
 
-  set -o allexport && source "$N2ST_PATH/.env.project" && set +o allexport
+  set -o allexport && source "$TEST_N2ST_PATH/.env.project" && set +o allexport
 
 #  # Visualise generated environment variables
 #  (echo && printenv | grep -e PROJECT_ && echo) >&3
 
+  # ....Tests......................................................................................
   assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}"'(".git")?'
   assert_equal "${PROJECT_GIT_NAME}" "${SUPERPROJECT_NAME}"
   assert_equal "${PROJECT_PATH}" "${SUPERPROJECT_PATH}"
   assert_equal "${PROJECT_SRC_NAME}" "${SUPERPROJECT_NAME}"
   assert_equal "${PROJECT_SRC_NAME}" "dockerized-norlab-project-mock"
 
+  # ....Teardown this test case ...................................................................
+  # Delete cloned repository mock
+  rm -rf "$SUPERPROJECT_PATH"
 }
