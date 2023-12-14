@@ -32,7 +32,7 @@ else
   exit 1
 fi
 
-# ====Setup========================================================================================================
+# ====Setup========================================================================================
 
 setup_file() {
   BATS_DOCKER_WORKDIR=$(pwd) && export BATS_DOCKER_WORKDIR
@@ -43,7 +43,7 @@ setup_file() {
 #setup() {
 #}
 
-# ====Teardown=====================================================================================================
+# ====Teardown=====================================================================================
 
 teardown() {
   bats_print_run_env_variable_on_error
@@ -54,7 +54,7 @@ teardown() {
 #    echo "executed once after finishing the last test"
 #}
 
-# ====Test casses==================================================================================================
+# ====Test casses==================================================================================
 # Livetemplate shortcut: @test
 
 function _source_dotenv() {
@@ -77,7 +77,7 @@ function source_dotenv_project() {
   _source_dotenv ".env.project"
 }
 
-# ----.env.msg_style------------------------------------------------------------------------------------------------
+# ----.env.msg_style-------------------------------------------------------------------------------
 @test ".env.msg_style › Env variable MSG_PROMPT_NAME › variable substitution › expect fail" {
   assert_empty "$PROJECT_PROMPT_NAME"
   assert_empty "$PROJECT_GIT_NAME"
@@ -190,7 +190,7 @@ function source_dotenv_project() {
   assert_regex "${MSG_BASE_TEAMCITY}" "${TEAMCITY_ESCAPE_CHAR}"
 }
 
-# ----.env.n2st----------------------------------------------------------------------------------------------
+# ----.env.n2st------------------------------------------------------------------------------------
 @test ".env.n2st › Env variables set ok" {
   assert_empty "$N2ST_PATH"
   source_dotenv_n2st
@@ -200,17 +200,23 @@ function source_dotenv_project() {
   assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
   assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
   assert_equal "${PROJECT_SRC_NAME}" "norlab-shell-script-tools"
+  assert_equal "${PROJECT_PATH}" "/code/norlab-shell-script-tools"
+
+  assert_equal "${N2ST_PROMPT_NAME}" "N2ST"
+  assert_regex "${N2ST_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
+  assert_equal "${N2ST_GIT_NAME}" "norlab-shell-script-tools"
+  assert_equal "${N2ST_SRC_NAME}" "norlab-shell-script-tools"
   assert_equal "${N2ST_PATH}" "/code/norlab-shell-script-tools"
 }
 
-# ----.env.project-------------------------------------------------------------------------------------------------
+# ----.env.project---------------------------------------------------------------------------------
 @test ".env.project › Sourced in N2ST repo › Env variables set ok" {
   source_dotenv_project
 #  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' >&3
 
   assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
   assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
-  assert_equal "${PROJECT_ROOT}" "/code/norlab-shell-script-tools"
+  assert_equal "${PROJECT_PATH}" "/code/norlab-shell-script-tools"
   assert_equal "${PROJECT_SRC_NAME}" "norlab-shell-script-tools"
 }
 
@@ -239,7 +245,7 @@ function source_dotenv_project() {
 
   assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}"'(".git")?'
   assert_equal "${PROJECT_GIT_NAME}" "${SUPERPROJECT_NAME}"
-  assert_equal "${PROJECT_ROOT}" "${SUPERPROJECT_PATH}"
+  assert_equal "${PROJECT_PATH}" "${SUPERPROJECT_PATH}"
   assert_equal "${PROJECT_SRC_NAME}" "${SUPERPROJECT_NAME}"
   assert_equal "${PROJECT_SRC_NAME}" "dockerized-norlab-project-mock"
 

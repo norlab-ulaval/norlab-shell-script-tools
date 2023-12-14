@@ -81,6 +81,12 @@ teardown() {
   assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
   assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
   assert_equal "${PROJECT_SRC_NAME}" "norlab-shell-script-tools"
+  assert_equal "${PROJECT_PATH}" "/code/norlab-shell-script-tools"
+
+  assert_equal "${N2ST_PROMPT_NAME}" "N2ST"
+  assert_regex "${N2ST_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
+  assert_equal "${N2ST_GIT_NAME}" "norlab-shell-script-tools"
+  assert_equal "${N2ST_SRC_NAME}" "norlab-shell-script-tools"
   assert_equal "${N2ST_PATH}" "/code/norlab-shell-script-tools"
 }
 
@@ -105,6 +111,66 @@ teardown() {
 #  run n2st::set_which_architecture_and_os >&3
   run n2st::set_which_architecture_and_os
   assert_success
+}
+
+
+@test "${TESTED_FILE} › import from within a superproject › Env variables set ok" {
+  N2ST_PATH="/code/norlab-shell-script-tools"
+  SUPERPROJECT_NAME="dockerized-norlab-project-mock"
+  SUPERPROJECT_PATH="/code/${SUPERPROJECT_NAME}"
+
+  # ....Setup superproject.........................................................................
+  assert_equal "$(pwd)" "$N2ST_PATH"
+  cd ..
+  assert_equal "$(pwd)" "/code"
+
+  git clone "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}.git"
+  assert_dir_exist "${SUPERPROJECT_PATH}"
+
+#  # Visualise the testing directories
+#  (echo && pwd && tree -L 2 -a) >&3
+
+  # ....Import N2ST library........................................................................
+  cd "$N2ST_PATH"
+  source "$TESTED_FILE"
+
+  # Env var prefixed PROJECT_ are set as expected
+  assert_equal "${PROJECT_PROMPT_NAME}" "N2ST"
+  assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
+  assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
+  assert_equal "${PROJECT_SRC_NAME}" "norlab-shell-script-tools"
+  assert_equal "${PROJECT_PATH}" "/code/norlab-shell-script-tools"
+
+  # Env var prefixed N2ST_ are still as expected
+  assert_equal "${N2ST_PROMPT_NAME}" "N2ST"
+  assert_regex "${N2ST_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
+  assert_equal "${N2ST_GIT_NAME}" "norlab-shell-script-tools"
+  assert_equal "${N2ST_SRC_NAME}" "norlab-shell-script-tools"
+  assert_equal "${N2ST_PATH}" "/code/norlab-shell-script-tools"
+
+  # ....Source .env.project........................................................................
+  cd "${SUPERPROJECT_PATH}"
+  assert_equal "$(pwd)" "${SUPERPROJECT_PATH}"
+
+  set -o allexport && source "$N2ST_PATH/.env.project" && set +o allexport
+
+#  # Visualise generated environment variables
+#  (echo && printenv | grep -e PROJECT_ && echo) >&3
+
+  # Env var prefixed PROJECT_ are set as expected
+  assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}"'(".git")?'
+  assert_equal "${PROJECT_GIT_NAME}" "${SUPERPROJECT_NAME}"
+  assert_equal "${PROJECT_PATH}" "${SUPERPROJECT_PATH}"
+  assert_equal "${PROJECT_SRC_NAME}" "${SUPERPROJECT_NAME}"
+  assert_equal "${PROJECT_SRC_NAME}" "dockerized-norlab-project-mock"
+
+  # Env var prefixed N2ST_ are still as expected
+  assert_equal "${N2ST_PROMPT_NAME}" "N2ST"
+  assert_regex "${N2ST_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
+  assert_equal "${N2ST_GIT_NAME}" "norlab-shell-script-tools"
+  assert_equal "${N2ST_SRC_NAME}" "norlab-shell-script-tools"
+  assert_equal "${N2ST_PATH}" "/code/norlab-shell-script-tools"
+
 }
 
 @test "assess execute with \"bash $TESTED_FILE\" › expect fail" {

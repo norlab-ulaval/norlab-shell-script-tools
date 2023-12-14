@@ -131,9 +131,8 @@ This should solve the problem permanently.
 
 Try this in `norlab-shell-script-tools` root
 ```shell
-set -o allexport && source .env.project && set +o allexport
 source import_norlab_shell_script_tools_lib.bash
-n2st::norlab_splash NorLab https://github.com/norlab-ulaval
+n2st::norlab_splash "NorLab rule 🦾"  https://github.com/norlab-ulaval
 ```
 
 ![](visual/N2ST_slash.jpg)
@@ -156,8 +155,6 @@ n2st::norlab_splash NorLab https://github.com/norlab-ulaval
 To import the library functions, execute the following
 ```shell
 cd <path/to/norlab-shell-script-tools>
-
-set -o allexport &&  source .env.project && set +o allexport
 
 bash import_norlab_shell_script_tools_lib.bash
 # All norlab-shell-script-tools functions are now sourced in your current shell. 

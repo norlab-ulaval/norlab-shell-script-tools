@@ -76,5 +76,5 @@ echo
 n2st::add_user_to_the_docker_group "$(whoami)"
 
 n2st::print_formated_script_footer 'install_docker_tools.bash'
-# ====Teardown=====================================================================================================
+# ====Teardown=====================================================================================
 cd "${TMP_CWD}"  || exit

@@ -11,10 +11,7 @@
 # Usage from within a shell script:
 #
 #   #!/bin/bash
-#   cd <my/superproject/root>
-#   N2ST_REL_PATH=./utilities/norlab-shell-script-tools
-#   set -o allexport && source $N2ST_REL_PATH/.env.project && set +o allexport
-#   cd $N2ST_PATH
+#   cd <my/superproject/root>/utilities/norlab-shell-script-tools
 #   source import_norlab_shell_script_tools_lib.bash
 #
 # =================================================================================================
