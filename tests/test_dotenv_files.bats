@@ -32,7 +32,7 @@ else
   exit 1
 fi
 
-# ====Setup========================================================================================================
+# ====Setup========================================================================================
 
 setup_file() {
   BATS_DOCKER_WORKDIR=$(pwd) && export BATS_DOCKER_WORKDIR
@@ -43,7 +43,7 @@ setup_file() {
 #setup() {
 #}
 
-# ====Teardown=====================================================================================================
+# ====Teardown=====================================================================================
 
 teardown() {
   bats_print_run_env_variable_on_error
@@ -54,7 +54,7 @@ teardown() {
 #    echo "executed once after finishing the last test"
 #}
 
-# ====Test casses==================================================================================================
+# ====Test casses==================================================================================
 # Livetemplate shortcut: @test
 
 function _source_dotenv() {
@@ -77,14 +77,14 @@ function source_dotenv_project() {
   _source_dotenv ".env.project"
 }
 
-# ----.env.msg_style------------------------------------------------------------------------------------------------
+# ----.env.msg_style-------------------------------------------------------------------------------
 @test ".env.msg_style › Env variable MSG_PROMPT_NAME › variable substitution › expect fail" {
   assert_empty "$PROJECT_PROMPT_NAME"
   assert_empty "$PROJECT_GIT_NAME"
 
   run source_dotenv_msg_style
   assert_failure
-  assert_output --regexp "set PROJECT_PROMPT_NAME or source .env.project before sourcing .env.msg_style!"
+  assert_output --regexp "ERROR: set PROJECT_PROMPT_NAME or source .env.project first!"
 #  bats_print_run_env_variable
 
 }
@@ -119,6 +119,7 @@ function source_dotenv_project() {
   source_dotenv_n2st
   source_dotenv_msg_style
 
+  # ....Tests......................................................................................
   assert_not_empty "${MSG_EMPH_FORMAT}"
   assert_not_empty "${MSG_DIMMED_FORMAT}"
   assert_not_empty "${MSG_BASE_FORMAT}"
@@ -140,6 +141,7 @@ function source_dotenv_project() {
   source_dotenv_n2st
   source_dotenv_msg_style
 
+  # ....Tests......................................................................................
   # Bash regex ref https://www.gnu.org/software/bash/manual/bash.html#Conditional-Constructs
   # The Patern "\033\[".* escape both | and [ which must be quoted and then math any number of char
   # shellcheck disable=SC2125
@@ -160,6 +162,7 @@ function source_dotenv_project() {
   source_dotenv_n2st
   source_dotenv_msg_style
 
+  # ....Tests......................................................................................
   assert_not_empty "${MSG_DIMMED_FORMAT_TEAMCITY}"
   assert_not_empty "${MSG_BASE_FORMAT_TEAMCITY}"
   assert_not_empty "${MSG_ERROR_FORMAT_TEAMCITY}"
@@ -177,6 +180,7 @@ function source_dotenv_project() {
   source_dotenv_n2st
   source_dotenv_msg_style
 
+  # ....Tests......................................................................................
   # Bash regex ref https://www.gnu.org/software/bash/manual/bash.html#Conditional-Constructs
   # The Patern "\|\[".* escape both | and [ which must be quoted and then math any number of char
   # shellcheck disable=SC2125
@@ -190,23 +194,97 @@ function source_dotenv_project() {
   assert_regex "${MSG_BASE_TEAMCITY}" "${TEAMCITY_ESCAPE_CHAR}"
 }
 
-# ----.env.n2st----------------------------------------------------------------------------------------------
+# ----.env.n2st------------------------------------------------------------------------------------
 @test ".env.n2st › Env variables set ok" {
+  # ....Pre-condition..............................................................................
+  assert_empty ${PROJECT_PROMPT_NAME}
+  assert_empty ${PROJECT_GIT_REMOTE_URL}
+  assert_empty ${PROJECT_GIT_NAME}
+  assert_empty ${PROJECT_SRC_NAME}
+  assert_empty ${PROJECT_PATH}
+
+  assert_empty ${N2ST_PROMPT_NAME}
+  assert_empty ${N2ST_GIT_REMOTE_URL}
+  assert_empty ${N2ST_GIT_NAME}
+  assert_empty ${N2ST_SRC_NAME}
+  assert_empty ${N2ST_PATH}
+
+  # ....Source .env.project........................................................................
   source_dotenv_n2st
 #  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' >&3
 
-  assert_not_empty "$PROJECT_PROMPT_NAME"
+  # ....Tests......................................................................................
+  assert_equal "${PROJECT_PROMPT_NAME}" "N2ST"
   assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
   assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
-  assert_equal "${PROJECT_SRC_NAME}" "${PROJECT_GIT_NAME}"
+  assert_equal "${PROJECT_SRC_NAME}" "norlab-shell-script-tools"
+  assert_equal "${PROJECT_PATH}" "/code/norlab-shell-script-tools"
+
+  assert_equal "${N2ST_PROMPT_NAME}" "N2ST"
+  assert_regex "${N2ST_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
+  assert_equal "${N2ST_GIT_NAME}" "norlab-shell-script-tools"
+  assert_equal "${N2ST_SRC_NAME}" "norlab-shell-script-tools"
+  assert_equal "${N2ST_PATH}" "/code/norlab-shell-script-tools"
 }
 
-# ----.env.project-------------------------------------------------------------------------------------------------
-@test ".env.project › Env variables set ok" {
+# ----.env.project---------------------------------------------------------------------------------
+@test ".env.project › Sourced in N2ST repo › Env variables set ok" {
   source_dotenv_project
 #  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' >&3
 
   assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
   assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
-  assert_equal "${PROJECT_SRC_NAME}" "${PROJECT_GIT_NAME}"
+  assert_equal "${PROJECT_PATH}" "/code/norlab-shell-script-tools"
+  assert_equal "${PROJECT_SRC_NAME}" "norlab-shell-script-tools"
+}
+
+@test ".env.project › Source in a superproject › Env variables set ok" {
+  TEST_N2ST_PATH="/code/norlab-shell-script-tools"
+  SUPERPROJECT_NAME="dockerized-norlab-project-mock"
+  SUPERPROJECT_PATH="/code/${SUPERPROJECT_NAME}"
+
+  # ....Pre-condition..............................................................................
+  assert_empty ${PROJECT_PROMPT_NAME}
+  assert_empty ${PROJECT_GIT_REMOTE_URL}
+  assert_empty ${PROJECT_GIT_NAME}
+  assert_empty ${PROJECT_SRC_NAME}
+  assert_empty ${PROJECT_PATH}
+
+  assert_empty ${N2ST_PROMPT_NAME}
+  assert_empty ${N2ST_GIT_REMOTE_URL}
+  assert_empty ${N2ST_GIT_NAME}
+  assert_empty ${N2ST_SRC_NAME}
+  assert_empty ${N2ST_PATH}
+
+  # ....Setup superproject.........................................................................
+  assert_equal "$(pwd)" "$TEST_N2ST_PATH"
+  cd ..
+  assert_equal "$(pwd)" "/code"
+
+  git clone "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}.git"
+  assert_dir_exist "${SUPERPROJECT_NAME}"
+
+#  # Visualise the testing directories
+#  (echo && pwd && tree -L 2 -a) >&3
+
+
+  # ....Source .env.project........................................................................
+  cd "${SUPERPROJECT_NAME}"
+  assert_equal "$(pwd)" "${SUPERPROJECT_PATH}"
+
+  set -o allexport && source "$TEST_N2ST_PATH/.env.project" && set +o allexport
+
+#  # Visualise generated environment variables
+#  (echo && printenv | grep -e PROJECT_ && echo) >&3
+
+  # ....Tests......................................................................................
+  assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}"'(".git")?'
+  assert_equal "${PROJECT_GIT_NAME}" "${SUPERPROJECT_NAME}"
+  assert_equal "${PROJECT_PATH}" "${SUPERPROJECT_PATH}"
+  assert_equal "${PROJECT_SRC_NAME}" "${SUPERPROJECT_NAME}"
+  assert_equal "${PROJECT_SRC_NAME}" "dockerized-norlab-project-mock"
+
+  # ....Teardown this test case ...................................................................
+  # Delete cloned repository mock
+  rm -rf "$SUPERPROJECT_PATH"
 }

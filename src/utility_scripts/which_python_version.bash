@@ -1,4 +1,5 @@
 #!/bin/bash
+# =================================================================================================
 #
 # Utility script to check the current python version and set PYTHON3_VERSION environment variable
 #
@@ -11,6 +12,8 @@
 # Globals:
 #   write 'PYTHON3_VERSION'
 #
+# =================================================================================================
+
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then

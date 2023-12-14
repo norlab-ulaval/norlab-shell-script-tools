@@ -106,7 +106,7 @@ teardown() {
 
   n2st::set_which_python3_version
   assert_not_empty "$PYTHON3_VERSION"
-  echo "PYTHON3_VERSION=$PYTHON3_VERSION" >&3
+  # assert_equal "$PYTHON3_VERSION" "3.10" # Note: the container base image is "ubuntu:lates" -> the python verison will change
 }
 
 @test "n2st::set_which_architecture_and_os ok" {
@@ -147,7 +147,7 @@ teardown() {
 
   set_which_python3_version
   assert_not_empty "$PYTHON3_VERSION"
-  echo "PYTHON3_VERSION=$PYTHON3_VERSION" >&3
+  # assert_equal "$PYTHON3_VERSION" "3.10" # Note: the container base image is "ubuntu:lates" -> the python verison will change
 }
 
 @test "(legacy API support testing) set_which_architecture_and_os ok" {

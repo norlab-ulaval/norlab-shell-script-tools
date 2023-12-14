@@ -1,5 +1,5 @@
 #!/bin/bash
-# ToDo: unit-test
+# =================================================================================================
 #
 # Utility script to install docker related tools and execute basic configuration
 #
@@ -9,7 +9,7 @@
 #   $ cd <path/to/project>/norlab-shell-script-tools/src/utility_scripts
 #   $ bash ./install_docker_tools.bash
 #
-
+# =================================================================================================
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
@@ -76,5 +76,5 @@ echo
 n2st::add_user_to_the_docker_group "$(whoami)"
 
 n2st::print_formated_script_footer 'install_docker_tools.bash'
-# ====Teardown=====================================================================================================
+# ====Teardown=====================================================================================
 cd "${TMP_CWD}"  || exit
