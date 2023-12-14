@@ -1,20 +1,23 @@
 #!/bin/bash
-#
+# =================================================================================================
 # Import norlab-shell-script-tools function library and dependencies
 #
-# Usage:
-#   $ cd <path/to/norlab-shell-script-tools/root>
+# Usage in a interactive terminal session:
+#
+#   $ cd <path/to/norlab-shell-script-tools/>
 #   $ PROJECT_PROMPT_NAME=MySuperProject
 #   $ source import_norlab_shell_script_tools_lib.bash
 #
-#   alternate way
+# Usage from within a shell script:
 #
-#   $ cd <my/superproject/root>
-#   $ set -o allexport && source ./utilities/norlab-shell-script-tools/.env.project && set +o allexport
-#   $ cd ./utilities/norlab-shell-script-tools
-#   $ source import_norlab_shell_script_tools_lib.bash
+#   #!/bin/bash
+#   cd <my/superproject/root>
+#   N2ST_REL_PATH=./utilities/norlab-shell-script-tools
+#   set -o allexport && source $N2ST_REL_PATH/.env.project && set +o allexport
+#   cd $N2ST_PATH
+#   source import_norlab_shell_script_tools_lib.bash
 #
-#
+# =================================================================================================
 
 MSG_DIMMED_FORMAT="\033[1;2m"
 MSG_ERROR_FORMAT="\033[1;31m"
@@ -24,13 +27,19 @@ function n2st::source_lib(){
   local TMP_CWD
   TMP_CWD=$(pwd)
 
-  # ====Begin======================================================================================
-#  N2ST_PATH=$(git rev-parse --show-toplevel)
+  # Note: can handle both sourcing cases
+  #   i.e. from within a script or from an interactive terminal session
   _PATH_TO_SCRIPT="$(realpath "${BASH_SOURCE[0]:-'.'}")"
-  N2ST_PATH="$(dirname "${_PATH_TO_SCRIPT}")"
+  _PATH_TO_SCRIPT_DIR="$(dirname "${_PATH_TO_SCRIPT}")"
 
+  # ....Load environment variables from file.......................................................
+  cd "${_PATH_TO_SCRIPT_DIR}" || exit
+  set -o allexport
+  source .env.n2st
+  set +o allexport
 
-  cd "${N2ST_PATH}/src/function_library" || exit
+  # ....Begin......................................................................................
+  cd "${N2ST_PATH:?'[ERROR] env var not set!'}/src/function_library" || exit
   for each_file in "$(pwd)"/*.bash ; do
       source "${each_file}"
   done
@@ -39,11 +48,11 @@ function n2st::source_lib(){
 #  cd "${N2ST_ROOT_DIR}/src/utility_scripts"
 #  PATH=$PATH:${N2ST_ROOT_DIR}/src/utility_scripts
 
-  # ====Teardown===================================================================================
+  # ....Teardown...................................................................................
   cd "${TMP_CWD}"
 }
 
-
+# ::::Main:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   # This script is being run, ie: __name__="__main__"
   echo -e "${MSG_ERROR_FORMAT}[ERROR]${MSG_END_FORMAT} This script must be sourced i.e.: $ source $( basename "$0" )" 1>&2

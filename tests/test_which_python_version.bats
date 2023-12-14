@@ -32,7 +32,7 @@ else
   exit 1
 fi
 
-# ====Setup========================================================================================================
+# ====Setup========================================================================================
 
 TESTED_FILE="which_python_version.bash"
 TESTED_FILE_PATH="src/utility_scripts/"
@@ -47,7 +47,7 @@ setup() {
   cd "$TESTED_FILE_PATH" || exit
 }
 
-# ====Teardown=====================================================================================================
+# ====Teardown=====================================================================================
 
 teardown() {
   bats_print_run_env_variable_on_error
@@ -57,7 +57,7 @@ teardown() {
 #    echo "executed once after finishing the last test"
 #}
 
-# ====Test casses==================================================================================================
+# ====Test casses==================================================================================
 
 @test "sourcing $TESTED_FILE from bad cwd › expect fail" {
   cd "${BATS_DOCKER_WORKDIR}/src/"
@@ -75,6 +75,7 @@ teardown() {
   source ./$TESTED_FILE
 
   assert_not_empty "$PYTHON3_VERSION"
-  echo "PYTHON3_VERSION=$PYTHON3_VERSION" >&3
+  # assert_equal "$PYTHON3_VERSION" "3.10" # Note: the container base image is "ubuntu:lates" -> the python verison will change
+#  echo "PYTHON3_VERSION=$PYTHON3_VERSION" >&3
 }
 

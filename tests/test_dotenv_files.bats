@@ -84,7 +84,7 @@ function source_dotenv_project() {
 
   run source_dotenv_msg_style
   assert_failure
-  assert_output --regexp "set PROJECT_PROMPT_NAME or source .env.project before sourcing .env.msg_style!"
+  assert_output --regexp "ERROR: set PROJECT_PROMPT_NAME or source .env.project first!"
 #  bats_print_run_env_variable
 
 }
@@ -192,21 +192,55 @@ function source_dotenv_project() {
 
 # ----.env.n2st----------------------------------------------------------------------------------------------
 @test ".env.n2st › Env variables set ok" {
+  assert_empty "$N2ST_PATH"
   source_dotenv_n2st
 #  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' >&3
 
-  assert_not_empty "$PROJECT_PROMPT_NAME"
+  assert_equal "${PROJECT_PROMPT_NAME}" "N2ST"
   assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
   assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
-  assert_equal "${PROJECT_SRC_NAME}" "${PROJECT_GIT_NAME}"
+  assert_equal "${PROJECT_SRC_NAME}" "norlab-shell-script-tools"
+  assert_equal "${N2ST_PATH}" "/code/norlab-shell-script-tools"
 }
 
 # ----.env.project-------------------------------------------------------------------------------------------------
-@test ".env.project › Env variables set ok" {
+@test ".env.project › Sourced in N2ST repo › Env variables set ok" {
   source_dotenv_project
 #  printenv | grep -e 'CONTAINER_PROJECT_' -e 'PROJECT_' >&3
 
   assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
   assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
-  assert_equal "${PROJECT_SRC_NAME}" "${PROJECT_GIT_NAME}"
+  assert_equal "${PROJECT_ROOT}" "/code/norlab-shell-script-tools"
+  assert_equal "${PROJECT_SRC_NAME}" "norlab-shell-script-tools"
+}
+
+@test ".env.project › Source in a superproject › Env variables set ok" {
+  N2ST_PATH="/code/norlab-shell-script-tools"
+  SUPERPROJECT_NAME="dockerized-norlab-project-mock"
+  SUPERPROJECT_PATH="/code/${SUPERPROJECT_NAME}"
+
+  assert_equal "$(pwd)" "$N2ST_PATH"
+  cd ..
+  assert_equal "$(pwd)" "/code"
+
+  git clone "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}.git"
+
+#  # Visualise the testing directories
+#  (echo && pwd && tree -L 2 -a) >&3
+
+  assert_dir_exist "${SUPERPROJECT_NAME}"
+  cd "${SUPERPROJECT_NAME}"
+  assert_equal "$(pwd)" "${SUPERPROJECT_PATH}"
+
+  set -o allexport && source "$N2ST_PATH/.env.project" && set +o allexport
+
+#  # Visualise generated environment variables
+#  (echo && printenv | grep -e PROJECT_ && echo) >&3
+
+  assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}"'(".git")?'
+  assert_equal "${PROJECT_GIT_NAME}" "${SUPERPROJECT_NAME}"
+  assert_equal "${PROJECT_ROOT}" "${SUPERPROJECT_PATH}"
+  assert_equal "${PROJECT_SRC_NAME}" "${SUPERPROJECT_NAME}"
+  assert_equal "${PROJECT_SRC_NAME}" "dockerized-norlab-project-mock"
+
 }

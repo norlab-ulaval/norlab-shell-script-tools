@@ -1,4 +1,5 @@
 #!/bin/bash
+# =================================================================================================
 #
 # Utility script to check the host architecture plus OS type and set IMAGE_ARCH_AND_OS environment variable as either
 #       - IMAGE_ARCH_AND_OS=arm64\darwin
@@ -21,6 +22,7 @@
 # Returns:
 #   exit 1 in case of unsupported processor architecture
 #
+# =================================================================================================
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then

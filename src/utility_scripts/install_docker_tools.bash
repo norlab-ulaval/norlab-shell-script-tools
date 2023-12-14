@@ -1,5 +1,5 @@
 #!/bin/bash
-# ToDo: unit-test
+# =================================================================================================
 #
 # Utility script to install docker related tools and execute basic configuration
 #
@@ -9,7 +9,7 @@
 #   $ cd <path/to/project>/norlab-shell-script-tools/src/utility_scripts
 #   $ bash ./install_docker_tools.bash
 #
-
+# =================================================================================================
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then

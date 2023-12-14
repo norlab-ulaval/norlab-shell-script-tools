@@ -66,23 +66,32 @@ teardown() {
 
 # ====Test casses==================================================================================
 
-@test "source all script in 'src/function_library' directory (set environment variable check) › expect pass" {
+
+@test "assess execute with \"source $TESTED_FILE\" › expect pass" {
+  run source "$TESTED_FILE"
+  assert_success
+}
+
+@test "${TESTED_FILE} › check if .env.n2st was properly sourced › expect pass" {
   assert_empty "${MSG_PROMPT_NAME}"
   assert_not_empty "$PROJECT_GIT_NAME"
 
-  run bash -c "PROJECT_PROMPT_NAME=MyCoolTester && source $TESTED_FILE && printenv"
-  assert_success
-  assert_output --partial "MSG_PROMPT_NAME=MyCoolTester"
+  source "$TESTED_FILE"
+  assert_equal "${PROJECT_PROMPT_NAME}" "N2ST"
+  assert_regex "${PROJECT_GIT_REMOTE_URL}" "https://github.com/norlab-ulaval/norlab-shell-script-tools"'(".git")?'
+  assert_equal "${PROJECT_GIT_NAME}" "norlab-shell-script-tools"
+  assert_equal "${PROJECT_SRC_NAME}" "norlab-shell-script-tools"
+  assert_equal "${N2ST_PATH}" "/code/norlab-shell-script-tools"
 }
 
-@test "validate env var are not set between test run" {
+@test "${TESTED_FILE} › validate env var are not set between test run" {
   assert_empty "${MSG_PROMPT_NAME}"
   assert_empty "${PROJECT_PROMPT_NAME}"
-#  assert_empty "${NBS_PATH}"
-#  assert_empty "${NBS_TMP_TEST_LIB_SOURCING_ENV_EXPORT}"
+  assert_empty "${N2ST_PATH}"
 }
 
-@test "source all script in 'src/function_library' directory (import function check) › expect pass" {
+
+@test "${TESTED_FILE} › validate the import function mechanism › expect pass" {
   source "$TESTED_FILE"
   export GREETING="Hello NorLab"
 
@@ -98,7 +107,7 @@ teardown() {
   assert_success
 }
 
-@test "run \"bash $TESTED_FILE\" › expect fail" {
+@test "assess execute with \"bash $TESTED_FILE\" › expect fail" {
   run bash "$TESTED_FILE"
   assert_failure
   assert_output --regexp "[ERROR]".*"This script must be sourced i.e.:".*"source".*"$TESTED_FILE"
