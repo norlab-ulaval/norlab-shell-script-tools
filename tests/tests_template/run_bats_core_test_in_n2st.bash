@@ -6,6 +6,8 @@
 #   2. (optional) ToDo: set N2ST_PATH="<path/to/submodule/norlab-shell-script-tools>"
 #   3. Execute the script
 #
+# Note the script can be executed from anywhere as long as its inside the '<my-superproject>' repository
+#
 # Usage:
 #  $ bash run_bats_core_test_in_n2st.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
 #
@@ -19,6 +21,12 @@
 #
 # =================================================================================================
 OPTIONS="$@"
+
+if [[ -z $OPTIONS ]]; then
+  # Set to default bats tests directory if none specified
+  OPTIONS="tests/"
+fi
+
 
 function n2st::run_n2st_testsing_tools(){
   local TMP_CWD
