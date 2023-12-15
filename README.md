@@ -27,16 +27,16 @@ Maintainer: [Luc Coupal](https://redleader962.github.io)
 </sup>
 </p>  
 
-`N2ST` is a library of shell script functions and a shell testing tools leveraging both _**bats-core**_ and _**docker**_. 
-This library purposes is to speed up shell script development and improve reliability.
+**`N2ST` is a library of shell script functions and a shell testing tools leveraging both _**bats-core**_ and _**docker**_.**
+<br>
+**This library purposes is to speed up shell script development and improve reliability.**
 
+<img src="https://img.shields.io/static/v1?label=norlab-teamcity-build-system&message=CI&color=green?style=plastic&logo=teamcity" />
 </div>
-
 <br>
 
-
 <details>
-  <summary style="font-weight: bolder;font-size: x-large;"> Install instructions and git submodule usage notes </summary>
+  <summary style="font-weight: bolder;font-size: large;"><b> Install instructions and git submodule usage notes </b></summary>
 
 Just clone the *norlab-shell-script-tools* as a submodule in your project repository (ie the
 _superproject_), in an arbitrary directory eg.: `my-project/utilities/`.
