@@ -20,11 +20,11 @@
 #   Read N2ST_PATH    Default to "./utilities/norlab-shell-script-tools"
 #
 # =================================================================================================
-OPTIONS="$@"
+PARAMS="$@"
 
-if [[ -z $OPTIONS ]]; then
+if [[ -z $PARAMS ]]; then
   # Set to default bats tests directory if none specified
-  OPTIONS="tests/"
+  PARAMS="tests/"
 fi
 
 
@@ -38,7 +38,7 @@ function n2st::run_n2st_testsing_tools(){
 
   # ....Execute N2ST run_bats_tests_in_docker.bash.................................................
   cd "$SUPERPROJECT_PATH"
-  bash "${N2ST_PATH}/tests/bats_testing_tools/run_bats_tests_in_docker.bash" "$OPTIONS"
+  bash "${N2ST_PATH}/tests/bats_testing_tools/run_bats_tests_in_docker.bash" "$PARAMS"
 
   # ....Teardown...................................................................................
   cd "$TMP_CWD"
