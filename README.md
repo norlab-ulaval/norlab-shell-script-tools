@@ -37,10 +37,10 @@ to speed up shell script development and improve reliability.**
 <br>
 
 </div>
+<br>
 
 Maintainer: [Luc Coupal](https://redleader962.github.io)
 
-<br>
 
 <details>
   <summary style="font-weight: bolder;font-size: large;"><b> Install instructions and git submodule usage notes </b></summary>
