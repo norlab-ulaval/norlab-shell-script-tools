@@ -27,10 +27,10 @@ function n2st::source_lib(){
   # Note: can handle both sourcing cases
   #   i.e. from within a script or from an interactive terminal session
   _PATH_TO_SCRIPT="$(realpath "${BASH_SOURCE[0]:-'.'}")"
-  _PATH_TO_SCRIPT_DIR="$(dirname "${_PATH_TO_SCRIPT}")"
+  _REPO_ROOT="$(dirname "${_PATH_TO_SCRIPT}")"
 
   # ....Load environment variables from file.......................................................
-  cd "${_PATH_TO_SCRIPT_DIR}" || exit
+  cd "${_REPO_ROOT}" || exit
   set -o allexport
   source .env.n2st
   set +o allexport
