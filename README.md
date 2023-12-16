@@ -35,6 +35,7 @@ to speed up shell script development and improve reliability.**
 <img src="https://img.shields.io/static/v1?label=powered by JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity" />
 
 <br>
+<br>
 
 Maintainer: [Luc Coupal](https://redleader962.github.io)
 
