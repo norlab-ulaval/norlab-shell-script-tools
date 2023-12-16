@@ -22,16 +22,19 @@
 <a href="https://hub.docker.com/repositories/norlabulaval">norlabulaval</a>
 (Docker Hub) &nbsp;
 
-Maintainer: [Luc Coupal](https://redleader962.github.io)
 
 </sup>
 </p>  
 
-**`N2ST` is a library of shell script functions and a shell testing tools leveraging both _**bats-core**_ and _**docker**_.**
+**`N2ST` is a library of shell script functions and a shell testing tools 
 <br>
-**This library purposes is to speed up shell script development and improve reliability.**
+leveraging both _**bats-core**_ and _**docker**_**. **This library purposes is 
+<br>
+to speed up shell script development and improve reliability.**
 
-<img src="https://img.shields.io/static/v1?label=norlab-teamcity-build-system&message=CI&color=green?style=plastic&logo=teamcity" />
+<img src="https://img.shields.io/static/v1?label=powered by JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity" />
+
+Maintainer: [Luc Coupal](https://redleader962.github.io)
 </div>
 <br>
 
