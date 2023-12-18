@@ -38,7 +38,9 @@ function n2st::run_n2st_testsing_tools(){
 
   # ....Execute N2ST run_bats_tests_in_docker.bash.................................................
   cd "$SUPERPROJECT_PATH"
-  bash "${N2ST_PATH}/tests/bats_testing_tools/run_bats_tests_in_docker.bash" "$PARAMS"
+
+  # shellcheck disable=SC2086
+  bash "${N2ST_PATH}/tests/bats_testing_tools/run_bats_tests_in_docker.bash" $PARAMS
 
   # ....Teardown...................................................................................
   cd "$TMP_CWD"
