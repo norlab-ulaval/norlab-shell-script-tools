@@ -22,18 +22,25 @@
 <a href="https://hub.docker.com/repositories/norlabulaval">norlabulaval</a>
 (Docker Hub) &nbsp;
 
-Maintainer: [Luc Coupal](https://redleader962.github.io)
 
 </sup>
 </p>  
 
-**`N2ST` is a library of shell script functions and a shell testing tools leveraging both _**bats-core**_ and _**docker**_.**
+**`N2ST` is a library of shell script functions and a shell testing tools 
 <br>
-**This library purposes is to speed up shell script development and improve reliability.**
+leveraging both _**bats-core**_ and _**docker**_**. **This library purposes is 
+<br>
+to speed up shell script development and improve reliability.**
 
-<img src="https://img.shields.io/static/v1?label=norlab-teamcity-build-system&message=CI&color=green?style=plastic&logo=teamcity" />
+<img src="https://img.shields.io/static/v1?label=powered by JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity" />
+<br>
+<br>
+
 </div>
 <br>
+
+Maintainer: [Luc Coupal](https://redleader962.github.io)
+
 
 <details>
   <summary style="font-weight: bolder;font-size: large;"><b> Install instructions and git submodule usage notes </b></summary>
@@ -122,12 +129,14 @@ This should solve the problem permanently.
 
 ---
 
-#### `v2.0.1` release note:
+#### `v2.0.4` release note:
 
 - Functions are available with and without the `n2st::` prefix for maintaining legacy v1 API
   support.
 
 --- 
+
+![](visual/N2ST_slash.jpg)
 
 Try this in `norlab-shell-script-tools` root
 ```shell
@@ -135,7 +144,6 @@ source import_norlab_shell_script_tools_lib.bash
 n2st::norlab_splash "NorLab rule 🦾"  https://github.com/norlab-ulaval
 ```
 
-![](visual/N2ST_slash.jpg)
 
 # N2ST shell script function/script library
 - Most code in this repository is tested using _**bats-core**_
