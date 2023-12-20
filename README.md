@@ -26,11 +26,11 @@
 </sup>
 </p>  
 
-**`N2ST` is a library of shell script functions and a shell testing tools 
+**A library of shell script functions and a shell testing tools 
 <br>
-leveraging both _**bats-core**_ and _**docker**_**. **This library purposes is 
+leveraging both _**bats-core**_ and _**docker**_**. **`N2ST` purposes is 
 <br>
-to speed up shell script development and improve reliability.**
+to speed up shell script development and improve code reliability.**
 
 <img src="https://img.shields.io/static/v1?label=powered by JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity" />
 
@@ -129,10 +129,11 @@ This should solve the problem permanently.
 
 ---
 
-#### `v2.0.4` release note:
+#### `v2.*.*` release note:
 
 - Functions are available with and without the `n2st::` prefix for maintaining legacy v1 API
-  support.
+  support. 
+  Be advised, they will only be available in their `n2st::` prefixed form in release `>= v3`. 
 
 --- 
 
