@@ -33,14 +33,14 @@ leveraging both _**bats-core**_ and _**docker**_**. **`N2ST` purposes is
 to speed up shell script development and improve code reliability.**
 
 <img src="https://img.shields.io/static/v1?label=powered by JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity" />
-
 <br>
+<br>
+
+</div>
 <br>
 
 Maintainer: [Luc Coupal](https://redleader962.github.io)
 
-</div>
-<br>
 
 <details>
   <summary style="font-weight: bolder;font-size: large;"><b> Install instructions and git submodule usage notes </b></summary>
