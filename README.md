@@ -17,7 +17,7 @@
 <p>
 <sup>
 <a href="https://http://132.203.26.125:8111">NorLab TeamCity GUI</a>
-(VPN or intranet access) &nbsp; • &nbsp;  
+(VPN/intranet access) &nbsp; • &nbsp;  
 <a href="https://hub.docker.com/repositories/norlabulaval">norlabulaval</a>
 (Docker Hub) &nbsp;
 
@@ -31,15 +31,18 @@ leveraging both _**bats-core**_ and _**docker**_**. **`N2ST` purposes is
 <br>
 to speed up shell script development and improve code reliability.**
 
+<br>
+
 [//]: # ( ==== Badges ================================================ )
 
 [![semantic-release: conventional commits](https://img.shields.io/badge/semantic--release-conventional_commits-453032?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 <img src="https://img.shields.io/static/v1?label=powered by JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity" />
+<img alt="GitHub release (with filter)" src="https://img.shields.io/github/v/release/norlab-ulaval/norlab-shell-script-tools">
 
 <br>
 
 [//]: # ( ==== Maintainer ============================================ )
-Maintainer: [Luc Coupal](https://redleader962.github.io)
+<sup> Maintainer: <a href="https://redleader962.github.io">Luc Coupal</a> </sup>
 </div>
 <br>
 
