@@ -1,3 +1,4 @@
+[//]: # ( ==== Logo ================================================== )
 <div align="center">
 <br>
 <br>
@@ -6,14 +7,12 @@
 </a>
 <br>
 
+[//]: # ( ==== Title ================================================= ) 
 # _NorLab Shell Script Tools (N2ST)_
 
 </div>
 
-
-[//]: # (<b>Project related link: </b> &nbsp; )
-
-[//]: # (Project related link:)
+[//]: # ( ==== Hyperlink ============================================= ) 
 <div align="center">
 <p>
 <sup>
@@ -22,26 +21,30 @@
 <a href="https://hub.docker.com/repositories/norlabulaval">norlabulaval</a>
 (Docker Hub) &nbsp;
 
-
 </sup>
 </p>  
 
+[//]: # ( ==== Description =========================================== )
 **A library of shell script functions and a shell testing tools 
 <br>
 leveraging both _**bats-core**_ and _**docker**_**. **`N2ST` purposes is 
 <br>
 to speed up shell script development and improve code reliability.**
 
+[//]: # ( ==== Badges ================================================ )
+
+[![semantic-release: conventional commits](https://img.shields.io/badge/semantic--release-conventional_commits-453032?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 <img src="https://img.shields.io/static/v1?label=powered by JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity" />
-<br>
+
 <br>
 
+[//]: # ( ==== Maintainer ============================================ )
+Maintainer: [Luc Coupal](https://redleader962.github.io)
 </div>
 <br>
 
-Maintainer: [Luc Coupal](https://redleader962.github.io)
 
-
+[//]: # ( ==== Body ================================================== )
 <details>
   <summary style="font-weight: bolder;font-size: large;"><b> Install instructions and git submodule usage notes </b></summary>
 
