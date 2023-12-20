@@ -30,19 +30,19 @@
 leveraging both _**bats-core**_ and _**docker**_**. **`N2ST` purposes is 
 <br>
 to speed up shell script development and improve code reliability.**
-
+<br>
 <br>
 
 [//]: # ( ==== Badges ================================================ )
-
 [![semantic-release: conventional commits](https://img.shields.io/badge/semantic--release-conventional_commits-453032?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
-<img src="https://img.shields.io/static/v1?label=powered by JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity" />
+<img src="https://img.shields.io/static/v1?label=JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity" />
 <img alt="GitHub release (with filter)" src="https://img.shields.io/github/v/release/norlab-ulaval/norlab-shell-script-tools">
+
 
 <br>
 
 [//]: # ( ==== Maintainer ============================================ )
-<sup> Maintainer: <a href="https://redleader962.github.io">Luc Coupal</a> </sup>
+Maintainer: [Luc Coupal](https://redleader962.github.io)
 </div>
 <br>
 
