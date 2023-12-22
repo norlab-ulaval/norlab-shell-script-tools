@@ -41,7 +41,7 @@ setup_file() {
 }
 
 setup() {
-  cd "src/function_library" || exit
+  cd "src/function_library" || exit 1
   source ./terminal_splash.bash
 }
 
