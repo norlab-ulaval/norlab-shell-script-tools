@@ -320,7 +320,7 @@ function n2st::norlab_splash() {
   else
     MSG_ERROR_FORMAT="\033[1;31m"
     MSG_END_FORMAT="\033[0m"
-    echo -e "${MSG_ERROR_FORMAT}SPLASH_TYPE \"${SPLASH_TYPE}\" not implemented! ${MSG_END_FORMAT}"
+    echo -e "${MSG_ERROR_FORMAT}SPLASH_TYPE \"${SPLASH_TYPE}\" not implemented! ${MSG_END_FORMAT}" 1>&2
   fi
 
 }

@@ -30,13 +30,13 @@ function n2st::source_lib(){
   _REPO_ROOT="$(dirname "${_PATH_TO_SCRIPT}")"
 
   # ....Load environment variables from file.......................................................
-  cd "${_REPO_ROOT}" || exit
+  cd "${_REPO_ROOT}" || exit 1
   set -o allexport
   source .env.n2st
   set +o allexport
 
   # ....Begin......................................................................................
-  cd "${N2ST_PATH:?'[ERROR] env var not set!'}/src/function_library" || exit
+  cd "${N2ST_PATH:?'[ERROR] env var not set!'}/src/function_library" || exit 1
   for each_file in "$(pwd)"/*.bash ; do
       source "${each_file}"
   done

@@ -13,7 +13,7 @@
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
-  echo -e "\n[\033[1;31mERROR\033[0m] 'install_docker_tools.bash' script must be sourced from the 'utility_scripts/'!\n Curent working directory is '$(pwd)'"
+  echo -e "\n[\033[1;31mERROR\033[0m] 'install_docker_tools.bash' script must be sourced from the 'utility_scripts/'!\n Curent working directory is '$(pwd)'" 1>&2
   echo '(press any key to exit)'
   read -r -n 1
   exit 1
@@ -22,7 +22,7 @@ fi
 # ....Load helper function.........................................................................
 TMP_CWD=$(pwd)
 source ../../.env.n2st
-cd ../function_library || exit
+cd ../function_library || exit 1
 source ./prompt_utilities.bash
 source ./docker_utilities.bash
 cd "${TMP_CWD}"
@@ -77,4 +77,4 @@ n2st::add_user_to_the_docker_group "$(whoami)"
 
 n2st::print_formated_script_footer 'install_docker_tools.bash'
 # ====Teardown=====================================================================================
-cd "${TMP_CWD}"  || exit
+cd "${TMP_CWD}"  || exit 1

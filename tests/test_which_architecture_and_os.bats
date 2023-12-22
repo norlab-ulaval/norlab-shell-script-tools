@@ -44,7 +44,7 @@ setup_file() {
 }
 
 setup() {
-  cd "$TESTED_FILE_PATH" || exit
+  cd "$TESTED_FILE_PATH" || exit 1
 }
 
 # ====Teardown=====================================================================================

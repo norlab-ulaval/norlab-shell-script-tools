@@ -37,7 +37,7 @@ function mock_docker_command_exit_ok() {
 
 function mock_docker_command_exit_error() {
     function docker() {
-      echo "Error" >&2
+      echo "Error" 1>&2
       return 1
     }
 }

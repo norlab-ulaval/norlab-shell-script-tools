@@ -16,6 +16,6 @@ function n2st::good_morning_norlab() {
 }
 
 function n2st::this_is_not_cool() {
-    echo -e "\n[\033[1;31mERROR\033[0m] Noooooooooooooo!"
+    echo -e "\n[\033[1;31mERROR\033[0m] Noooooooooooooo!" 1>&2
     return 1
 }
