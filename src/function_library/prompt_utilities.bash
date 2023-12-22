@@ -12,7 +12,7 @@
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
-  echo -e "\n[\033[1;31mERROR\033[0m] 'prompt_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'"
+  echo -e "\n[\033[1;31mERROR\033[0m] 'prompt_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'" 1>&2
   echo '(press any key to exit)'
   read -rn 1
   exit 1
@@ -98,7 +98,7 @@ function n2st::print_msg_error_and_exit() {
   local ERROR_MSG=$1
 
   echo ""
-  echo -e "${MSG_ERROR}: ${ERROR_MSG}" >&2
+  echo -e "${MSG_ERROR}: ${ERROR_MSG}" 1>&2
   # Note: The >&2 sends the echo output to standard error
   echo "Exiting now."
   echo ""
@@ -109,7 +109,7 @@ function n2st::print_msg_error() {
   local ERROR_MSG=$1
 
   echo ""
-  echo -e "${MSG_ERROR}: ${ERROR_MSG}" >&2
+  echo -e "${MSG_ERROR}: ${ERROR_MSG}" 1>&2
   echo ""
 }
 

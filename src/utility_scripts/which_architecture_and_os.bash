@@ -26,7 +26,7 @@
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
-  echo -e "\n[\033[1;31mERROR\033[0m] 'which_architecture_and_os.bash' script must be sourced from the 'utility_scripts/'!\n Curent working directory is '$(pwd)'"
+  echo -e "\n[\033[1;31mERROR\033[0m] 'which_architecture_and_os.bash' script must be sourced from the 'utility_scripts/'!\n Curent working directory is '$(pwd)'" 1>&2
   echo '(press any key to exit)'
   read -r -n 1
   exit 1
@@ -42,7 +42,7 @@ if [[ -z $PROJECT_PROMPT_NAME ]] && [[ -z $PROJECT_GIT_NAME ]] ; then
   set +o allexport
 fi
 
-cd ../function_library || exit
+cd ../function_library || exit 1
 source ./general_utilities.bash
 
 cd "${TMP_CWD}"

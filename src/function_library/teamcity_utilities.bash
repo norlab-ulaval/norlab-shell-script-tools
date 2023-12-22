@@ -12,7 +12,7 @@
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
-  echo -e "\n[\033[1;31mERROR\033[0m] 'teamcity_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'"
+  echo -e "\n[\033[1;31mERROR\033[0m] 'teamcity_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'" 1>&2
   echo '(press any key to exit)'
   read -r -n 1
   exit 1

@@ -11,7 +11,7 @@
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "function_library" ]]; then
-  echo -e "\n[\033[1;31mERROR\033[0m] 'general_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'"
+  echo -e "\n[\033[1;31mERROR\033[0m] 'general_utilities.bash' script must be sourced from the 'function_library/'!\n Curent working directory is '$(pwd)'" 1>&2
   echo '(press any key to exit)'
   read -r -n 1
   exit 1
@@ -100,7 +100,7 @@ function n2st::set_which_architecture_and_os() {
     elif [[ $(uname) == "Linux" ]]; then
         export IMAGE_ARCH_AND_OS='linux/arm64'
     else
-      echo -e "${MSG_ERROR} Unsupported OS for aarch64 processor"
+      echo -e "${MSG_ERROR} Unsupported OS for aarch64 processor" 1>&2
     fi
   elif [[ $(uname -m) == "arm64" ]] && [[ $(uname) == "Darwin" ]]; then
     export IMAGE_ARCH_AND_OS='darwin/arm64'
