@@ -264,3 +264,4 @@ See `tests/tests_template/run_bats_core_test_in_n2st.bash` for details.
 - Quick intro:
   - [testing bash scripts with bats](https://www.baeldung.com/linux/testing-bash-scripts-bats)
  
+
