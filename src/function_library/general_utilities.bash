@@ -49,7 +49,7 @@ function n2st::seek_and_modify_string_in_file() {
   local TMP_FILE_PATH="${3}"
 
   # Note: Character ';' is used as a delimiter
-  sudo sed --in-place "s;${TMP_SEEK};${TMP_CHANGE_FOR};" "${TMP_FILE_PATH}"
+  sudo sed -i "s;${TMP_SEEK};${TMP_CHANGE_FOR};" "${TMP_FILE_PATH}"
 
 }
 
