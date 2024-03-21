@@ -63,6 +63,7 @@ docker build \
   --build-arg "TEAMCITY_VERSION=${TEAMCITY_VERSION}" \
   --file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
   --tag n2st-bats-test-code-isolation/"${PROJECT_GIT_NAME}" \
+  --platform "linux/$(uname -m)" \
   --load \
   .
 
