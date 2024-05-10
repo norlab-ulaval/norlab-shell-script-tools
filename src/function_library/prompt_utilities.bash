@@ -137,6 +137,11 @@ function n2st::draw_horizontal_line_across_the_terminal_window() {
 
   # Ref https://bash.cyberciti.biz/guide/$TERM_variable
   TPUT_FLAG="-T $TERM"
+
+  # (CRITICAL) ToDo: on task end >> delete next bloc ↓↓
+  printenv
+  echo -e "Original TERM=${TERM}"
+
   if [[ -z ${TERM} ]]; then
     TPUT_FLAG='-T xterm-256color'
   elif [[ ${TERM} == dumb ]]; then
