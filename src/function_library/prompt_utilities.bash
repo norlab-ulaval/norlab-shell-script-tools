@@ -137,16 +137,12 @@ function n2st::draw_horizontal_line_across_the_terminal_window() {
 
   # Ref https://bash.cyberciti.biz/guide/$TERM_variable
   TPUT_FLAG="-T $TERM"
-
-  # (CRITICAL) ToDo: on task end >> delete next bloc ↓↓
-  printenv
-  echo -e "Original TERM=${TERM}"
-
   if [[ -z ${TERM} ]]; then
     TPUT_FLAG='-T xterm-256color'
   elif [[ ${TERM} == dumb ]]; then
     # "dumb" is the one set on TeamCity Agent
-    TPUT_FLAG='-T xterm-256color'
+#    TPUT_FLAG='-T xterm-256color'
+    unset TPUT_FLAG
   fi
 
   # (NICE TO HAVE) ToDo:
@@ -161,6 +157,12 @@ function n2st::draw_horizontal_line_across_the_terminal_window() {
   terminal_width="${COLUMNS:-$(tput ${TPUT_FLAG} cols)}"
   pad=$(printf -- "${SYMBOL}%.0s" $(seq $terminal_width))
   printf -- "${pad}\n"
+
+#  # (CRITICAL) ToDo: on task end >> delete next bloc ↓↓
+#  echo "terminal_width=${terminal_width}"
+#  echo "seq $terminal_width = $(seq $terminal_width)"
+#  echo "$SHELL"
+#  ps -p $$
 }
 
 # =================================================================================================
