@@ -22,7 +22,8 @@ SHELL ["/bin/bash", "-e", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV TERM=${TERM:-"xterm-256color"}
-
+#RUN tput -T $TERM init
+ENV COLUMNS=80
 
 # ====Begin========================================================================================
 # ....Setup timezone and localization..............................................................
