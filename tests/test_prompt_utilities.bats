@@ -130,10 +130,10 @@ teardown() {
 
 @test "n2st::draw_horizontal_line_across_the_terminal_window ok" {
 
-    # (Priority) ToDo: debug › on task end >> mute next bloc ↓↓
-    printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
-    n2st::draw_horizontal_line_across_the_terminal_window "." >&3
-    tput longname >&3
+#    # (Priority) ToDo: debug › on task end >> mute next bloc ↓↓
+#    printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
+#    n2st::draw_horizontal_line_across_the_terminal_window "." >&3
+#    tput longname >&3
 
     run n2st::draw_horizontal_line_across_the_terminal_window
     assert_success

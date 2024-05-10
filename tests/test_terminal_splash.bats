@@ -120,10 +120,10 @@ teardown() {
 
   IS_TEAMCITY_RUN=true
 
-  # (Priority) ToDo: debug › on task end >> mute next bloc ↓↓
-  printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
-  n2st::echo_centering_str "$CENTERED_STR" "$THE_STYLE" "$THE_PAD_CHAR" >&3
-  tput longname >&3
+#  # (Priority) ToDo: debug › on task end >> mute next bloc ↓↓
+#  printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
+#  n2st::echo_centering_str "$CENTERED_STR" "$THE_STYLE" "$THE_PAD_CHAR" >&3
+#  tput longname >&3
 
   run n2st::echo_centering_str "$CENTERED_STR" "$THE_STYLE" "$THE_PAD_CHAR"
   assert_success

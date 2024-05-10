@@ -51,7 +51,8 @@ function n2st::echo_centering_str() {
     TPUT_FLAG='-T xterm-256color'
   elif [[ ${TERM} == dumb ]]; then
     # "dumb" is the one set on TeamCity Agent
-    TPUT_FLAG='-T xterm-256color'
+#    TPUT_FLAG='-T xterm-256color'
+    unset TPUT_FLAG
   fi
 
   # (NICE TO HAVE) ToDo:
