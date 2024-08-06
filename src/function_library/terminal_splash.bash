@@ -46,14 +46,15 @@ function n2st::echo_centering_str() {
   fi
 
   # Ref https://bash.cyberciti.biz/guide/$TERM_variable
-  TPUT_FLAG="-T ${TERM}"
+  TPUT_FLAG=("-T" "$TERM")
   if [[ -z ${TERM} ]]; then
-    TPUT_FLAG='-T xterm-256color'
+    TPUT_FLAG=("-T" "xterm-256color")
   elif [[ ${TERM} == dumb ]]; then
     # "dumb" is the one set on TeamCity Agent
-#    TPUT_FLAG='-T xterm-256color'
-    unset TPUT_FLAG
+    TPUT_FLAG=("-T" "xterm-256color")
+#    unset TPUT_FLAG
   fi
+
 
   # (NICE TO HAVE) ToDo:
   #     - var TERM should be setup in Dockerfile.dependencies.
@@ -62,9 +63,9 @@ function n2st::echo_centering_str() {
   local terminal_width
 #  terminal_width=$(tput ${TPUT_FLAG} cols)
   # shellcheck disable=SC2086
-  terminal_width="${COLUMNS:-$(tput ${TPUT_FLAG} cols)}"
-  local total_padding_len=$(( $terminal_width - $str_len ))
-  local single_side_padding_len=$(( $total_padding_len / 2 ))
+  terminal_width="${COLUMNS:-$(tput "${TPUT_FLAG[@]}" cols)}"
+  local total_padding_len=$(( ${terminal_width} - ${str_len} ))
+  local single_side_padding_len=$(( ${total_padding_len} / 2 ))
   local pad
   pad=$(printf -- "$the_pad_cha%.0s" $(seq $single_side_padding_len))
   LC_ALL='' LC_CTYPE=en_US.UTF-8 printf -- "%b%b%s%b%s%b%b\n" "${the_style}" "${fill_left}" "${pad}" "${the_str}" "${pad}" "${fill_right}" "${the_style_off}"
