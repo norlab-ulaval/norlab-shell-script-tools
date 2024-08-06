@@ -24,16 +24,10 @@ BATS_DOCKERFILE_DISTRO=${2:-'ubuntu'}
 # ....N2ST root logic..............................................................................
 REPO_ROOT=$(pwd)
 N2ST_BATS_TESTING_TOOLS_ABS_PATH="$( cd "$( dirname "${0}" )" &> /dev/null && pwd )"
-
-# ToDo: assessment › harccoding the relative path is more robust. Since the location wont change anymore, the version with string substitution is irelevant.
 N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=".${N2ST_BATS_TESTING_TOOLS_ABS_PATH/$REPO_ROOT/}"
-#N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH="tests/bats_testing_tools"
 
-#N2ST_PATH=$( git rev-parse --show-toplevel )
 N2ST_PATH="${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/../.."
 test -d "${N2ST_PATH}" || exit 1
-#tree -a -L 1 ${N2ST_PATH}
-
 
 # ....Source project shell-scripts dependencies....................................................
 pushd "$(pwd)" >/dev/null || exit 1
