@@ -57,12 +57,16 @@ test -d "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}" || exit 1
 test -f "${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}/bats_helper_functions.bash" ||  exit 1
 
 # ====Begin========================================================================================
-n2st::norlab_splash "${PROJECT_PROMPT_NAME}" "${PROJECT_GIT_REMOTE_URL}"
+n2st::set_is_teamcity_run_environment_variable
+n2st::print_msg "IS_TEAMCITY_RUN=${IS_TEAMCITY_RUN} ${TC_VERSION}"
+if [[ ${IS_TEAMCITY_RUN} != true ]] && [[ -z ${BUILDX_BUILDER} ]]; then
+  n2st::norlab_splash "${PROJECT_PROMPT_NAME}" "${PROJECT_GIT_REMOTE_URL}"
+fi
 n2st::print_formated_script_header "$(basename $0) ${MSG_END_FORMAT}on device ${MSG_DIMMED_FORMAT}$(hostname -s)" "${MSG_LINE_CHAR_BUILDER_LVL2}"
 
 if [[ -z ${BUILDX_BUILDER} ]]; then
   # Note: Default to default buildx builder (ie native host architecture) so that the build img
-  # be available in the local image store and that run executed via `up_and_attach.bash` doesn't
+  # be available in the local image store and that tests executed via docker run doesn't
   # require pulling built img from dockerhub.
   n2st::set_which_architecture_and_os
   n2st::print_msg "Current image architecture and os: $IMAGE_ARCH_AND_OS"
