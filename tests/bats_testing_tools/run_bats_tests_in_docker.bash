@@ -1,5 +1,5 @@
 #!/bin/bash
-#
+# =================================================================================================
 # Execute bats unit test in a docker container with bats-core support including several helper libraries
 #
 # Usage:
@@ -12,6 +12,7 @@
 #                                                      run all bats file in the test directory
 #   - ['<image-distro>']          ubuntu or alpine (default ubuntu)
 #
+# =================================================================================================
 
 RUN_TESTS_IN_DIR=${1:-'tests'}
 BATS_DOCKERFILE_DISTRO=${2:-'ubuntu'}
@@ -23,16 +24,10 @@ BATS_DOCKERFILE_DISTRO=${2:-'ubuntu'}
 # ....N2ST root logic..............................................................................
 REPO_ROOT=$(pwd)
 N2ST_BATS_TESTING_TOOLS_ABS_PATH="$( cd "$( dirname "${0}" )" &> /dev/null && pwd )"
+N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=".${N2ST_BATS_TESTING_TOOLS_ABS_PATH/$REPO_ROOT/}"
 
-# ToDo: assessment › harccoding the relative path is more robust. Since the location wont change anymore, the version with string substitution is irelevant.
-#N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=".${N2ST_BATS_TESTING_TOOLS_ABS_PATH/$REPO_ROOT/}"
-N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH="tests/bats_testing_tools"
-
-#N2ST_PATH=$( git rev-parse --show-toplevel )
 N2ST_PATH="${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/../.."
 test -d "${N2ST_PATH}" || exit 1
-#tree -a -L 1 ${N2ST_PATH}
-N2ST_VERSION="$(cat "${N2ST_PATH}"/version.txt)"
 
 # ....Source project shell-scripts dependencies....................................................
 pushd "$(pwd)" >/dev/null || exit 1
@@ -58,12 +53,12 @@ test -f "${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}/bats_helper_functions.bash" ||
 
 # ====Begin========================================================================================
 n2st::set_is_teamcity_run_environment_variable
-n2st::print_msg "IS_TEAMCITY_RUN=${IS_TEAMCITY_RUN} ${TC_VERSION}"
 if [[ ${IS_TEAMCITY_RUN} != true ]] && [[ -z ${BUILDX_BUILDER} ]]; then
   n2st::norlab_splash "${PROJECT_PROMPT_NAME}" "${PROJECT_GIT_REMOTE_URL}"
 fi
 n2st::print_formated_script_header "$(basename $0) ${MSG_END_FORMAT}on device ${MSG_DIMMED_FORMAT}$(hostname -s)" "${MSG_LINE_CHAR_BUILDER_LVL2}"
 
+n2st::print_msg "IS_TEAMCITY_RUN=${IS_TEAMCITY_RUN} ${TC_VERSION}"
 if [[ -z ${BUILDX_BUILDER} ]]; then
   # Note: Default to default buildx builder (ie native host architecture) so that the build img
   # be available in the local image store and that tests executed via docker run doesn't

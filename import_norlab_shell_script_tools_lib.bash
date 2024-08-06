@@ -44,6 +44,9 @@ function n2st::source_lib(){
 #  cd "${N2ST_ROOT_DIR}/src/utility_scripts"
 #  PATH=$PATH:${N2ST_ROOT_DIR}/src/utility_scripts
 
+  N2ST_VERSION="$(cat "${N2ST_PATH}"/version.txt)"
+  export N2ST_VERSION
+
   # ....Teardown...................................................................................
   popd >/dev/null || exit 1
 }
