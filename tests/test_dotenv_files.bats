@@ -261,6 +261,7 @@ function source_dotenv_project() {
   cd ..
   assert_equal "$(pwd)" "/code"
 
+
   git clone "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}.git"
   assert_dir_exist "${SUPERPROJECT_NAME}"
 

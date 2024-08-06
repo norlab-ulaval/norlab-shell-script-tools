@@ -78,6 +78,18 @@ teardown() {
 }
 
 @test "n2st::set_is_teamcity_run_environment_variable ok" {
+
+  # Case › not run in TeamCity
+  run n2st::set_is_teamcity_run_environment_variable
+  assert_success
+  n2st::set_is_teamcity_run_environment_variable
+  assert_not_empty  "$IS_TEAMCITY_RUN"
+
+  # Reset state
+  unset IS_TEAMCITY_RUN
+  assert_empty "$IS_TEAMCITY_RUN"
+
+  # Case › run in TeamCity
   fake_IS_TEAMCITY_RUN
   run n2st::set_is_teamcity_run_environment_variable
   assert_success

@@ -23,6 +23,7 @@
 #   exit 1 in case of unsupported processor architecture
 #
 # =================================================================================================
+pushd "$(pwd)" >/dev/null || exit 1
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
@@ -33,8 +34,6 @@ if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
 fi
 
 # ....Load helper function.........................................................................
-TMP_CWD=$(pwd)
-
 # (Priority) ToDo: validate!! (ref task NMO-388 fix: explicitly sourcing .env.n2st cause conflicting problem when the repo is used as a lib)
 if [[ -z $PROJECT_PROMPT_NAME ]] && [[ -z $PROJECT_GIT_NAME ]] ; then
   set -o allexport
@@ -45,8 +44,9 @@ fi
 cd ../function_library || exit 1
 source ./general_utilities.bash
 
-cd "${TMP_CWD}"
 
 # ====Begin========================================================================================
 n2st::set_which_architecture_and_os
 
+# ====Teardown=====================================================================================
+popd >/dev/null || exit 1
