@@ -1,19 +1,9 @@
 # Description
-### Summary:
+
+Add a quick summary here.  
 
 
 
-
-
-
-### Changes and type of changes (quick overview):
-
-- 
-- 
-- 
-
-
----
 
 # Checklist:
 
@@ -28,9 +18,6 @@
 - [ ] My pull request `base ref` branch is set to the `dev` branch (the _build-system_ won't be triggered otherwise) 
 - [ ] My pull request branch is up-to-date with the `dev` branch (the _build-system_ will reject it otherwise)
 
-### PR description related 
-- [ ] I have included a quick summary of the changes
-- [ ] I have indicated the related issue's id with `# <issue-id>` if changes are of type `fix`
 
  ## Note for repository admins
  ### Release PR related
