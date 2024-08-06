@@ -10,7 +10,16 @@ ENV N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=${N2ST_BATS_TESTING_TOOLS_RELATIVE_PAT
 ARG TEAMCITY_VERSION
 ENV TEAMCITY_VERSION=${TEAMCITY_VERSION}
 
+# (Priority) ToDo: implement >> next bloc ↓↓ (ref task NMO-570)
+ARG N2ST_VERSION
+LABEL norlab.tools.norlab-shell-script-tools.tester="${N2ST_VERSION:?err}"
+LABEL org.opencontainers.image.authors="luc.coupal.1@ulaval.ca"
+
+SHELL ["/bin/bash", "-e", "-c"]
+ARG DEBIAN_FRONTEND=noninteractive
+
 ENV TERM=${TERM:-"xterm-256color"}
+ENV COLUMNS=80
 
 # Note:
 #   Image purpose › source code isolation for CI build

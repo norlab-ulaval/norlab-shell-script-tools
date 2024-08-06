@@ -28,7 +28,7 @@ source ./prompt_utilities.bash
 
 # =================================================================================================
 # Check if the script is executed in JetBrains TeamCity continuous integration/deployment server
-# and set the IS_TEAMCITY_RUN environment variable accordingly
+# and set the IS_TEAMCITY_RUN environment variable accordingly, 'true' or 'false'
 #
 # Usage:
 #   $ n2st::set_is_teamcity_run_environment_variable
@@ -41,8 +41,11 @@ source ./prompt_utilities.bash
 # =================================================================================================
 function n2st::set_is_teamcity_run_environment_variable() {
   if [[ ${TEAMCITY_VERSION} ]] ; then
-    IS_TEAMCITY_RUN=true && export IS_TEAMCITY_RUN
+    IS_TEAMCITY_RUN=true
+  else
+    IS_TEAMCITY_RUN=false
   fi
+  export IS_TEAMCITY_RUN
 }
 
 

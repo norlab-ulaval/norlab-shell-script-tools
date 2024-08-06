@@ -29,7 +29,17 @@ PROJECT_GIT_REMOTE_URL=$(git remote get-url origin)
 PROJECT_GIT_NAME=$(basename "${PROJECT_GIT_REMOTE_URL}" .git)
 REPO_ROOT=$(pwd)
 N2ST_BATS_TESTING_TOOLS_ABS_PATH="$( cd "$( dirname "${0}" )" &> /dev/null && pwd )"
-N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=".${N2ST_BATS_TESTING_TOOLS_ABS_PATH/$REPO_ROOT/}"
+
+# ToDo: assessment › harccoding the relative path is more robust. Since the location wont change anymore, the version with string substitution is irelevant.
+#N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=".${N2ST_BATS_TESTING_TOOLS_ABS_PATH/$REPO_ROOT/}"
+N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH="tests/bats_testing_tools"
+
+N2ST_PATH=$( git rev-parse --show-toplevel )
+#N2ST_PATH="${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}/../.."
+test -d "${N2ST_PATH}" || exit 1
+#tree -a -L 1 ${N2ST_PATH}
+N2ST_VERSION="$(cat "${N2ST_PATH}"/version.txt)"
+
 
 if [[ $(basename "$REPO_ROOT") != ${PROJECT_CLONE_GIT_NAME} ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] $0 must be executed from the project root!\nCurrent wordir: $(pwd)" 1>&2
@@ -38,7 +48,8 @@ if [[ $(basename "$REPO_ROOT") != ${PROJECT_CLONE_GIT_NAME} ]]; then
   exit 1
 fi
 
-
+test -d "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}" || exit 1
+test -f "${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}/bats_helper_functions.bash" ||  exit 1
 
 # Do not load MSG_BASE nor MSG_BASE_TEAMCITY from there .env file so that tested logic does not leak in that file
 _MSG_BASE="\033[1m[${PROJECT_GIT_NAME}]\033[0m"
@@ -61,11 +72,15 @@ docker build \
   --build-arg BUILDKIT_CONTEXT_KEEP_GIT_DIR=1 \
   --build-arg N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH="$N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH" \
   --build-arg "TEAMCITY_VERSION=${TEAMCITY_VERSION}" \
+  --build-arg "N2ST_VERSION=${N2ST_VERSION:?err}" \
   --file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
   --tag n2st-bats-test-code-isolation/"${PROJECT_GIT_NAME}" \
-  --platform "linux/$(uname -m)" \
-  --load \
-  .
+  "${REPO_ROOT}"
+
+# done: NMO-571 fix: unable to find image faillure on build server › Cause: image were build using docker-container builder because of the --platform flag
+# (NICE TO HAVE) ToDo: assessment >> Not sure its relevant to have multiarch build logic since test are executed at runtime not build time.
+#  --platform "linux/$(uname -m)" \
+#  --load \
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   echo -e "##teamcity[blockClosed name='${_MSG_BASE_TEAMCITY} Build custom bats-core docker image']"
