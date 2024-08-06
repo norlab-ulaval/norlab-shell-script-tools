@@ -10,6 +10,8 @@
 #   $ bash ./install_docker_tools.bash
 #
 # =================================================================================================
+pushd "$(pwd)" >/dev/null || exit 1
+
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
@@ -20,12 +22,14 @@ if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
 fi
 
 # ....Load helper function.........................................................................
-TMP_CWD=$(pwd)
+pushd "$(pwd)" >/dev/null || exit 1
 source ../../.env.n2st
 cd ../function_library || exit 1
 source ./prompt_utilities.bash
 source ./docker_utilities.bash
-cd "${TMP_CWD}"
+popd >/dev/null || exit 1
+
+
 
 # ====Begin========================================================================================
 n2st::print_formated_script_header 'install_docker_tools.bash'
@@ -75,6 +79,8 @@ echo
 
 n2st::add_user_to_the_docker_group "$(whoami)"
 
-n2st::print_formated_script_footer 'install_docker_tools.bash'
 # ====Teardown=====================================================================================
-cd "${TMP_CWD}"  || exit 1
+n2st::print_formated_script_footer 'install_docker_tools.bash'
+popd >/dev/null || exit 1
+
+

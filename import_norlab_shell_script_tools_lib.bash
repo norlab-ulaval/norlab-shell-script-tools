@@ -21,8 +21,7 @@ MSG_ERROR_FORMAT="\033[1;31m"
 MSG_END_FORMAT="\033[0m"
 
 function n2st::source_lib(){
-  local TMP_CWD
-  TMP_CWD=$(pwd)
+  pushd "$(pwd)" >/dev/null || exit 1
 
   # Note: can handle both sourcing cases
   #   i.e. from within a script or from an interactive terminal session
@@ -46,7 +45,7 @@ function n2st::source_lib(){
 #  PATH=$PATH:${N2ST_ROOT_DIR}/src/utility_scripts
 
   # ....Teardown...................................................................................
-  cd "${TMP_CWD}"
+  popd >/dev/null || exit 1
 }
 
 # ::::Main:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

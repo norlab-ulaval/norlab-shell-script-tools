@@ -20,17 +20,32 @@ BATS_DOCKERFILE_DISTRO=${2:-'ubuntu'}
 ## Set Docker builder log output for debug. Options: plain, tty or auto (default)
 #export BUILDKIT_PROGRESS=plain
 
-# ====Begin========================================================================================
+# ....N2ST root logic..............................................................................
+REPO_ROOT=$(pwd)
+N2ST_BATS_TESTING_TOOLS_ABS_PATH="$( cd "$( dirname "${0}" )" &> /dev/null && pwd )"
+
+# ToDo: assessment › harccoding the relative path is more robust. Since the location wont change anymore, the version with string substitution is irelevant.
+#N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=".${N2ST_BATS_TESTING_TOOLS_ABS_PATH/$REPO_ROOT/}"
+N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH="tests/bats_testing_tools"
+
+#N2ST_PATH=$( git rev-parse --show-toplevel )
+N2ST_PATH="${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/../.."
+test -d "${N2ST_PATH}" || exit 1
+#tree -a -L 1 ${N2ST_PATH}
+N2ST_VERSION="$(cat "${N2ST_PATH}"/version.txt)"
+
+# ....Source project shell-scripts dependencies....................................................
+pushd "$(pwd)" >/dev/null || exit 1
+source "${N2ST_PATH}"/import_norlab_shell_script_tools_lib.bash || exit 1
+popd >/dev/null || exit 1
 
 # ....Project root logic...........................................................................
 PROJECT_CLONE_GIT_ROOT=$(git rev-parse --show-toplevel)
 PROJECT_CLONE_GIT_NAME=$(basename "$PROJECT_CLONE_GIT_ROOT" .git)
 PROJECT_GIT_REMOTE_URL=$(git remote get-url origin)
 PROJECT_GIT_NAME=$(basename "${PROJECT_GIT_REMOTE_URL}" .git)
-REPO_ROOT=$(pwd)
-N2ST_BATS_TESTING_TOOLS_ABS_PATH="$( cd "$( dirname "${0}" )" &> /dev/null && pwd )"
-N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=".${N2ST_BATS_TESTING_TOOLS_ABS_PATH/$REPO_ROOT/}"
 
+# ....Pre-condition................................................................................
 if [[ $(basename "$REPO_ROOT") != ${PROJECT_CLONE_GIT_NAME} ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] $0 must be executed from the project root!\nCurrent wordir: $(pwd)" 1>&2
   echo '(press any key to exit)'
@@ -38,17 +53,42 @@ if [[ $(basename "$REPO_ROOT") != ${PROJECT_CLONE_GIT_NAME} ]]; then
   exit 1
 fi
 
+test -d "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}" || exit 1
+test -f "${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}/bats_helper_functions.bash" ||  exit 1
 
+# ====Begin========================================================================================
+n2st::set_is_teamcity_run_environment_variable
+n2st::print_msg "IS_TEAMCITY_RUN=${IS_TEAMCITY_RUN} ${TC_VERSION}"
+if [[ ${IS_TEAMCITY_RUN} != true ]] && [[ -z ${BUILDX_BUILDER} ]]; then
+  n2st::norlab_splash "${PROJECT_PROMPT_NAME}" "${PROJECT_GIT_REMOTE_URL}"
+fi
+n2st::print_formated_script_header "$(basename $0) ${MSG_END_FORMAT}on device ${MSG_DIMMED_FORMAT}$(hostname -s)" "${MSG_LINE_CHAR_BUILDER_LVL2}"
 
-# Do not load MSG_BASE nor MSG_BASE_TEAMCITY from there .env file so that tested logic does not leak in that file
-_MSG_BASE="\033[1m[${PROJECT_GIT_NAME}]\033[0m"
-_MSG_BASE_TEAMCITY="|[${PROJECT_GIT_NAME}|]"
+if [[ -z ${BUILDX_BUILDER} ]]; then
+  # Note: Default to default buildx builder (ie native host architecture) so that the build img
+  # be available in the local image store and that tests executed via docker run doesn't
+  # require pulling built img from dockerhub.
+  n2st::set_which_architecture_and_os
+  n2st::print_msg "Current image architecture and os: $IMAGE_ARCH_AND_OS"
+  if [[ $IMAGE_ARCH_AND_OS == 'darwin/arm64' ]]; then
+    export BUILDX_BUILDER=desktop-linux
+  else
+    export BUILDX_BUILDER=default
+  fi
+  n2st::print_msg "Setting BUILDX_BUILDER=$BUILDX_BUILDER"
+  # Force builder initialisation
+  docker buildx inspect --bootstrap $BUILDX_BUILDER >/dev/null
+fi
 
 # ....Execute docker steps.........................................................................
 # Note:
 #   - CONTAINER_PROJECT_ROOT_NAME is for copying the source code including the repository root (i.e.: the project name)
 #   - BUILDKIT_CONTEXT_KEEP_GIT_DIR is for setting buildkit to keep the .git directory in the container
 #     Source https://docs.docker.com/build/building/context/#keep-git-directory
+
+# Do not load MSG_BASE nor MSG_BASE_TEAMCITY from there .env file so that tested logic does not leak in that file
+_MSG_BASE="\033[1m[${PROJECT_GIT_NAME}]\033[0m"
+_MSG_BASE_TEAMCITY="|[${PROJECT_GIT_NAME}|]"
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   echo -e "##teamcity[blockOpened name='${_MSG_BASE_TEAMCITY} Build custom bats-core docker image']"
@@ -61,11 +101,15 @@ docker build \
   --build-arg BUILDKIT_CONTEXT_KEEP_GIT_DIR=1 \
   --build-arg N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH="$N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH" \
   --build-arg "TEAMCITY_VERSION=${TEAMCITY_VERSION}" \
+  --build-arg "N2ST_VERSION=${N2ST_VERSION:?err}" \
   --file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
   --tag n2st-bats-test-code-isolation/"${PROJECT_GIT_NAME}" \
-  --platform "linux/$(uname -m)" \
-  --load \
-  .
+  "${REPO_ROOT}"
+
+# done: NMO-571 fix: unable to find image faillure on build server › Cause: image were build using docker-container builder because of the --platform flag
+# (NICE TO HAVE) ToDo: assessment >> Not sure its relevant to have multiarch build logic since test are executed at runtime not build time.
+#  --platform "linux/$(uname -m)" \
+#  --load \
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   echo -e "##teamcity[blockClosed name='${_MSG_BASE_TEAMCITY} Build custom bats-core docker image']"

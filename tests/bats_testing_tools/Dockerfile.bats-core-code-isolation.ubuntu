@@ -2,9 +2,9 @@
 #   Image purpose › source code isolation for CI build
 #   This container use a copy project source code strategy instead of using the mounting volume
 
-FROM bats/bats:latest as bats-core-base-img
+FROM bats/bats:latest AS bats-core-base-img
 
-FROM ubuntu:latest as final
+FROM ubuntu:latest AS final
 
 ARG CONTAINER_PROJECT_ROOT_NAME
 ENV CONTAINER_PROJECT_ROOT_NAME=${CONTAINER_PROJECT_ROOT_NAME:?'Build argument needs to be set and non-empty.'}
@@ -16,13 +16,14 @@ ENV N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=${N2ST_BATS_TESTING_TOOLS_RELATIVE_PAT
 ARG TEAMCITY_VERSION
 ENV TEAMCITY_VERSION=${TEAMCITY_VERSION}
 
+ARG N2ST_VERSION
+LABEL norlab.tools.norlab-shell-script-tools.tester="${N2ST_VERSION:?err}"
 LABEL org.opencontainers.image.authors="luc.coupal.1@ulaval.ca"
 
 SHELL ["/bin/bash", "-e", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV TERM=${TERM:-"xterm-256color"}
-#RUN tput -T $TERM init
 ENV COLUMNS=80
 
 # ====Begin========================================================================================
