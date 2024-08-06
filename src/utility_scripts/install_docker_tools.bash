@@ -10,7 +10,6 @@
 #   $ bash ./install_docker_tools.bash
 #
 # =================================================================================================
-pushd "$(pwd)" >/dev/null || exit 1
 
 
 # ....Pre-condition................................................................................
@@ -22,6 +21,8 @@ if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
 fi
 
 # ....Load helper function.........................................................................
+pushd "$(pwd)" >/dev/null || exit 1
+
 pushd "$(pwd)" >/dev/null || exit 1
 source ../../.env.n2st
 cd ../function_library || exit 1

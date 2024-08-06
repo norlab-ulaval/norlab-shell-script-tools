@@ -23,7 +23,6 @@
 #   exit 1 in case of unsupported processor architecture
 #
 # =================================================================================================
-pushd "$(pwd)" >/dev/null || exit 1
 
 # ....Pre-condition................................................................................
 if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
@@ -34,6 +33,8 @@ if [[ "$(basename "$(pwd)")" != "utility_scripts" ]]; then
 fi
 
 # ....Load helper function.........................................................................
+pushd "$(pwd)" >/dev/null || exit 1
+
 # (Priority) ToDo: validate!! (ref task NMO-388 fix: explicitly sourcing .env.n2st cause conflicting problem when the repo is used as a lib)
 if [[ -z $PROJECT_PROMPT_NAME ]] && [[ -z $PROJECT_GIT_NAME ]] ; then
   set -o allexport
