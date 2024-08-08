@@ -21,7 +21,7 @@ MSG_ERROR_FORMAT="\033[1;31m"
 MSG_END_FORMAT="\033[0m"
 
 function n2st::source_lib(){
-  pushd "$(pwd)" >/dev/null || exit 1
+  pushd "$(pwd)" >/dev/null || { echo "pushd error"  1>&2 && exit 1;}
 
   # Note: can handle both sourcing cases
   #   i.e. from within a script or from an interactive terminal session
@@ -29,15 +29,15 @@ function n2st::source_lib(){
   _REPO_ROOT="$(dirname "${_PATH_TO_SCRIPT}")"
 
   # ....Load environment variables from file.......................................................
-  cd "${_REPO_ROOT}" || exit 1
+  cd "${_REPO_ROOT}" || { echo "${_REPO_ROOT} unreachable"  1>&2 && exit 1;}
   set -o allexport
   source .env.n2st
   set +o allexport
 
   # ....Begin......................................................................................
-  cd "${N2ST_PATH:?'[ERROR] env var not set!'}/src/function_library" || exit 1
+  cd "${N2ST_PATH:?'[ERROR] env var not set!'}/src/function_library" || { echo "${N2ST_PATH} unreachable"  1>&2 && exit 1;}
   for each_file in "$(pwd)"/*.bash ; do
-      source "${each_file}"
+      source "${each_file}" || { echo "${each_file} unexpected error"  1>&2 && exit 1;}
   done
 
   # (NICE TO HAVE) ToDo: append lib to PATH (ref task NMO-414)
@@ -48,7 +48,7 @@ function n2st::source_lib(){
   export N2ST_VERSION
 
   # ....Teardown...................................................................................
-  popd >/dev/null || exit 1
+  popd >/dev/null || { echo "popd error"  1>&2 && exit 1;}
 }
 
 # ::::Main:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
