@@ -83,6 +83,7 @@ teardown() {
   assert_empty ${N2ST_GIT_NAME}
   assert_empty ${N2ST_SRC_NAME}
   assert_empty ${N2ST_PATH}
+  assert_empty ${N2ST_VERSION}
 
   # ....Import N2ST library........................................................................
   source "$TESTED_FILE"
@@ -99,6 +100,7 @@ teardown() {
   assert_equal "${N2ST_GIT_NAME}" "norlab-shell-script-tools"
   assert_equal "${N2ST_SRC_NAME}" "norlab-shell-script-tools"
   assert_equal "${N2ST_PATH}" "/code/norlab-shell-script-tools"
+  assert_regex "${N2ST_VERSION}" [0-9]+\.[0-9]+\.[0-9]+
 }
 
 @test "${TESTED_FILE} › validate the import function mechanism › expect pass" {
@@ -117,6 +119,49 @@ teardown() {
 #  run n2st::set_which_architecture_and_os >&3
   run n2st::set_which_architecture_and_os
   assert_success
+}
+
+@test "${TESTED_FILE} › validate return to original dir on script exit › expect pass" {
+  # ....Test setup.................................................................................
+  local ORIGINAL_CWD=$(pwd)
+
+  # ....Import N2ST library........................................................................
+  source "$TESTED_FILE"
+
+  # ....Tests......................................................................................
+  assert_equal "$(pwd)" "${ORIGINAL_CWD}"
+}
+
+@test "${TESTED_FILE} › validate return to original dir on script exit (superproject version) › expect pass" {
+  TEST_N2ST_PATH="/code/norlab-shell-script-tools"
+  SUPERPROJECT_NAME="dockerized-norlab-project-mock"
+  SUPERPROJECT_PATH="/code/${SUPERPROJECT_NAME}"
+
+  # ....Setup superproject.........................................................................
+  assert_equal "$(pwd)" "$TEST_N2ST_PATH"
+  cd ..
+  assert_equal "$(pwd)" "/code"
+
+  git clone "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}.git"
+  assert_dir_exist "${SUPERPROJECT_PATH}"
+
+  # ....Test setup.................................................................................
+  cd "${SUPERPROJECT_PATH}"
+  local ORIGINAL_CWD=$(pwd)
+
+#  # Visualise the testing directories
+#  (echo && pwd && tree -L 2 -a) >&3
+
+  # ....Import N2ST library........................................................................
+#  cd "$TEST_N2ST_PATH"
+  source "${TEST_N2ST_PATH}/${TESTED_FILE}"
+
+  # ....Tests......................................................................................
+  assert_equal "$(pwd)" "${ORIGINAL_CWD}"
+
+  # ....Teardown this test case ...................................................................
+  # Delete cloned repository mock
+  rm -rf "$SUPERPROJECT_PATH"
 }
 
 
