@@ -35,13 +35,14 @@ source "${N2ST_PATH}"/import_norlab_shell_script_tools_lib.bash || exit 1
 popd >/dev/null || exit 1
 
 # ....Project root logic...........................................................................
-PROJECT_CLONE_GIT_ROOT=$(git rev-parse --show-toplevel)
-PROJECT_CLONE_GIT_NAME=$(basename "$PROJECT_CLONE_GIT_ROOT" .git)
+SUPER_PROJECT_GIT_ROOT=$(git rev-parse --show-toplevel)
+SUPER_PROJECT_GIT_ROOT_NAME=$(basename "$SUPER_PROJECT_GIT_ROOT" .git)
 PROJECT_GIT_REMOTE_URL=$(git remote get-url origin)
 PROJECT_GIT_NAME=$(basename "${PROJECT_GIT_REMOTE_URL}" .git)
+CONTAINER_TAG=$(echo "n2st-bats-test-code-isolation/${PROJECT_GIT_NAME}" | tr '[:upper:]' '[:lower:]' )
 
 # ....Pre-condition................................................................................
-if [[ $(basename "$REPO_ROOT") != ${PROJECT_CLONE_GIT_NAME} ]]; then
+if [[ $(basename "$REPO_ROOT") != ${SUPER_PROJECT_GIT_ROOT_NAME} ]]; then
   echo -e "\n[\033[1;31mERROR\033[0m] $0 must be executed from the project root!\nCurrent wordir: $(pwd)" 1>&2
   echo '(press any key to exit)'
   read -r -n 1
@@ -96,13 +97,10 @@ docker build \
   --build-arg "TEAMCITY_VERSION=${TEAMCITY_VERSION}" \
   --build-arg "N2ST_VERSION=${N2ST_VERSION:?err}" \
   --file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
-  --tag n2st-bats-test-code-isolation/"${PROJECT_GIT_NAME}" \
+  --tag "${CONTAINER_TAG}" \
+  --no-cache \
   "${REPO_ROOT}"
 
-# done: NMO-571 fix: unable to find image faillure on build server › Cause: image were build using docker-container builder because of the --platform flag
-# (NICE TO HAVE) ToDo: assessment >> Not sure its relevant to have multiarch build logic since test are executed at runtime not build time.
-#  --platform "linux/$(uname -m)" \
-#  --load \
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   echo -e "##teamcity[blockClosed name='${_MSG_BASE_TEAMCITY} Build custom bats-core docker image']"
@@ -117,9 +115,9 @@ fi
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   # The '--interactive' flag is not compatible with TeamCity build agent
-  docker run --tty --rm n2st-bats-test-code-isolation/"${PROJECT_GIT_NAME}" "$RUN_TESTS_IN_DIR"
+  docker run --tty --rm "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
 else
-  docker run --interactive --tty --rm n2st-bats-test-code-isolation/"${PROJECT_GIT_NAME}" "$RUN_TESTS_IN_DIR"
+  docker run --interactive --tty --rm "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
 fi
 DOCKER_EXIT_CODE=$?
 
