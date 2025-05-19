@@ -68,7 +68,10 @@ function n2st::echo_centering_str() {
   local single_side_padding_len=$(( ${total_padding_len} / 2 ))
   local pad
   pad=$(printf -- "$the_pad_cha%.0s" $(seq $single_side_padding_len))
-  LC_ALL='' LC_CTYPE=en_US.UTF-8 printf -- "%b%b%s%b%s%b%b\n" "${the_style}" "${fill_left}" "${pad}" "${the_str}" "${pad}" "${fill_right}" "${the_style_off}"
+
+  # Note: adding `2>/dev/null` at the end is a quick-hack. Will need a more robust solution.
+  #       ref task N2ST-2 fix: splash LC_TYPE related error
+  LC_ALL='' LC_CTYPE=en_US.UTF-8 printf -- "%b%b%s%b%s%b%b\n" "${the_style}" "${fill_left}" "${pad}" "${the_str}" "${pad}" "${fill_right}" "${the_style_off}" 2>/dev/null
 }
 
 
