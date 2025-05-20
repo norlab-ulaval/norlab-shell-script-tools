@@ -98,7 +98,6 @@ docker build \
   --build-arg "N2ST_VERSION=${N2ST_VERSION:?err}" \
   --file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
   --tag "${CONTAINER_TAG}" \
-  --no-cache \
   "${REPO_ROOT}"
 
 
