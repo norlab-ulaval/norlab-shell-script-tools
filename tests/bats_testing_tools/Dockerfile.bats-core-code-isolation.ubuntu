@@ -67,7 +67,22 @@ RUN apt-get update \
 
 # ....Setup test environment.......................................................................
 WORKDIR "${SRC_CODE_PATH}"
-RUN git config --global --add safe.directory "${SRC_CODE_PATH}"
+
+# Note:
+#   About git `safe.directory` check
+#       "To completely opt-out of this security check, set `safe.directory` to the string `*`.
+#       This will allow all repositories to be treated as if their directory was listed in
+#       the `safe.directory` list."
+#       "Giving a directory with `/*` appended to it will allow access to all repositories under
+#       the named directory."
+#
+#   Ref
+#   - https://github.com/git/git/blob/313eec177ad010048b399d6fd14de871b517f7e3/Documentation/config/safe.txt#L42C1-L44C51
+#   - https://github.com/git/git/blob/313eec177ad010048b399d6fd14de871b517f7e3/Documentation/config/safe.txt#L47-L48
+#
+#   This is required in our case since SRC_CODE_PATH will often have git submodule
+RUN git config --global --add safe.directory "*"
+
 COPY ./bats_helper_functions.bash ./tests/bats_testing_tools/bats_helper_functions.bash
 
 ## ====End=========================================================================================
