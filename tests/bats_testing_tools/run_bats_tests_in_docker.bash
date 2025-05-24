@@ -29,11 +29,6 @@ N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=".${N2ST_BATS_TESTING_TOOLS_ABS_PATH/$REPO
 N2ST_PATH="${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/../.."
 test -d "${N2ST_PATH}" || exit 1
 
-# ....Super project user related logic.............................................................
-SUPER_PROJECT_USER="$( id -un )"
-SUPER_PROJECT_UID="$( id -u )"
-SUPER_PROJECT_GID="$( id -g )"
-
 # ....Source project shell-scripts dependencies....................................................
 pushd "$(pwd)" >/dev/null || exit 1
 source "${N2ST_PATH}"/import_norlab_shell_script_tools_lib.bash || exit 1
@@ -104,11 +99,6 @@ docker build \
   --file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
   --tag "${CONTAINER_TAG}" \
   "${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}"
-#  --build-arg "SUPER_PROJECT_USER=${SUPER_PROJECT_USER:?err}" \
-#  --build-arg "SUPER_PROJECT_UID=${SUPER_PROJECT_UID:?err}" \
-#  --build-arg "SUPER_PROJECT_GID=${SUPER_PROJECT_GID:?err}" \
-#  --no-cache \
-
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   echo -e "##teamcity[blockClosed name='${_MSG_BASE_TEAMCITY} Build custom bats-core docker image']"

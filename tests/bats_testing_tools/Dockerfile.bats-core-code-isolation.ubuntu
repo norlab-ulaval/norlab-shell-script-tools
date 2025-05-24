@@ -16,14 +16,6 @@ ENV N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH=${N2ST_BATS_TESTING_TOOLS_RELATIVE_PAT
 ARG TEAMCITY_VERSION
 ENV TEAMCITY_VERSION=${TEAMCITY_VERSION}
 
-# (Priority) ToDo: on task end >> delete next bloc ↓↓
-#ARG SUPER_PROJECT_USER
-#ARG SUPER_PROJECT_UID
-#ARG SUPER_PROJECT_GID
-#ENV SUPER_PROJECT_USER=${SUPER_PROJECT_USER:?'Build argument needs to be set and non-empty.'}
-#ENV SUPER_PROJECT_UID=${SUPER_PROJECT_UID:?'Build argument needs to be set and non-empty.'}
-#ENV SUPER_PROJECT_GID=${SUPER_PROJECT_GID:?'Build argument needs to be set and non-empty.'}
-
 ARG N2ST_VERSION
 LABEL norlab.tools.norlab-shell-script-tools.tester="${N2ST_VERSION:?err}"
 LABEL org.opencontainers.image.authors="luc.coupal.1@ulaval.ca"
@@ -73,40 +65,11 @@ RUN apt-get update \
         tini \
     && rm -rf /var/lib/apt/lists/*
 
-# ....Setup N2ST utils.............................................................................
+# ....Setup test environment.......................................................................
 WORKDIR "${SRC_CODE_PATH}"
+RUN git config --global --add safe.directory "${SRC_CODE_PATH}"
 COPY ./bats_helper_functions.bash ./tests/bats_testing_tools/bats_helper_functions.bash
 
-# ....Setup super project user.....................................................................
-#RUN <<EOF
-#    #!/bin/bash
-#    # Inspired from https://roboticseabass.com/2023/07/09/updated-guide-docker-and-ros2/
-#    {
-#        groupadd --force --gid "${SUPER_PROJECT_GID}" "${SUPER_PROJECT_USER}"
-#        useradd --uid "${SUPER_PROJECT_UID}" --gid "${SUPER_PROJECT_GID}" --create-home "${SUPER_PROJECT_USER}"
-#        echo "${SUPER_PROJECT_USER} ALL=(root) NOPASSWD:ALL" >/etc/sudoers.d/"${SUPER_PROJECT_USER}"
-#        chmod 0440 "/etc/sudoers.d/${SUPER_PROJECT_USER}"
-#        mkdir -p "${SUPER_PROJECT_USER_HOME}"
-#        chown -R "${SUPER_PROJECT_UID}":"${SUPER_PROJECT_GID}" "${SUPER_PROJECT_USER_HOME}"
-#
-#        # Add the 'video' groups to new user as it's required for GPU access.
-#        # (not a problem on norlab-og but mandatory on Jetson device)
-#        # Ref: https://forums.developer.nvidia.com/t/how-to-properly-create-new-users/68660/2
-#        usermod -a -G video,sudo "${SUPER_PROJECT_USER}"
-#    }
-#
-#    {
-#      chown -R $(id -u ${SUPER_PROJECT_USER}):$(id -g ${SUPER_PROJECT_USER}) "${SRC_CODE_PATH}"
-#      chown -R $(id -u ${SUPER_PROJECT_USER}):$(id -g ${SUPER_PROJECT_USER}) "${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}"
-#    }
-#EOF
-#
-#
-## ====End==========================================================================================
-#USER ${SUPER_PROJECT_USER:?'Env variable needs to be set and non-empty.'}
-#SHELL ["/bin/bash", "-c"]
-
-## ====End==========================================================================================
-RUN git config --global --add safe.directory "${SRC_CODE_PATH}"
+## ====End=========================================================================================
 WORKDIR "${SRC_CODE_PATH}"
 ENTRYPOINT [ "/usr/bin/tini", "--", "bash", "bats", "--recursive", "--verbose-run", "--print-output-on-failure" ]

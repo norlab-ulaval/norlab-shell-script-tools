@@ -29,11 +29,11 @@ RUN apk --no-cache add \
     git \
     tree
 
-# ....Setup project source code....................................................................
-COPY ./bats_helper_functions.bash $SRC_CODE_PATH/bats_testing_tools/bats_helper_functions.bash
-#RUN chown -R $(whoami) $SRC_CODE_PATH
+# ....Setup test environment.......................................................................
+WORKDIR "${SRC_CODE_PATH}"
+RUN git config --global --add safe.directory "${SRC_CODE_PATH}"
+COPY ./bats_helper_functions.bash ./tests/bats_testing_tools/bats_helper_functions.bash
 
 # ====End==========================================================================================
 WORKDIR $SRC_CODE_PATH
-
 ENTRYPOINT [ "/tini", "--", "bash", "bats", "--recursive", "--verbose-run", "--print-output-on-failure" ]
