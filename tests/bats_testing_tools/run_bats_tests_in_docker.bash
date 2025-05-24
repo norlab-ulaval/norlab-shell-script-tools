@@ -117,14 +117,14 @@ if [[ ${TEAMCITY_VERSION} ]]; then
       --tty \
       --rm \
       --privileged \
-      --volume "${SUPER_PROJECT_GIT_ROOT}":/code/"${PROJECT_GIT_NAME}":ro \
+      --volume "${SUPER_PROJECT_GIT_ROOT}":/code/"${PROJECT_GIT_NAME}" \
       "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
 else
   docker run \
       --tty \
       --rm \
       --privileged \
-      --volume "${SUPER_PROJECT_GIT_ROOT}":/code/"${PROJECT_GIT_NAME}":ro \
+      --volume "${SUPER_PROJECT_GIT_ROOT}":/code/"${PROJECT_GIT_NAME}" \
       --interactive \
       "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
 fi
