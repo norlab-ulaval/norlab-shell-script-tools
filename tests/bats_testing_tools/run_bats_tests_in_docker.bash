@@ -98,8 +98,7 @@ docker build \
   --build-arg "N2ST_VERSION=${N2ST_VERSION:?err}" \
   --file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
   --tag "${CONTAINER_TAG}" \
-  "${REPO_ROOT}"
-
+  "${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}"
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   echo -e "##teamcity[blockClosed name='${_MSG_BASE_TEAMCITY} Build custom bats-core docker image']"
@@ -114,9 +113,20 @@ fi
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   # The '--interactive' flag is not compatible with TeamCity build agent
-  docker run --tty --rm "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
+  docker run \
+      --tty \
+      --rm \
+      --privileged \
+      --volume "${SUPER_PROJECT_GIT_ROOT}":/code/"${PROJECT_GIT_NAME}":ro \
+      "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
 else
-  docker run --interactive --tty --rm "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
+  docker run \
+      --tty \
+      --rm \
+      --privileged \
+      --volume "${SUPER_PROJECT_GIT_ROOT}":/code/"${PROJECT_GIT_NAME}":ro \
+      --interactive \
+      "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
 fi
 DOCKER_EXIT_CODE=$?
 

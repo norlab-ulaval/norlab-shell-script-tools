@@ -60,21 +60,16 @@ RUN ln -s /opt/bats/bin/bats /usr/local/bin/bats
 COPY --from=bats-core-base-img /opt/bats/ /opt/bats/
 COPY --from=bats-core-base-img /usr/lib/bats/ /usr/lib/bats/
 
-#RUN git clone https://github.com/bats-core/bats-core.git \
-#    cd bats-core \
-#    ./install.sh /usr/local
-
 RUN apt-get update \
     && apt-get install --assume-yes --no-install-recommends \
         tini \
     && rm -rf /var/lib/apt/lists/*
 
-# ....Setup project source code....................................................................
-COPY . $SRC_CODE_PATH
-COPY "${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}/bats_helper_functions.bash" $SRC_CODE_PATH/tests/bats_testing_tools/bats_helper_functions.bash
-#RUN chown -R $(whoami) $SRC_CODE_PATH
+# ....Setup test environment.......................................................................
+WORKDIR "${SRC_CODE_PATH}"
+RUN git config --global --add safe.directory "${SRC_CODE_PATH}"
+COPY ./bats_helper_functions.bash ./tests/bats_testing_tools/bats_helper_functions.bash
 
-# ====End==========================================================================================
-WORKDIR $SRC_CODE_PATH
-
+## ====End=========================================================================================
+WORKDIR "${SRC_CODE_PATH}"
 ENTRYPOINT [ "/usr/bin/tini", "--", "bash", "bats", "--recursive", "--verbose-run", "--print-output-on-failure" ]
