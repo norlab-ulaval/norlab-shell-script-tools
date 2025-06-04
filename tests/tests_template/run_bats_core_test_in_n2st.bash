@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 # =================================================================================================
 # Execute '<my-superproject>' repo shell script tests via 'norlab-shell-script-tools' library
 #
@@ -20,30 +20,34 @@
 #   Read N2ST_PATH    Default to "./utilities/norlab-shell-script-tools"
 #
 # =================================================================================================
-PARAMS="$@"
+PARAMS=( "$@" )
+
+set -e            # exit on error
+set -o nounset    # exit on unbound variable
+set -o pipefail   # exit if errors within pipes
 
 if [[ -z $PARAMS ]]; then
   # Set to default bats tests directory if none specified
   PARAMS="tests/"
 fi
 
+function n2st::teardown() {
+  EXIT_CODE=$?
+  cd "${SUPERPROJECT_PATH:?err}" || exit 1
+  # Add any teardown logic here
+  exit ${EXIT_CODE:1}
+}
+trap n2st::teardown EXIT
 
-function n2st::run_n2st_testsing_tools(){
-  pushd "$(pwd)" >/dev/null || exit 1
+# ....Project root logic.........................................................................
+SUPERPROJECT_PATH=$(git rev-parse --show-toplevel)
+N2ST_PATH=${N2ST_PATH:-"./utilities/norlab-shell-script-tools"}
 
-  # ....Project root logic.........................................................................
-  SUPERPROJECT_PATH=$(git rev-parse --show-toplevel)
-  N2ST_PATH=${N2ST_PATH:-"./utilities/norlab-shell-script-tools"}
+# ....Execute N2ST run_bats_tests_in_docker.bash.................................................
+cd "$SUPERPROJECT_PATH"
 
-  # ....Execute N2ST run_bats_tests_in_docker.bash.................................................
-  cd "$SUPERPROJECT_PATH"
+bash "${N2ST_PATH:?err}/tests/bats_testing_tools/run_bats_tests_in_docker.bash" "${PARAMS[@]}"
 
-  # shellcheck disable=SC2086
-  bash "${N2ST_PATH}/tests/bats_testing_tools/run_bats_tests_in_docker.bash" $PARAMS
-
-  # ....Teardown...................................................................................
-  popd >/dev/null || exit 1
-  }
-
-n2st::run_n2st_testsing_tools
+# ....Teardown.....................................................................................
+# Handle by the trap command
 

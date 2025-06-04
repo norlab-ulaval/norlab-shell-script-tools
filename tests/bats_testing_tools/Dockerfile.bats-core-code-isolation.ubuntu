@@ -1,10 +1,14 @@
+# =================================================================================================
+#
 # Note:
 #   Image purpose › source code isolation for CI build
-#   This container use a copy project source code strategy instead of using the mounting volume
-
+#   This container use a copy project source code strategy
+#   Alternativaly, you can use build stage `mount-version` for the mounting volume strategy
+#
+# =================================================================================================
 FROM bats/bats:latest AS bats-core-base-img
 
-FROM ubuntu:latest AS final
+FROM ubuntu:latest AS bats-core
 
 ARG CONTAINER_PROJECT_ROOT_NAME
 ENV CONTAINER_PROJECT_ROOT_NAME=${CONTAINER_PROJECT_ROOT_NAME:?'Build argument needs to be set and non-empty.'}
@@ -65,9 +69,16 @@ RUN apt-get update \
         tini \
     && rm -rf /var/lib/apt/lists/*
 
-# ....Setup test environment.......................................................................
-WORKDIR "${SRC_CODE_PATH}"
+WORKDIR "${SRC_CODE_PATH:?err}"
 
+FROM bats-core AS copy-version
+# ....Setup project source code....................................................................
+COPY . .
+COPY "${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH:?err}/bats_helper_functions.bash" ./tests/bats_testing_tools/bats_helper_functions.bash
+ENTRYPOINT [ "/usr/bin/tini", "--", "bash", "bats", "--recursive", "--verbose-run", "--print-output-on-failure" ]
+
+FROM bats-core AS mount-version
+# ....Setup test environment.......................................................................
 # Note:
 #   About git `safe.directory` check
 #       "To completely opt-out of this security check, set `safe.directory` to the string `*`.
@@ -82,9 +93,6 @@ WORKDIR "${SRC_CODE_PATH}"
 #
 #   This is required in our case since SRC_CODE_PATH will often have git submodule
 RUN git config --global --add safe.directory "*"
-
 COPY ./bats_helper_functions.bash ./tests/bats_testing_tools/bats_helper_functions.bash
-
-## ====End=========================================================================================
-WORKDIR "${SRC_CODE_PATH}"
 ENTRYPOINT [ "/usr/bin/tini", "--", "bash", "bats", "--recursive", "--verbose-run", "--print-output-on-failure" ]
+
