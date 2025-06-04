@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-#
+# =================================================================================================
 # Usage in docker container
 #   $ REPO_ROOT=$(pwd) && RUN_TESTS_IN_DIR='tests'
 #   $ docker run -it --rm -v "$REPO_ROOT:/code" bats/bats:latest "$RUN_TESTS_IN_DIR"
@@ -12,12 +12,14 @@
 #   - https://opensource.com/article/19/2/testing-bash-bats
 #       ↳ https://github.com/dmlond/how_to_bats/blob/master/test/build.bats
 #
-# Helper library: 
+# Helper library:
 #   - https://github.com/bats-core/bats-assert
 #   - https://github.com/bats-core/bats-support
 #   - https://github.com/bats-core/bats-file
 #
+# =================================================================================================
 
+# ....load helper..................................................................................
 BATS_HELPER_PATH=/usr/lib/bats
 if [[ -d ${BATS_HELPER_PATH} ]]; then
   load "${BATS_HELPER_PATH}/bats-support/load"

@@ -1,22 +1,30 @@
 #!/bin/bash
+DOCUMENTATION_RUN_BATS_TESTS_IN_DOCKER=$( cat <<'EOF'
 # =================================================================================================
 # Execute bats unit test in a docker container with bats-core support including several helper libraries
 #
 # Usage:
 #   $ cd my_project_root
-#   $ bash ./tests/run_bats_tests_in_docker.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
+#   $ bash ./tests/run_bats_tests_in_docker.bash [--mount-src-code-as-a-volume] [--help]
+#                                                ['<test-directory>[/<this-bats-test-file.bats>]'
+#                                                ['<image-distro>']]
 #
 # Arguments:
-#   - ['<test-directory>']     The directory from which to start test, default to 'tests'
-#   - ['<test-directory>/<this-bats-test-file.bats>']  A specific bats file to run, default will
-#                                                      run all bats file in the test directory
-#   - ['<image-distro>']          ubuntu or alpine (default ubuntu)
+#   --mount-src-code-as-a-volume      Mount the source code at run time instead of copying it at build time.
+#                                     Comromise in isolation to the benefit of increase velocity.
+#                                     Usefull for project dealing with large files but require
+#                                     handling temporary files and directory manualy via bats-file.
+#   -h | --help
+#
+# Positional argument:
+#   '<test-directory>'                The directory from which to start test (default to 'tests')
+#   '<this-bats-test-file.bats>'      A specific bats file to run, default will run all bats file
+#                                      in the test directory
+#   '<image-distro>'                  ubuntu or alpine (default ubuntu)
 #
 # =================================================================================================
-
-RUN_TESTS_IN_DIR=${1:-'tests'}
-BATS_DOCKERFILE_DISTRO=${2:-'ubuntu'}
-
+EOF
+)
 # ....Option.......................................................................................
 ## Set Docker builder log output for debug. Options: plain, tty or auto (default)
 #export BUILDKIT_PROGRESS=plain
@@ -33,6 +41,52 @@ test -d "${N2ST_PATH}" || exit 1
 pushd "$(pwd)" >/dev/null || exit 1
 source "${N2ST_PATH}"/import_norlab_shell_script_tools_lib.bash || exit 1
 popd >/dev/null || exit 1
+
+# ....Set env variables (pre cli)................................................................
+declare -a REMAINING_ARGS
+MOUNT_SRC_CODE_AS_A_VOLUME=false
+
+# ....cli..........................................................................................
+function show_help() {
+  # (NICE TO HAVE) ToDo: refactor as a n2st fct (ref NMO-583)
+  echo -e "${MSG_DIMMED_FORMAT}"
+  n2st::draw_horizontal_line_across_the_terminal_window "="
+  echo -e "$0 --help\n"
+  # Strip shell comment char `#` and both lines
+  echo -e "${DOCUMENTATION_RUN_BATS_TESTS_IN_DOCKER}" | sed 's/\# ====.*//' | sed 's/^\#//'
+  n2st::draw_horizontal_line_across_the_terminal_window "="
+  echo -e "${MSG_END_FORMAT}"
+}
+
+while [ $# -gt 0 ]; do
+
+  case $1 in
+    --mount-src-code-as-a-volume)
+      MOUNT_SRC_CODE_AS_A_VOLUME=true
+      shift # Remove argument (--mount-src-code-as-a-volume)
+      ;;
+    -h | --help)
+      clear
+      show_help
+      exit
+      ;;
+    --) # no more option
+      shift
+      REMAINING_ARGS=( "$@" )
+      break
+      ;;
+    *) # Default case
+      REMAINING_ARGS=("$@")
+      break
+      ;;
+  esac
+
+done
+
+# ....Set env variables (post cli)...............................................................
+RUN_TESTS_IN_DIR=${REMAINING_ARGS[1]:-'tests'}
+BATS_DOCKERFILE_DISTRO=${REMAINING_ARGS[2]:-'ubuntu'}
+
 
 # ....Project root logic...........................................................................
 SUPER_PROJECT_GIT_ROOT=$(git rev-parse --show-toplevel)
@@ -90,20 +144,27 @@ else
   echo -e "\n\n${_MSG_BASE} Building custom bats-core ${BATS_DOCKERFILE_DISTRO} docker image\n"
 fi
 
-docker build \
-  --build-arg "CONTAINER_PROJECT_ROOT_NAME=${PROJECT_GIT_NAME}" \
-  --build-arg BUILDKIT_CONTEXT_KEEP_GIT_DIR=1 \
-  --build-arg N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH="$N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH" \
-  --build-arg "TEAMCITY_VERSION=${TEAMCITY_VERSION}" \
-  --build-arg "N2ST_VERSION=${N2ST_VERSION:?err}" \
-  --file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}" \
-  --tag "${CONTAINER_TAG}" \
-  "${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}"
+BUILD_FLAG=()
+BUILD_FLAG+=(--build-arg "CONTAINER_PROJECT_ROOT_NAME=${PROJECT_GIT_NAME}")
+BUILD_FLAG+=(--build-arg BUILDKIT_CONTEXT_KEEP_GIT_DIR=1)
+BUILD_FLAG+=(--build-arg N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH="$N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH")
+BUILD_FLAG+=(--build-arg "TEAMCITY_VERSION=${TEAMCITY_VERSION}")
+BUILD_FLAG+=(--build-arg "N2ST_VERSION=${N2ST_VERSION:?err}")
+BUILD_FLAG+=(--file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}")
+if [[ ${MOUNT_SRC_CODE_AS_A_VOLUME} == true ]]; then
+  BUILD_FLAG+=(--target mount-version)
+  CONTAINER_TAG="${CONTAINER_TAG}-mount"
+  CONTEXT="${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}"
+else
+  BUILD_FLAG+=(--target copy-version)
+  CONTEXT="${REPO_ROOT}"
+fi
+
+docker build "${BUILD_FLAG[@]}" --tag "${CONTAINER_TAG}" "${CONTEXT}" || exit 1
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   echo -e "##teamcity[blockClosed name='${_MSG_BASE_TEAMCITY} Build custom bats-core docker image']"
 fi
-
 
 if [[ ${TEAMCITY_VERSION} ]]; then
   echo -e "##teamcity[blockOpened name='${_MSG_BASE_TEAMCITY} Run bats-core tests']"
@@ -111,23 +172,17 @@ else
   echo -e "\n\n${_MSG_BASE} Starting bats-core test run on ${BATS_DOCKERFILE_DISTRO}\n"
 fi
 
+RUN_ARG=(--tty --rm)
 if [[ ${TEAMCITY_VERSION} ]]; then
   # The '--interactive' flag is not compatible with TeamCity build agent
-  docker run \
-      --tty \
-      --rm \
-      --privileged \
-      --volume "${SUPER_PROJECT_GIT_ROOT}":/code/"${PROJECT_GIT_NAME}" \
-      "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
-else
-  docker run \
-      --tty \
-      --rm \
-      --privileged \
-      --volume "${SUPER_PROJECT_GIT_ROOT}":/code/"${PROJECT_GIT_NAME}" \
-      --interactive \
-      "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
+  RUN_ARG+=(--interactive)
 fi
+if [[ ${MOUNT_SRC_CODE_AS_A_VOLUME} == true ]]; then
+  RUN_ARG+=(--privileged)
+  RUN_ARG+=(--volume "${SUPER_PROJECT_GIT_ROOT}":/code/"${PROJECT_GIT_NAME}")
+fi
+
+docker run "${RUN_ARG[@]}" "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
 DOCKER_EXIT_CODE=$?
 
 if [[ ${TEAMCITY_VERSION} ]] && [[ $DOCKER_EXIT_CODE != 0 ]]; then
