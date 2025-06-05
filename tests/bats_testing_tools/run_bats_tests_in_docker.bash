@@ -84,8 +84,8 @@ while [ $# -gt 0 ]; do
 done
 
 # ....Set env variables (post cli)...............................................................
-RUN_TESTS_IN_DIR=${REMAINING_ARGS[1]:-'tests'}
-BATS_DOCKERFILE_DISTRO=${REMAINING_ARGS[2]:-'ubuntu'}
+RUN_TESTS_IN_DIR=${REMAINING_ARGS[0]:-'tests'}
+BATS_DOCKERFILE_DISTRO=${REMAINING_ARGS[1]:-'ubuntu'}
 
 
 # ....Project root logic...........................................................................
