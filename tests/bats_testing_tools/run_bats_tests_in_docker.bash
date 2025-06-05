@@ -1,24 +1,25 @@
 #!/bin/bash
 DOCUMENTATION_RUN_BATS_TESTS_IN_DOCKER=$( cat <<'EOF'
 # =================================================================================================
-# Execute bats unit test in a docker container with bats-core support including several helper libraries
+# Execute bats unit test in a docker container with bats-core support including several helper
+# libraries. Under the hood, it will copy or optionaly mount the repository source code in a docker
+# container and execute every .bats tests located in the '<test-directory>'.
 #
 # Usage:
-#   $ cd my_project_root
+#   $ cd path/to/my/project/root
 #   $ bash ./tests/run_bats_tests_in_docker.bash [--mount-src-code-as-a-volume] [--help]
-#                                                ['<test-directory>[/<this-bats-test-file.bats>]'
-#                                                ['<image-distro>']]
+#                                                ['<test-directory>[/<bats-test-file-name.bats>]' ['<image-distro>']]
 #
 # Arguments:
 #   --mount-src-code-as-a-volume      Mount the source code at run time instead of copying it at build time.
 #                                     Comromise in isolation to the benefit of increase velocity.
 #                                     Usefull for project dealing with large files but require
 #                                     handling temporary files and directory manualy via bats-file.
-#   -h | --help
+#   -h | --help                       Show this help message
 #
 # Positional argument:
 #   '<test-directory>'                The directory from which to start test (default to 'tests')
-#   '<this-bats-test-file.bats>'      A specific bats file to run, default will run all bats file
+#   '<bats-test-file-name.bats>'      A specific bats file to run, default will run all bats file
 #                                      in the test directory
 #   '<image-distro>'                  ubuntu or alpine (default ubuntu)
 #
@@ -44,7 +45,7 @@ popd >/dev/null || exit 1
 
 # ....Set env variables (pre cli)................................................................
 declare -a REMAINING_ARGS
-MOUNT_SRC_CODE_AS_A_VOLUME=false
+declare MOUNT_SRC_CODE_AS_A_VOLUME=false
 
 # ....cli..........................................................................................
 function show_help() {
@@ -160,6 +161,7 @@ else
   CONTEXT="${REPO_ROOT}"
 fi
 
+n2st::print_msg "Execute ${MSG_DIMMED_FORMAT}docker build ${BUILD_FLAG[*]} --tag ${CONTAINER_TAG} ${CONTEXT}${MSG_END_FORMAT}\n"
 docker build "${BUILD_FLAG[@]}" --tag "${CONTAINER_TAG}" "${CONTEXT}" || exit 1
 
 if [[ ${TEAMCITY_VERSION} ]]; then
@@ -182,6 +184,7 @@ if [[ ${MOUNT_SRC_CODE_AS_A_VOLUME} == true ]]; then
   RUN_ARG+=(--volume "${SUPER_PROJECT_GIT_ROOT}":/code/"${PROJECT_GIT_NAME}")
 fi
 
+n2st::print_msg "Execute ${MSG_DIMMED_FORMAT}docker run ${RUN_ARG[*]} ${CONTAINER_TAG} $RUN_TESTS_IN_DIR${MSG_END_FORMAT}\n"
 docker run "${RUN_ARG[@]}" "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
 DOCKER_EXIT_CODE=$?
 

@@ -238,13 +238,13 @@ just run the following from your repository root
 
 ```shell
 cd "<path/to/superproject>/tests"
-bash run_bats_core_test_in_n2st.bash ['<test-directory>[/<this-bats-test-file.bats>]' ['<image-distro>']]
+bash run_bats_core_test_in_n2st.bash ['<test-directory>[/<bats-test-file-name.bats>]' ['<image-distro>']]
 ```
 
 Arguments:
 
 - `['<test-directory>']`            The directory from which to start test, default to 'tests'
-- `['/<this-bats-test-file.bats>']`  A specific bats file to run, default will run all bats file in
+- `['/<bats-test-file-name.bats>']`  A specific bats file to run, default will run all bats file in
   the test directory
 
 See `tests/tests_template/run_bats_core_test_in_n2st.bash` for details.
