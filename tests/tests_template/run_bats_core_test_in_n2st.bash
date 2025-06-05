@@ -20,15 +20,15 @@
 #   Read N2ST_PATH    Default to "./utilities/norlab-shell-script-tools"
 #
 # =================================================================================================
-PARAMS=( "$@" )
+params=( "$@" )
 
 set -e            # exit on error
 set -o nounset    # exit on unbound variable
 set -o pipefail   # exit if errors within pipes
 
-if [[ -z $PARAMS ]]; then
+if [[ -z ${params} ]]; then
   # Set to default bats tests directory if none specified
-  PARAMS="tests/"
+  params="tests/"
 fi
 
 function n2st::teardown() {
@@ -46,7 +46,7 @@ N2ST_PATH=${N2ST_PATH:-"./utilities/norlab-shell-script-tools"}
 # ....Execute N2ST run_bats_tests_in_docker.bash.................................................
 cd "$SUPERPROJECT_PATH"
 
-bash "${N2ST_PATH:?err}/tests/bats_testing_tools/run_bats_tests_in_docker.bash" "${PARAMS[@]}"
+bash "${N2ST_PATH:?err}/tests/bats_testing_tools/run_bats_tests_in_docker.bash" "${params[@]}"
 
 # ....Teardown.....................................................................................
 # Handle by the trap command
