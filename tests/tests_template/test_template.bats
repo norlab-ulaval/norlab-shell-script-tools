@@ -18,58 +18,66 @@
 #   - https://github.com/bats-core/bats-file
 #
 # =================================================================================================
-
-# ....load helper..................................................................................
-BATS_HELPER_PATH=/usr/lib/bats
-if [[ -d ${BATS_HELPER_PATH} ]]; then
-  load "${BATS_HELPER_PATH}/bats-support/load"
-  load "${BATS_HELPER_PATH}/bats-assert/load"
-  load "${BATS_HELPER_PATH}/bats-file/load"
-  load "${SRC_CODE_PATH}/${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH}/bats_helper_functions"
-  #load "${BATS_HELPER_PATH}/bats-detik/load" # << Kubernetes support
+bats_path=/usr/lib/bats
+error_prefix="[\033[1;31mN2ST ERROR\033[0m]"
+if [[ -d ${bats_path} ]]; then
+  # ....Bats-core recommended helper functions.....................................................
+  load "${bats_path}/bats-support/load"
+  load "${bats_path}/bats-assert/load"
+  load "${bats_path}/bats-file/load"
+  # ....Optional...................................................................................
+  #load "${bats_path}/bats-detik/load" # <- Kubernetes support
+  # ....N2ST library helper function...............................................................
+  load "${SRC_CODE_PATH:?err}/${N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH:?err}/bats_helper_functions"
+  # You can add your own helper functions, just uncomment this line and add them to this directory⬇︎
+  #load "${SRC_CODE_PATH}/tests/tests_bats/bats_testing_tools/bats_helper_functions_local"
 else
-  echo -e "\n[\033[1;31mERROR\033[0m] $0 path to bats-core helper library unreachable at \"${BATS_HELPER_PATH}\"!"
+  echo -e "\n{error_prefix} $0 path to bats-core helper library unreachable at \"${bats_path}\"!"
   echo '(press any key to exit)'
   read -r -n 1
   exit 1
 fi
 
-# ====Setup========================================================================================
+# ====Tests file configuration=====================================================================
 
-#TODO: setup the following variable
+#TODO: setup the following variables: the script to test and its path
 TESTED_FILE="dummy.bash"
 TESTED_FILE_PATH="src/function_library"
 
-# executed once before starting the first test (valide for all test in that file)
+# ....Setup........................................................................................
+# TODO: configure setup_file and setup function
+
 setup_file() {
+  echo -e " Executed once before starting the first test (valide for all test in that file)" >&3
   BATS_DOCKER_WORKDIR=$(pwd) && export BATS_DOCKER_WORKDIR
 
   ## Uncomment the following for debug, the ">&3" is for printing bats msg to stdin
-#  pwd >&3 && tree -L 1 -a -hug >&3
-#  printenv >&3
+  #tree -L 1 -a -hug $PWD >&3
+  #printenv >&3
 }
 
-# executed before each test
 setup() {
+  echo -e "   ↳ Executed before each test" >&3
   cd "$TESTED_FILE_PATH" || exit 1
   source ./$TESTED_FILE
 }
 
-# ====Teardown=====================================================================================
+# ....Teardown.....................................................................................
+# TODO: configure teardown and teardown_file function
 
-# executed after each test
 teardown() {
+  echo -e "   ↳ Executed after each test" >&3
   bats_print_run_env_variable_on_error
 }
 
-## executed once after finishing the last test (valide for all test in that file)
-#teardown_file() {
-#
-#}
+teardown_file() {
+  echo -e " Executed once after finishing the last test (valide for all test in that file)\n" >&3
+}
 
 # ====Test casses==================================================================================
+# TODO: write tests cases
 
-@test "test me like a boss" {
+@test "(Example) test me like a boss" {
   echo "TODO: write some test"
 }
 
@@ -78,26 +86,26 @@ teardown() {
   fail 'this test always fails'
 }
 
-@test "n2st::this_is_not_cool (explicitly source $TESTED_FILE) › expect fail" {
+@test "(Example) n2st::this_is_not_cool (explicitly source $TESTED_FILE) › expect fail" {
   run bash -c "source ./$TESTED_FILE && n2st::this_is_not_cool"
   assert_failure 1
   assert_output --partial 'Noooooooooooooo!'
 }
 
-@test "n2st::this_is_not_cool (source at setup step) › expect fail" {
+@test "(Example) n2st::this_is_not_cool (source at setup step) › expect fail" {
   run n2st::this_is_not_cool
   assert_failure 1
   assert_output --partial 'Noooooooooooooo!'
 }
 
-@test "n2st::good_morning_norlab (environment variable not set) › expect fail" {
+@test "(Example) n2st::good_morning_norlab (environment variable not set) › expect fail" {
   run "n2st::good_morning_norlab"
   assert_failure 1
   assert_output --partial 'Error: Environment variable not set'
   unset GREETING
 }
 
-@test "n2st::good_morning_norlab (environment variable set) › expect pass" {
+@test "(Example) n2st::good_morning_norlab (environment variable set) › expect pass" {
   assert_empty $GREETING
   export GREETING='Goooooooood morning NorLab'
   assert_not_empty $GREETING
@@ -108,7 +116,7 @@ teardown() {
   unset GREETING
 }
 
-@test "n2st::good_morning_norlab (command executed in a subshell) › expect pass" {
+@test "(Example) n2st::good_morning_norlab (command executed in a subshell) › expect pass" {
   assert_empty $GREETING
   run bash -c "source ./$TESTED_FILE && GREETING='Goooooooood morning NorLab' && n2st::good_morning_norlab"
   assert_empty $GREETING
@@ -116,7 +124,7 @@ teardown() {
   assert_output --partial "Goooooooood morning NorLab ... there's nothing like the smell of a snow storm in the morning!"
 }
 
-@test "n2st::talk_to_me_or_not › expect fail" {
+@test "(Example) n2st::talk_to_me_or_not › expect fail" {
   # Note:
   #  - "echo 'Y'" is for sending an keyboard input to the 'read' command which expect a single character
   #    run bash -c "echo 'Y' | source ./function_library/$TESTED_FILE"
