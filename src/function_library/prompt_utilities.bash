@@ -39,7 +39,7 @@ set +o allexport
 # Returns:
 #   none
 # =================================================================================================
-function _print_msg_formater() {
+function n2st::_print_msg_formater() {
   local MSG_TYPE=${1}
   local MSG=${2}
 
@@ -64,19 +64,19 @@ function _print_msg_formater() {
 
 function n2st::print_msg() {
     local MSG=${1}
-    _print_msg_formater "BASE" "${MSG}"
+    n2st::_print_msg_formater "BASE" "${MSG}"
 }
 function n2st::print_msg_done() {
     local MSG=${1}
-    _print_msg_formater "DONE" "${MSG}"
+    n2st::_print_msg_formater "DONE" "${MSG}"
 }
 function n2st::print_msg_warning() {
     local MSG=${1}
-    _print_msg_formater "WARNING" "${MSG}"
+    n2st::_print_msg_formater "WARNING" "${MSG}"
 }
 function n2st::print_msg_awaiting_input() {
     local MSG=${1}
-    _print_msg_formater "AWAITING_INPUT" "${MSG}"
+    n2st::_print_msg_formater "AWAITING_INPUT" "${MSG}"
 }
 
 # =================================================================================================
