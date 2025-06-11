@@ -40,20 +40,26 @@ source ./prompt_utilities.bash
 # Outputs:
 #   none
 # Returns:
-#   none
+#   1 on faillure, 0 otherwise
 # =================================================================================================
 function n2st::seek_and_modify_string_in_file() {
 
-  local TMP_SEEK="${1}"
-  local TMP_CHANGE_FOR="${2}"
-  local TMP_FILE_PATH="${3}"
+  local the_patern="${1}"
+  local change_for="${2}"
+  local file_path="${3}"
+
+  if [[ ! -f "$file_path" ]]; then
+    n2st::print_msg_error "File not found: $file_path"
+    return 1
+  fi
 
   # Note:
   #   - Character ';' is used as a delimiter
   #   - Keep -i flag for portability to Mac OsX (it's analogue to --in-place flag)
   #   - .bak is the backup extension convention and is required by -i
-  sudo sed -i.bak "s;${TMP_SEEK};${TMP_CHANGE_FOR};" "${TMP_FILE_PATH}" && rm "${TMP_FILE_PATH}.bak"
-
+  sudo sed -i.bak "s;${the_patern};${change_for};" "${file_path}" || return 1
+  sudo rm "${file_path}.bak" || return 1
+  return 0
 }
 
 # =================================================================================================
