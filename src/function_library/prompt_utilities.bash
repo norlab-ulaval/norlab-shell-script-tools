@@ -24,6 +24,11 @@ set -o allexport
 source .env.msg_style
 set +o allexport
 
+# ....Load dependencies............................................................................
+if [[ -z "$( declare -f n2st::generate_padding )"  ]] || [[ -z "$( declare -f n2st::get_terminal_width_robust )"  ]]; then
+  source "./terminal_splash.bash" || exit 1
+fi
+
 
 # =================================================================================================
 # Print formatted message to prompt
@@ -113,69 +118,44 @@ function n2st::print_msg_error() {
   echo ""
 }
 
-
 # =================================================================================================
 # Draw horizontal line the entire width of the terminal
 # Source: https://web.archive.org/web/20230402083320/http://wiki.bash-hackers.org/snipplets/print_horizontal_line#a_line_across_the_entire_width_of_the_terminal
 #
 # Usage:
-#   $ n2st::draw_horizontal_line_across_the_terminal_window [<SYMBOL>]
+#   $ n2st::draw_horizontal_line_across_the_terminal_window [<symbol>]
 #
 # Globals:
 #   Read 'TERM' and 'COLUMNS' if available
 # Arguments:
-#   [<SYMBOL>] Symbol (a single character) for the line, default to '='
+#   [<symbol>] Symbol (a single character) for the line, default to '='
 # Outputs:
 #   The screen wide line
 # Returns:
 #   none
 # =================================================================================================
 function n2st::draw_horizontal_line_across_the_terminal_window() {
-  local SYMBOL="${1:-=}"
+  local symbol="${1:-=}"
   local terminal_width
-  local pad
+  local padding
 
-  # Ref https://bash.cyberciti.biz/guide/$TERM_variable
-  TPUT_FLAG=("-T" "$TERM")
-  if [[ -z ${TERM} ]]; then
-    TPUT_FLAG=("-T" "xterm-256color")
-  elif [[ ${TERM} == dumb ]]; then
-    # "dumb" is the one set on TeamCity Agent
-    TPUT_FLAG=("-T" "xterm-256color")
-#    unset TPUT_FLAG
-  fi
+  terminal_width=$( n2st::get_terminal_width_robust 80 )
+  padding=$( n2st::generate_padding "${symbol}" "${terminal_width}" )
 
-  # (NICE TO HAVE) ToDo:
-  #     - var TERM should be setup in Dockerfile.dependencies
-  #     - print a warning message if TERM is not set
-
-  ## Original version
-  #printf '%*s\n' "${COLUMNS:-$(tput ${TPUT_FLAG} cols)}" '' | tr ' ' "${SYMBOL}"
-
-  # Alt version
-  # shellcheck disable=SC2086
-  terminal_width="${COLUMNS:-$(tput "${TPUT_FLAG[@]}" cols)}"
-  pad=$(printf -- "${SYMBOL}%.0s" $(seq "${terminal_width}"))
-  printf -- "${pad}\n"
-#  printf -- "%\n" "${pad}"
-
-#  # (CRITICAL) ToDo: on task end >> delete next bloc ↓↓
-#  echo "terminal_width=${terminal_width}"
-#  echo "seq $terminal_width = $(seq $terminal_width)"
-#  echo "$SHELL"
-#  ps -p $$
+#  printf -- "%s\n" "${padding}"
+  echo -e "$padding"
 }
 
 # =================================================================================================
 # Print a formatted script header or footer
 #
 # Usage:
-#   $ n2st::print_formated_script_header "<script name>" [<SYMBOL>]
-#   $ n2st::print_formated_script_footer "<script name>" [<SYMBOL>]
+#   $ n2st::print_formated_script_header "<script name>" [<symbol>]
+#   $ n2st::print_formated_script_footer "<script name>" [<symbol>]
 #
 # Arguments:
 #   <script name>   The name of the script that is executing the function. Will be print in the header
-#   [<SYMBOL>]      Symbole for the line, default to '='
+#   [<symbol>]      Symbole for the line, default to '='
 # Outputs:
 #   Print formated string to stdout
 # Returns:
@@ -183,19 +163,19 @@ function n2st::draw_horizontal_line_across_the_terminal_window() {
 # =================================================================================================
 function n2st::print_formated_script_header() {
   local SCRIPT_NAME="${1}"
-  local SYMBOL="${2:-=}"
+  local symbol="${2:-=}"
   echo
-  n2st::draw_horizontal_line_across_the_terminal_window "${SYMBOL}"
+  n2st::draw_horizontal_line_across_the_terminal_window "${symbol}"
   echo -e "Starting ${MSG_DIMMED_FORMAT}${SCRIPT_NAME}${MSG_END_FORMAT}"
   echo
 }
 
 function n2st::print_formated_script_footer() {
   local SCRIPT_NAME="${1}"
-  local SYMBOL="${2:-=}"
+  local symbol="${2:-=}"
   echo
   echo -e "Completed ${MSG_DIMMED_FORMAT}${SCRIPT_NAME}${MSG_END_FORMAT}"
-  n2st::draw_horizontal_line_across_the_terminal_window "${SYMBOL}"
+  n2st::draw_horizontal_line_across_the_terminal_window "${symbol}"
   echo
 }
 
@@ -204,11 +184,11 @@ function n2st::print_formated_script_footer() {
 # Print formated 'back to script' message
 #
 # Usage:
-#   $ n2st::print_formated_back_to_script_msg "<script name>" [<SYMBOL>]
+#   $ n2st::print_formated_back_to_script_msg "<script name>" [<symbol>]
 #
 # Arguments:
 #   <script name>   The name of the script that is executing the function. Will be print in the header
-#   [<SYMBOL>]      Symbole for the line, default to '='
+#   [<symbol>]      Symbole for the line, default to '='
 # Outputs:
 #   Print formated string to stdout
 # Returns:
@@ -216,9 +196,9 @@ function n2st::print_formated_script_footer() {
 # =================================================================================================
 function n2st::print_formated_back_to_script_msg() {
   local SCRIPT_NAME="${1}"
-  local SYMBOL="${2:-=}"
+  local symbol="${2:-=}"
   echo
-  n2st::draw_horizontal_line_across_the_terminal_window "${SYMBOL}"
+  n2st::draw_horizontal_line_across_the_terminal_window "${symbol}"
   echo -e "Back to ${MSG_DIMMED_FORMAT}${SCRIPT_NAME}${MSG_END_FORMAT}"
   echo
 }
@@ -330,3 +310,4 @@ function print_formated_file_preview_end() {
 function preview_file_in_promt() {
   n2st::preview_file_in_promt "$@"
 }
+
