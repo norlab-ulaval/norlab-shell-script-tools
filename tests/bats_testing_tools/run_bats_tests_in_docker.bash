@@ -175,6 +175,7 @@ else
 fi
 
 RUN_ARG=(--tty --rm)
+RUN_ARG+=(--env "TERM=${TERM:-xterm-256color}")
 if [[  ${IS_TEAMCITY_RUN} == false ]]; then
   # The '--interactive' flag is not compatible with TeamCity build agent
   RUN_ARG+=(--interactive)

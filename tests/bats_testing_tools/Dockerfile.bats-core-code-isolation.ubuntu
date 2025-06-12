@@ -27,8 +27,7 @@ LABEL org.opencontainers.image.authors="luc.coupal.1@ulaval.ca"
 SHELL ["/bin/bash", "-e", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 
-ENV TERM=${TERM:-"xterm-256color"}
-ENV COLUMNS=80
+ENV TERM="xterm-256color"
 
 # ====Begin========================================================================================
 # ....Setup timezone and localization..............................................................
