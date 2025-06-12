@@ -40,6 +40,14 @@ function n2st::echo_centering_str() {
   #     - var TERM should be setup in Dockerfile.dependencies.
   #     - print a warning message if TERM is not set
 
+  # ....Positional arguments.......................................................................
+  local the_str_pre=${1:?'Missing a mandatory parameter error'}
+#  local the_str=${1:?'Missing a mandatory parameter error'}
+  local the_style="${2:?'Missing a mandatory parameter error'}"
+  local the_pad_cha="${3:?'Missing a mandatory parameter error'}"
+  local fill_left="${4:-""}"
+  local fill_right="${5:-""}"
+
   # ....Pre-check and set default locale...........................................................
   # Add locale handling
   local current_lc_ctype="${LC_CTYPE:-}"
@@ -55,15 +63,6 @@ function n2st::echo_centering_str() {
     export LC_CTYPE="C"
   fi
 
-  # ....Positional arguments.......................................................................
-  local the_str_pre=${1:?'Missing a mandatory parameter error'}
-#  local the_str=${1:?'Missing a mandatory parameter error'}
-  printf -v the_str -- "%b" "${the_str_pre}" 2>/dev/null
-  local the_style="${2:?'Missing a mandatory parameter error'}"
-  local the_pad_cha="${3:?'Missing a mandatory parameter error'}"
-  local fill_left="${4:-""}"
-  local fill_right="${5:-""}"
-  local str_len=${#the_str}
 
   # ....Formating..................................................................................
   if [[ ${TEAMCITY_VERSION} ]] || [[ ${IS_TEAMCITY_RUN} == true ]] ; then
@@ -74,19 +73,21 @@ function n2st::echo_centering_str() {
 
   # ....Set terminal env var.......................................................................
   # Ref https://bash.cyberciti.biz/guide/$TERM_variable
-  tput_flag=("-T" "$TERM")
   if [[ -z ${TERM} ]]; then
     tput_flag=("-T" "xterm-256color")
   elif [[ ${TERM} == dumb ]]; then
     # "dumb" is the one set on TeamCity Agent
     #unset tput_flag
     tput_flag=("-T" "xterm-256color")
+  else
+    tput_flag=("-T" "$TERM")
   fi
 
 
   # ....Begin......................................................................................
+  printf -v the_str -- "%b" "${the_str_pre}" 2>/dev/null
+  local str_len=${#the_str}
   local terminal_width
-#  terminal_width=$(tput ${tput_flag} cols)
   # shellcheck disable=SC2086
   terminal_width="${COLUMNS:-$(tput "${tput_flag[@]}" cols)}"
   local total_padding_len=$(( ${terminal_width} - ${str_len} ))
