@@ -151,6 +151,7 @@ BUILD_FLAG+=(--build-arg BUILDKIT_CONTEXT_KEEP_GIT_DIR=1)
 BUILD_FLAG+=(--build-arg N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH="$N2ST_BATS_TESTING_TOOLS_RELATIVE_PATH")
 BUILD_FLAG+=(--build-arg "TEAMCITY_VERSION=${TEAMCITY_VERSION}")
 BUILD_FLAG+=(--build-arg "N2ST_VERSION=${N2ST_VERSION:?err}")
+BUILD_FLAG+=(--build-arg "TERM=${TERM:-xterm-256color}")
 BUILD_FLAG+=(--file "${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/Dockerfile.bats-core-code-isolation.${BATS_DOCKERFILE_DISTRO}")
 if [[ ${MOUNT_SRC_CODE_AS_A_VOLUME} == true ]]; then
   BUILD_FLAG+=(--target mount-version)

@@ -118,7 +118,7 @@ teardown() {
   local THE_STYLE="\033[1m"
   local THE_PAD_CHAR="."
 
-  IS_TEAMCITY_RUN=true
+  export IS_TEAMCITY_RUN=true
 
 #  # (Priority) ToDo: debug › on task end >> mute next bloc ↓↓
 #  printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
@@ -131,6 +131,7 @@ teardown() {
   assert_output --regexp "...$"
   refute_output --partial "...\033[0m"
   refute_output --partial "${THE_STYLE}..."
+  unset IS_TEAMCITY_RUN
 }
 
 
@@ -154,7 +155,7 @@ teardown() {
 }
 
 @test "n2st::snow_splash › teamcity case" {
-  IS_TEAMCITY_RUN=true
+  export IS_TEAMCITY_RUN=true
 #  printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
   run n2st::snow_splash
 #  assert_line --index 2 --regexp "\["2m.*"\["0m
@@ -164,6 +165,7 @@ teardown() {
   assert_output --regexp "...$"
   refute_output --partial "...\033[0m"
   refute_output --partial "${THE_STYLE}..."
+  unset IS_TEAMCITY_RUN
 }
 
 # ----n2st::norlab_splash--------------------------------------------------------------------------------
@@ -208,12 +210,13 @@ teardown() {
 }
 
 @test "n2st::norlab_splash › teamcity case" {
-  IS_TEAMCITY_RUN=true
+  export IS_TEAMCITY_RUN=true
 
   run n2st::norlab_splash
   refute_line --index 2 --regexp "\["2m.*"\["0m
   refute_output --regexp "\["1m.*"NorLab".*"\["0m
   refute_output --regexp "\["2m.*"https://norlab.ulaval.ca".*"\["0m
+  unset IS_TEAMCITY_RUN
 }
 
 # ====legacy API support testing===================================================================

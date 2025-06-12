@@ -1,13 +1,18 @@
 #!/bin/bash
+# =================================================================================================
+# Terminal splash related functions
 #
-# Requirement: This script must be executed from project root 'NorLab-TeamCity-Server-infrastructure'
+# Requirement:
+#   This script must be executed from project root 'NorLab-TeamCity-Server-infrastructure'
 #
 # Usage:
 #   $ source function_library/terminal_splash.bash
 #
-#set -e # (NICE TO HAVE) ToDo: fixme!! >> script exit if "set -e" is enable
-#set -v
+# =================================================================================================
 
+# Note: enable only for debugging
+#set -e
+#set -v
 
 # =================================================================================================
 # Dynamic printf centering tool. Centering based on the terminal screen width at runtime.
@@ -16,9 +21,15 @@
 #   $ source function_library/terminal_splash.bash
 #   $ n2st::echo_centering_str <theString> <theStyle> <thePadCharacter> [<fill_left>] [<fill_right>]
 #
+# Example:
 #   $ n2st::echo_centering_str "···•· ${title} ··•••" "\033[1;37m" "\033[0m·"
 #
-# Globals: 
+# Note:
+#   Since console printing formating related error as no consequences on program main logic
+#   execution, the function manage those gracefully by simply continuing execution without
+#   printing warning and error to console.
+#
+# Globals:
 #   none
 # Arguments:
 #   <theString>           The string to center
@@ -27,29 +38,30 @@
 # Globals:
 #   read LC_CTYPE
 #   read LC_ALL
+#   read BATS_TEST_FILENAME
 #   read TEAMCITY_VERSION
 #   read IS_TEAMCITY_RUN
 #   read TERM
+#   read COLUMNS
 # Outputs:
 #   Output the line to STDOUT
+#   The stderr output is muted in case of console print related problem (warning or error)
 # Returns:
-#   none
+#   0 on success
 # =================================================================================================
 function n2st::echo_centering_str() {
+  local show_debug=false
+
   # (NICE TO HAVE) ToDo:
   #     - var TERM should be setup in Dockerfile.dependencies.
   #     - print a warning message if TERM is not set
 
   # ....Positional arguments.......................................................................
-  local the_str_pre=${1:?'Missing a mandatory parameter error'}
-#  local the_str=${1:?'Missing a mandatory parameter error'}
-  local the_style="${2:?'Missing a mandatory parameter error'}"
+  local text_pre=${1:?'Missing a mandatory parameter error'}
+  local style="${2:?'Missing a mandatory parameter error'}"
   local pad_char="${3:?'Missing a mandatory parameter error'}"
   local fill_left="${4:-""}"
   local fill_right="${5:-""}"
-  # ....Set env variables (post cli)...............................................................
-  # Add env var
-
 
   # ....Pre-check and set default locale...........................................................
   # Save original locale settings
@@ -65,44 +77,41 @@ function n2st::echo_centering_str() {
       export LC_ALL="" LC_CTYPE="C"
   fi
 
-  # Get terminal width more reliably
+  # ....Get terminal width.........................................................................
+  local terminal_min_witdh_fallback=80
   local term_width
-  local minimum_witdh=80
+
   if [[ -n "$COLUMNS" ]]; then
       term_width="$COLUMNS"
   elif command -v tput >/dev/null 2>&1; then
       if [[ -z "$TERM" || "$TERM" == "dumb" ]]; then
-          term_width=$(tput -T xterm-256color cols 2>/dev/null) || term_width="$minimum_witdh"
+          term_width=$(tput -T xterm-256color cols 2>/dev/null) || term_width="$terminal_min_witdh_fallback"
       else
-          term_width=$(tput cols 2>/dev/null) || term_width="$minimum_witdh"
+          term_width=$(tput cols 2>/dev/null) || term_width="$terminal_min_witdh_fallback"
       fi
   else
-      term_width="$minimum_witdh"  # Default fallback
+      term_width="$terminal_min_witdh_fallback"  # Default fallback
   fi
 
+  if [[ -n "${BATS_TEST_FILENAME}" ]]; then
+    term_width=$(( term_width - 9))
+  fi
+
+  # ....Padding....................................................................................
+  # Compute padding value
+  local text
   local text_width
-#  printf -v the_str -- "%b" "${the_str_pre}" 2>/dev/null
-  the_str=$the_str_pre
-  text_width=${#the_str}
+  local pad_char_len
+  printf -v text -- "%b" "${text_pre}" 2>/dev/null
+  [[ $? -ne 0 ]] && text=$text_pre  # Fallback
+  text_width=${#text}
   pad_char_len=${#pad_char}
 
-#  # Quick-hack for handling braille character (unicode) which sometime are diffculte to handle
-#  if [[ ${pad_char_len} -gt 1  ]]; then
-#    text_width=$(( text_width / 3))
-#  fi
+  local total_padding=$(( term_width - $((text_width / pad_char_len)) )) 2>/dev/null
+  local side_padding=$((total_padding / 2)) 2>/dev/null
 
-  # Calculate padding
-  local total_padding=$(( term_width - $((text_width / pad_char_len)) ))
-  local side_padding=$((total_padding / 2))
-
-  ## Note: debug lines
-  #echo -e "term_width: ${term_width}"
-  #echo -e "text_width: ${text_width}"
-  #echo -e "pad_char_len: ${pad_char_len}"
-  #echo -e "total_padding: ${total_padding}"
-  #echo -e "side_padding: ${side_padding}"
-
-  # Generate padding - using a more reliable method than seq
+  # Generate padding
+  # Note: this a more robust method than using the seq command when handling unicode char
   local pad=""
   local i=0
   while ((i < side_padding)); do
@@ -111,28 +120,45 @@ function n2st::echo_centering_str() {
   done
 
   # ....Formating..................................................................................
-  if [[ "${the_style}" == " " ]]; then
-    the_style=""
+  if [[ "${style}" == " " ]]; then
+    style=""
   fi
   if [[ ${TEAMCITY_VERSION} ]] || [[ ${IS_TEAMCITY_RUN} == true ]] ; then
-    the_style=""
-    local the_style_off=""
+    style=""
+    local style_off=""
   else
-    local the_style_off="\033[0m"
+    local style_off="\033[0m"
   fi
 
   # Note: adding `2>/dev/null` at the end is a quick-hack. Will need a more robust solution.
   #       ref task N2ST-2 fix: splash LC_TYPE related error
-  echo -n -e  "${the_style}"
-#  LC_CTYPE="${LC_CTYPE}" printf -- "%b%s%b%s%b\n" "${fill_left}" "${pad}" "${the_str}" "${pad}" "${fill_right}" 2>/dev/null
-  LC_CTYPE="${LC_CTYPE}" echo -e "${fill_left}${pad}${the_str}${pad}${fill_right}" 2>/dev/null
-  echo -n -e  "${the_style_off}"
+
+  # Alternative implementation
+  #echo -n -e  "${style}" 2>/dev/null
+  #LC_CTYPE="${LC_CTYPE}" echo -e "${fill_left}${pad}${text}${pad}${fill_right}" 2>/dev/null
+  #echo -n -e  "${style_off}" 2>/dev/null
+
+  {
+    printf "%b" "${style}"
+    printf -- "%b%s%b%s%b" "${fill_left}" "${pad}" "${text}" "${pad}" "${fill_right}"
+    printf "%b\n" "${style_off}"
+  } 2>/dev/null
+
+  # ....Debug utils................................................................................
+  if [[ ${show_debug} == true ]]; then
+    echo -e "term_width: ${term_width}"
+    echo -e "text_width: ${text_width}"
+    echo -e "pad_char_len: ${pad_char_len}"
+    echo -e "total_padding: ${total_padding}"
+    echo -e "side_padding: ${side_padding}"
+  fi
 
   # ....Teardown...................................................................................
   # Restore original locale settings
   export LC_CTYPE="${original_lc_ctype}"
   export LC_ALL="${original_lc_all}"
 
+  # The return value is only relevant for testing purposes.
   return 0
 }
 
