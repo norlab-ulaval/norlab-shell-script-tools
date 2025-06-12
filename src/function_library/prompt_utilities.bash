@@ -137,13 +137,13 @@ function n2st::print_msg_error() {
 function n2st::draw_horizontal_line_across_the_terminal_window() {
   local symbol="${1:-=}"
   local terminal_width
-  local pad
+  local padding
 
   terminal_width=$( n2st::get_terminal_width_robust 80 )
   padding=$( n2st::generate_padding "${symbol}" "${terminal_width}" )
 
-#  echo -e "$padding"
-  printf -- "%s\n" "${padding}"
+#  printf -- "%s\n" "${padding}"
+  echo -e "$padding"
 }
 
 # =================================================================================================
