@@ -175,7 +175,7 @@ else
 fi
 
 RUN_ARG=(--tty --rm)
-if [[ ${TEAMCITY_VERSION} ]]; then
+if [[  ${IS_TEAMCITY_RUN} == false ]]; then
   # The '--interactive' flag is not compatible with TeamCity build agent
   RUN_ARG+=(--interactive)
 fi
@@ -188,12 +188,12 @@ n2st::print_msg "Execute ${MSG_DIMMED_FORMAT}docker run ${RUN_ARG[*]} ${CONTAINE
 docker run "${RUN_ARG[@]}" "${CONTAINER_TAG}" "$RUN_TESTS_IN_DIR"
 DOCKER_EXIT_CODE=$?
 
-if [[ ${TEAMCITY_VERSION} ]] && [[ $DOCKER_EXIT_CODE != 0 ]]; then
+if [[ ${IS_TEAMCITY_RUN} == true ]] && [[ $DOCKER_EXIT_CODE != 0 ]]; then
   # Fail the build › Will appear on the TeamCity Build Results page
   echo -e "##teamcity[buildProblem description='BUILD FAIL with docker exit code: ${DOCKER_EXIT_CODE}']"
 fi
 
-if [[ ${TEAMCITY_VERSION} ]]; then
+if [[ ${IS_TEAMCITY_RUN} == true ]]; then
   echo -e "##teamcity[blockClosed name='${_MSG_BASE_TEAMCITY} Run bats-core tests']"
 fi
 
