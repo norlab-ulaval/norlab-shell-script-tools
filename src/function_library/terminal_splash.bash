@@ -47,6 +47,10 @@ function n2st::get_terminal_width_robust() {
       term_width="$terminal_min_witdh_fallback"  # Default fallback
   fi
 
+  if [[ $term_width -lt $terminal_min_witdh_fallback ]]; then
+    term_width="$terminal_min_witdh_fallback"  # Default fallback
+  fi
+
   if [[ -n "${BATS_TEST_FILENAME}" ]]; then
     term_width=$(( term_width - 9))
   fi
