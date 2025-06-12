@@ -22,8 +22,8 @@
 #   none
 # Arguments:
 #   <theString>           The string to center
-#   <theStyle>            The style appended at the begining of the line (default to "\033[1;37m")
-#   <thePadCharacter>     The padding character to use (default to "\033[0m·")
+#   <theStyle>            The style appended at the begining of the line (set to ' ' to mute style)
+#   <thePadCharacter>     The padding character to use
 # Globals:
 #   read LC_CTYPE
 #   read LC_ALL
@@ -44,64 +44,95 @@ function n2st::echo_centering_str() {
   local the_str_pre=${1:?'Missing a mandatory parameter error'}
 #  local the_str=${1:?'Missing a mandatory parameter error'}
   local the_style="${2:?'Missing a mandatory parameter error'}"
-  local the_pad_cha="${3:?'Missing a mandatory parameter error'}"
+  local pad_char="${3:?'Missing a mandatory parameter error'}"
   local fill_left="${4:-""}"
   local fill_right="${5:-""}"
+  # ....Set env variables (post cli)...............................................................
+  # Add env var
+
 
   # ....Pre-check and set default locale...........................................................
-  # Add locale handling
-  local current_lc_ctype="${LC_CTYPE:-}"
+  # Save original locale settings
+  local original_lc_ctype="${LC_CTYPE:-}"
+  local original_lc_all="${LC_ALL:-}"
 
-  # Try using a default safe locale if the current one fails
-  local safe_locale="C.UTF-8"
-  if locale -a 2>/dev/null | grep -q "${safe_locale}"; then
-    export LC_CTYPE="${safe_locale}"
+  # Try to use a UTF-8 locale for consistent character handling
+  if locale -a 2>/dev/null | grep -q "C.UTF-8"; then
+      export LC_ALL="" LC_CTYPE="C.UTF-8"
   elif locale -a 2>/dev/null | grep -q "en_US.UTF-8"; then
-    export LC_CTYPE="en_US.UTF-8"
+      export LC_ALL="" LC_CTYPE="en_US.UTF-8"
   else
-    # Fallback to C locale which is guaranteed to exist
-    export LC_CTYPE="C"
+      export LC_ALL="" LC_CTYPE="C"
   fi
 
+  # Get terminal width more reliably
+  local term_width
+  local minimum_witdh=80
+  if [[ -n "$COLUMNS" ]]; then
+      term_width="$COLUMNS"
+  elif command -v tput >/dev/null 2>&1; then
+      if [[ -z "$TERM" || "$TERM" == "dumb" ]]; then
+          term_width=$(tput -T xterm-256color cols 2>/dev/null) || term_width="$minimum_witdh"
+      else
+          term_width=$(tput cols 2>/dev/null) || term_width="$minimum_witdh"
+      fi
+  else
+      term_width="$minimum_witdh"  # Default fallback
+  fi
+
+  local text_width
+#  printf -v the_str -- "%b" "${the_str_pre}" 2>/dev/null
+  the_str=$the_str_pre
+  text_width=${#the_str}
+  pad_char_len=${#pad_char}
+
+#  # Quick-hack for handling braille character (unicode) which sometime are diffculte to handle
+#  if [[ ${pad_char_len} -gt 1  ]]; then
+#    text_width=$(( text_width / 3))
+#  fi
+
+  # Calculate padding
+  local total_padding=$(( term_width - $((text_width / pad_char_len)) ))
+  local side_padding=$((total_padding / 2))
+
+  ## Note: debug lines
+  #echo -e "term_width: ${term_width}"
+  #echo -e "text_width: ${text_width}"
+  #echo -e "pad_char_len: ${pad_char_len}"
+  #echo -e "total_padding: ${total_padding}"
+  #echo -e "side_padding: ${side_padding}"
+
+  # Generate padding - using a more reliable method than seq
+  local pad=""
+  local i=0
+  while ((i < side_padding)); do
+      pad="${pad}${pad_char}"
+      ((i++))
+  done
 
   # ....Formating..................................................................................
+  if [[ "${the_style}" == " " ]]; then
+    the_style=""
+  fi
   if [[ ${TEAMCITY_VERSION} ]] || [[ ${IS_TEAMCITY_RUN} == true ]] ; then
-    local the_style_off="[0m"
+    the_style=""
+    local the_style_off=""
   else
     local the_style_off="\033[0m"
   fi
 
-  # ....Set terminal env var.......................................................................
-  # Ref https://bash.cyberciti.biz/guide/$TERM_variable
-  if [[ -z ${TERM} ]]; then
-    tput_flag=("-T" "xterm-256color")
-  elif [[ ${TERM} == dumb ]]; then
-    # "dumb" is the one set on TeamCity Agent
-    #unset tput_flag
-    tput_flag=("-T" "xterm-256color")
-  else
-    tput_flag=("-T" "$TERM")
-  fi
-
-
-  # ....Begin......................................................................................
-  printf -v the_str -- "%b" "${the_str_pre}" 2>/dev/null
-  local str_len=${#the_str}
-  local terminal_width
-  # shellcheck disable=SC2086
-  terminal_width="${COLUMNS:-$(tput "${tput_flag[@]}" cols)}"
-  local total_padding_len=$(( ${terminal_width} - ${str_len} ))
-  local single_side_padding_len=$(( ${total_padding_len} / 2 ))
-  local pad
-  pad=$(printf -- "$the_pad_cha%.0s" $(seq $single_side_padding_len))
-
   # Note: adding `2>/dev/null` at the end is a quick-hack. Will need a more robust solution.
   #       ref task N2ST-2 fix: splash LC_TYPE related error
-  LC_ALL='' LC_CTYPE=en_US.UTF-8 printf -- "%b%b%s%b%s%b%b\n" "${the_style}" "${fill_left}" "${pad}" "${the_str}" "${pad}" "${fill_right}" "${the_style_off}" 2>/dev/null
+  echo -n -e  "${the_style}"
+#  LC_CTYPE="${LC_CTYPE}" printf -- "%b%s%b%s%b\n" "${fill_left}" "${pad}" "${the_str}" "${pad}" "${fill_right}" 2>/dev/null
+  LC_CTYPE="${LC_CTYPE}" echo -e "${fill_left}${pad}${the_str}${pad}${fill_right}" 2>/dev/null
+  echo -n -e  "${the_style_off}"
 
   # ....Teardown...................................................................................
   # Restore original locale settings
-  export LC_CTYPE="${current_lc_ctype}"
+  export LC_CTYPE="${original_lc_ctype}"
+  export LC_ALL="${original_lc_all}"
+
   return 0
 }
 
@@ -146,21 +177,14 @@ function n2st::snow_splash() {
   local title=${1:-'NorLab'}
   local optional_url=${2:-'https://github.com/norlab-ulaval'}
 
-  local fill_t=''
-  local fill_u=''
-  if [[ ${IS_TEAMCITY_RUN} == true ]] || [[ ${TEAMCITY_VERSION} ]]; then
-    local fill_t='······'
-    local fill_u='      '
-  fi
-
   # Formatting
   #   - 1=Bold/bright
   #   - 2=Dim
   #   - 4=underline
   if [[ ${TEAMCITY_VERSION} ]] || [[ ${IS_TEAMCITY_RUN} == true ]] ; then
-    local title_formatting="[1m"
-    local snow_formatting="[2m"
-    local url_formatting="[2m"
+    local title_formatting=" "
+    local snow_formatting=" "
+    local url_formatting=" "
   else
     local title_formatting="\033[1m"
     local snow_formatting="\033[2m"
@@ -175,7 +199,7 @@ function n2st::snow_splash() {
   n2st::echo_centering_str "⢀⣤⡀⣿⣿⠀⠀⠉⣿⣿⡿⠁⠀⠀⣿⡟⣀⣤⠀⠀" "${snow_formatting}" "⠀"
   n2st::echo_centering_str "⠀⠙⣻⣿⣿⣧⠀⠀⢸⣿⠀⠀⢀⣿⣿⣿⣟⠉⠀⠀" "${snow_formatting}" "⠀"
   n2st::echo_centering_str "⠘⠛⠛⠉⠉⠙⠿⣿⣾⣿⣷⣿⠟⠉⠉⠙⠛⠛⠀⠀" "${snow_formatting}" "⠀"
-  n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" "${fill_t}" "${fill_t}"
+  n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·"
   n2st::echo_centering_str "⢠⣶⣤⣄⣀⣤⣶⣿⢿⣿⢿⣿⣶⣄⣀⣤⣤⣶⠀⠀" "${snow_formatting}" "⠀"
   n2st::echo_centering_str "⠀⣨⣿⣿⣿⡟⠁⠀⢸⣿⠀⠀⠉⣿⣿⣿⣯⣀⠀⠀" "${snow_formatting}" "⠀"
   n2st::echo_centering_str "⠈⠛⠁⣿⣿⢀⠀⣠⣿⣿⣷⡀⠀⠈⣿⣧⠉⠛⢀⠀" "${snow_formatting}" "⠀"
@@ -183,8 +207,8 @@ function n2st::snow_splash() {
   n2st::echo_centering_str "⠀⠀⠀⠀⠀⠀⠀⠀⠘⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" "${snow_formatting}" "⠀"
   n2st::echo_centering_str "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" "${snow_formatting}" "⠀"
   echo " "
-  n2st::echo_centering_str "https://norlab.ulaval.ca" "${url_formatting}" " " "${fill_u}" "${fill_u}"
-  n2st::echo_centering_str "${optional_url}" "${url_formatting}" " " "${fill_u}" "${fill_u}"
+  n2st::echo_centering_str "https://norlab.ulaval.ca" "${url_formatting}" " "
+  n2st::echo_centering_str "${optional_url}" "${url_formatting}" " "
   echo " "
   echo " "
 }
@@ -231,21 +255,15 @@ function n2st::norlab_splash() {
   local optional_url=${2:-'https://github.com/norlab-ulaval'}
   local splash_type=${3:-negative} # Option: small, negative or big
 
-  local fill_t=''
-  local fill_u=''
-  if [[ ${IS_TEAMCITY_RUN} == true ]] || [[ ${TEAMCITY_VERSION} ]]; then
-    local fill_t='······'
-    local fill_u='      '
-  fi
 
   # Formatting
   #   - 1=Bold/bright
   #   - 2=Dim
   #   - 4=underline
   if [[ ${TEAMCITY_VERSION} ]] || [[ ${IS_TEAMCITY_RUN} == true ]] ; then
-    local title_formatting="[1m"
-    local snow_formatting="[2m"
-    local url_formatting="[2m"
+    local title_formatting=" "
+    local snow_formatting=" "
+    local url_formatting=" "
   else
     local title_formatting="\033[1m"
     local snow_formatting="\033[2m"
@@ -266,7 +284,7 @@ function n2st::norlab_splash() {
     n2st::echo_centering_str "⠀⠀⠘⣿⣿⢡⡋⠙⠿⠀⣿⡀⢸⡟⠙⢷⣤⠀⣤⠞⠾⢿⡇⢰⡟⠀⠟⠉⢻⡟⣾⣿⠗⠀" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⠀⠀⢰⢁⣿⣿⠛⠀⣀⠈⠀⢸⡇⢸⣶⣄⠀⣤⠘⡀⢸⠃⠈⠀⣀⠀⠛⣿⣼⠸⡄⠀⠀" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⣶⣾⣿⣾⣿⣿⣿⠉⢀⣤⡶⠒⠀⠈⠛⢿⠀⠛⠚⠀⠀⠒⣶⣤⡀⢙⡿⣴⣿⣧⣿⣦⣤" "${snow_formatting}" "⠀"
-    n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" "${fill_t}" "${fill_t}"
+    n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·"
     n2st::echo_centering_str "⠀⣿⣿⣏⣿⣿⣿⣿⡿⣿⣄⠀⠛⣿⡿⠛⠀⠀⠀⠒⣶⡮⠛⠢⠿⣛⣭⣿⣿⣿⣿⣿⣿⣿" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⠈⠉⣿⢹⣿⣿⠛⢶⣤⡀⠉⠉⠀⢰⣿⣿⠀⣿⣷⡀⠀⠉⠉⣀⣤⡾⠛⣿⣿⡏⡿⠛⠉" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⠀⠀⣨⣆⣿⣿⠟⠀⠀⣠⠀⢸⡇⠘⠉⣀⠀⡀⠉⠀⢸⡆⢰⡄⠀⠐⠿⣿⣿⣼⠀⠀⠀" "${snow_formatting}" "⠀"
@@ -277,8 +295,8 @@ function n2st::norlab_splash() {
     n2st::echo_centering_str "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⣿⣿⣿⣿⠃⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" "${snow_formatting}" "⠀"
     echo " "
-    n2st::echo_centering_str "https://norlab.ulaval.ca" "${url_formatting}" " " "${fill_u}" "${fill_u}"
-    n2st::echo_centering_str "${optional_url}" "${url_formatting}" " " "${fill_u}" "${fill_u}"
+    n2st::echo_centering_str "https://norlab.ulaval.ca" "${url_formatting}" " "
+    n2st::echo_centering_str "${optional_url}" "${url_formatting}" " "
     echo " "
     echo " "
 
@@ -299,7 +317,7 @@ function n2st::norlab_splash() {
     n2st::echo_centering_str "⠀⠀⠀⠀⡿⢀⣿⣿⣟⠛⠉⠀⣀⣀⡀⠀⠀⠸⣿⠀⢸⣿⣶⣤⠀⠀⣤⣶⢸⡇⠀⣿⠇⠀⠀⢀⣀⣀⠀⠉⠛⣿⢃⣿⡄⢿⠀⠀⠀⠀" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⢀⣀⣤⣼⡇⣸⣿⣿⣿⣦⣶⠿⠛⠉⠀⢀⣠⡀⠀⠀⠘⢿⣿⣿⠀⠀⣿⠏⡸⠃⠀⠀⢀⣄⡀⠀⠉⠛⠿⣶⣴⠇⣼⣿⣇⢸⣇⡀⠀⠀" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⣿⣿⣿⣿⠁⣿⣿⣿⣿⣿⣿⣄⣠⣴⡾⠟⠉⠀⢀⣤⣄⠀⠈⠙⠀⠀⠁⠀⠀⣠⣤⡀⠀⠉⠻⢷⣦⣄⣠⡿⢃⣾⣿⣿⣿⠀⣿⣿⣿⣶" "${snow_formatting}" "⠀"
-    n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" "${fill_t}" "${fill_t}"
+    n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·"
     n2st::echo_centering_str "⣿⣿⣿⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⣏⡀⠀⠐⠾⣿⣿⣿⡿⠒⠀⠀⠀⠀⠠⢴⣶⣦⣍⠳⠦⣄⣼⡿⠟⣋⣴⣿⣿⣿⣿⣿⠀⣿⣿⣿⣿" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠿⣿⣿⣿⠀⣿⣿⣿⣿⣿⣿⠁⠉⠛⠿⣶⣤⡀⠀⠉⠁⠀⣠⣴⠀⠀⣦⣀⠀⠈⠉⠀⢀⣤⣶⠶⠒⠉⠈⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⠀⠈⢹⡇⢹⣿⣿⣿⠛⠛⠿⣶⣤⡀⠀⠉⠀⢀⠀⢰⣿⣿⣿⠀⠀⣿⣿⣿⠀⠀⡀⠀⠉⠀⢀⣤⣶⠿⠛⠻⣿⣿⣿⡏⢸⡟⠛⠉⠁" "${snow_formatting}" "⠀"
@@ -315,14 +333,14 @@ function n2st::norlab_splash() {
     n2st::echo_centering_str "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" "${snow_formatting}" "⠀"
     echo " "
-    n2st::echo_centering_str "https://norlab.ulaval.ca" "${url_formatting}" " " "${fill_u}" "${fill_u}"
-    n2st::echo_centering_str "${optional_url}" "${url_formatting}" " " "${fill_u}" "${fill_u}"
+    n2st::echo_centering_str "https://norlab.ulaval.ca" "${url_formatting}" " "
+    n2st::echo_centering_str "${optional_url}" "${url_formatting}" " "
     echo " "
     echo " "
 
   elif [[ ${splash_type} == negative ]]; then
 
-    local SS="·"
+    local SS="⠐"
     if [[ ${TEAMCITY_VERSION} ]] || [[ ${IS_TEAMCITY_RUN} == true ]] ; then
       SS=""
     fi
@@ -339,7 +357,7 @@ function n2st::norlab_splash() {
     n2st::echo_centering_str "⣿⣿⣿⣿⣿⣿⣿⡿⢠⠃⠀⠀⠉⣻⣿⣿⣤⣿⣿⠀⣿⠛⠿⣿⣿⣿⣿⣿⢸⣿⠀⣿⣟⣤⣿⣿⣟⠉⠀⢠⠻⡀⣴⣿⣿⣿⣿⣿⣿⣿" "${snow_formatting}" "⣿"
     n2st::echo_centering_str "⣿⣿⣿⣿⣿⣿⡿⠀⡟⠀⠀⠈⠟⠋⠁⣤⣿⣿⣿⣶⣿⠂⠀⠀⣿⣿⠀⣿⢸⣿⣶⣿⣿⣿⣄⠈⠙⠁⢀⠋⠀⣿⠈⣿⣿⣿⣿⣿⣿⣿" "${snow_formatting}" "⣿"
     n2st::echo_centering_str "⣿⣿⣿⣿⠀⠀⠀⢰⠁⠀⠀⠀⠀⠹⠟⠉⣀⣴⣾⡿⠛⠿⣿⣦⣿⣿⣿⣿⠟⠛⢿⣷⣤⡀⠉⠋⠀⣠⠋⠀⠀⢸⠀⠀⠀⠉⣿⣿⣿⣿" "${snow_formatting}" "⣿"
-    n2st::echo_centering_str "${SS}··•· ${title} ··•••" "${title_formatting}" "·" "${fill_t}" "${fill_t}"
+    n2st::echo_centering_str "${SS}··•· ${title} ··•••" "${title_formatting}" "·"
     n2st::echo_centering_str "⣿⣿⣿⣿⠀⠀⠀⢸⠀⠀⠀⠀⠀⢀⡀⠈⠻⣿⣶⣄⠀⣀⣶⣿⣿⣿⣿⣦⣀⠀⣹⣦⣭⣥⣤⢖⠋⠀⠀⠀⠀⢸⠀⠀⠀⢸⣿⣿⣿⣿" "${snow_formatting}" "⣿"
     n2st::echo_centering_str "⣿⣿⣿⣿⣷⣶⣤⠀⡇⠀⠀⠀⡀⠉⠛⣿⣷⣦⣴⣿⣿⠛⠁⠀⣿⣿⠀⠉⢻⣿⣿⣤⣴⣾⡿⠛⠉⣀⠀⠀⠀⢸⠀⢀⣠⣼⣿⣿⣿⣿" "${snow_formatting}" "⣿"
     n2st::echo_centering_str "⣿⣿⣿⣿⣿⣿⣿⡆⢻⠀⠀⠈⠛⢿⣿⣾⣿⣿⣿⠀⣿⠀⣀⣴⣿⣿⣦⡀⢸⣿⠀⣿⡿⣿⣶⣿⠿⠛⠀⠀⠀⡟⣸⣿⣿⣿⣿⣿⣿⣿" "${snow_formatting}" "⣿"
@@ -352,8 +370,8 @@ function n2st::norlab_splash() {
     n2st::echo_centering_str "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄⣀⣀⣀⣀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿" "${snow_formatting}" "⣿"
     n2st::echo_centering_str "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿" "${snow_formatting}" "⣿"
     echo " "
-    n2st::echo_centering_str "https://norlab.ulaval.ca" "${url_formatting}" " " "${fill_u}" "${fill_u}"
-    n2st::echo_centering_str "${optional_url}" "${url_formatting}" " " "${fill_u}" "${fill_u}"
+    n2st::echo_centering_str "https://norlab.ulaval.ca" "${url_formatting}" " "
+    n2st::echo_centering_str "${optional_url}" "${url_formatting}" " "
     echo " "
     echo " "
 

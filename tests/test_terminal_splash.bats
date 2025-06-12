@@ -127,8 +127,12 @@ teardown() {
 
   run n2st::echo_centering_str "$CENTERED_STR" "$THE_STYLE" "$THE_PAD_CHAR"
   assert_success
-  assert_output --partial "...[0m"
+  assert_output --regexp "^..."
+  assert_output --regexp "...$"
+  refute_output --partial "...\033[0m"
+  refute_output --partial "${THE_STYLE}..."
 }
+
 
 # ----n2st::snow_splash----------------------------------------------------------------------------
 @test "n2st::snow_splash › default" {
@@ -151,11 +155,15 @@ teardown() {
 
 @test "n2st::snow_splash › teamcity case" {
   IS_TEAMCITY_RUN=true
-
+#  printenv | grep -i -e 'TERM' -e 'TPUT'  -e 'COLUMNS' >&3
   run n2st::snow_splash
-  assert_line --index 2 --regexp "\["2m.*"\["0m
-  assert_output --regexp "\["1m.*"NorLab".*"\["0m
-  assert_output --regexp "\["2m.*"https://norlab.ulaval.ca".*"\["0m
+#  assert_line --index 2 --regexp "\["2m.*"\["0m
+  assert_output --regexp .*"NorLab".*
+  assert_output --regexp .*"https://norlab.ulaval.ca".*
+  assert_output --regexp "^..."
+  assert_output --regexp "...$"
+  refute_output --partial "...\033[0m"
+  refute_output --partial "${THE_STYLE}..."
 }
 
 # ----n2st::norlab_splash--------------------------------------------------------------------------------
@@ -203,9 +211,9 @@ teardown() {
   IS_TEAMCITY_RUN=true
 
   run n2st::norlab_splash
-  assert_line --index 2 --regexp "\["2m.*"\["0m
-  assert_output --regexp "\["1m.*"NorLab".*"\["0m
-  assert_output --regexp "\["2m.*"https://norlab.ulaval.ca".*"\["0m
+  refute_line --index 2 --regexp "\["2m.*"\["0m
+  refute_output --regexp "\["1m.*"NorLab".*"\["0m
+  refute_output --regexp "\["2m.*"https://norlab.ulaval.ca".*"\["0m
 }
 
 # ====legacy API support testing===================================================================
