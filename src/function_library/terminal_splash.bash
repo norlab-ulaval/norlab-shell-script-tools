@@ -15,6 +15,84 @@
 #set -v
 
 # =================================================================================================
+# Get the terminal width fallback alternative
+#
+# Usage:
+#   $ term_width=$( n2st::get_terminal_width_robust [<minimum-width-fallback>] )
+#
+# Positional argument:
+#   <minimum-width-fallback>    Fallback terminal width value (Default: 80)
+# Globals:
+#   read TERM
+#   read COLUMNS
+# Outputs:
+#   Output the terminal width to STDOUT
+#   The stderr output is muted in case of console print related problem (warning or error)
+# Returns:
+#   0 on success
+# =================================================================================================
+function n2st::get_terminal_width_robust() {
+  local term_width
+  local terminal_min_witdh_fallback=${1:-80}
+
+  if [[ -n "$COLUMNS" ]]; then
+      term_width="$COLUMNS"
+  elif command -v tput >/dev/null 2>&1; then
+      if [[ -z "$TERM" || "$TERM" == "dumb" ]]; then
+          term_width=$(tput -T xterm-256color cols 2>/dev/null) || term_width="$terminal_min_witdh_fallback"
+      else
+          term_width=$(tput cols 2>/dev/null) || term_width="$terminal_min_witdh_fallback"
+      fi
+  else
+      term_width="$terminal_min_witdh_fallback"  # Default fallback
+  fi
+
+  if [[ -n "${BATS_TEST_FILENAME}" ]]; then
+    term_width=$(( term_width - 9))
+  fi
+
+  # ....Output.....................................................................................
+  echo "$term_width"
+
+  return 0
+}
+
+# =================================================================================================
+# Generate padding
+# Note: this a more robust method than using the seq command when handling unicode char
+#
+# Usage:
+#   $ padding=$( n2st::generate_padding <pad-character> <padding-length> )
+#
+# Positional argument:
+#   <pad-character>       The padding character
+#   <padding-length>      The padding length
+# Outputs:
+#   Output the padding text to STDOUT
+# Returns:
+#   0 on success
+# =================================================================================================
+function n2st::generate_padding() {
+  local pad_char=${1:?'Missing a mandatory parameter error'}
+  local padding_len=${2:?'Missing a mandatory parameter error'}
+
+  # ....Generate padding...........................................................................
+  local pad=""
+  local i=0
+  while ((i < padding_len)); do
+      pad="${pad}${pad_char}"
+      ((i++))
+  done
+
+  # ....Output.....................................................................................
+  echo "$pad"
+
+  return 0
+}
+
+
+
+# =================================================================================================
 # Dynamic printf centering tool. Centering based on the terminal screen width at runtime.
 #
 # Usage:
@@ -29,8 +107,6 @@
 #   execution, the function manage those gracefully by simply continuing execution without
 #   printing warning and error to console.
 #
-# Globals:
-#   none
 # Arguments:
 #   <theString>           The string to center
 #   <theStyle>            The style appended at the begining of the line (set to ' ' to mute style)
@@ -78,46 +154,23 @@ function n2st::echo_centering_str() {
   fi
 
   # ....Get terminal width.........................................................................
-  local terminal_min_witdh_fallback=80
   local term_width
+  term_width="$( n2st::get_terminal_width_robust 80 )"
 
-  if [[ -n "$COLUMNS" ]]; then
-      term_width="$COLUMNS"
-  elif command -v tput >/dev/null 2>&1; then
-      if [[ -z "$TERM" || "$TERM" == "dumb" ]]; then
-          term_width=$(tput -T xterm-256color cols 2>/dev/null) || term_width="$terminal_min_witdh_fallback"
-      else
-          term_width=$(tput cols 2>/dev/null) || term_width="$terminal_min_witdh_fallback"
-      fi
-  else
-      term_width="$terminal_min_witdh_fallback"  # Default fallback
-  fi
-
-  if [[ -n "${BATS_TEST_FILENAME}" ]]; then
-    term_width=$(( term_width - 9))
-  fi
 
   # ....Padding....................................................................................
   # Compute padding value
   local text
-  local text_width
-  local pad_char_len
   printf -v text -- "%b" "${text_pre}" 2>/dev/null
   [[ $? -ne 0 ]] && text=$text_pre  # Fallback
-  text_width=${#text}
-  pad_char_len=${#pad_char}
+
+  local text_width=${#text}
+  local pad_char_len=${#pad_char}
 
   local total_padding=$(( term_width - $((text_width / pad_char_len)) )) 2>/dev/null
   local side_padding=$((total_padding / 2)) 2>/dev/null
 
-  # Generate padding
-  # Note: this a more robust method than using the seq command when handling unicode char
-  local pad=""
-  local i=0
-  while ((i < side_padding)); do
-      pad="${pad}${pad_char}"
-      ((i++))
-  done
+  padding="$( n2st::generate_padding "${pad_char}" "${side_padding}" )"
 
   # ....Formating..................................................................................
   if [[ "${style}" == " " ]]; then
@@ -135,12 +188,12 @@ function n2st::echo_centering_str() {
 
   # Alternative implementation
   #echo -n -e  "${style}" 2>/dev/null
-  #LC_CTYPE="${LC_CTYPE}" echo -e "${fill_left}${pad}${text}${pad}${fill_right}" 2>/dev/null
+  #LC_CTYPE="${LC_CTYPE}" echo -e "${fill_left}${padding}${text}${padding}${fill_right}" 2>/dev/null
   #echo -n -e  "${style_off}" 2>/dev/null
 
   {
     printf "%b" "${style}"
-    printf -- "%b%s%b%s%b" "${fill_left}" "${pad}" "${text}" "${pad}" "${fill_right}"
+    printf -- "%b%s%b%s%b" "${fill_left}" "${padding}" "${text}" "${padding}" "${fill_right}"
     printf "%b\n" "${style_off}"
   } 2>/dev/null
 
@@ -151,6 +204,7 @@ function n2st::echo_centering_str() {
     echo -e "pad_char_len: ${pad_char_len}"
     echo -e "total_padding: ${total_padding}"
     echo -e "side_padding: ${side_padding}"
+    echo -e "padding: ${padding}"
   fi
 
   # ....Teardown...................................................................................
@@ -421,3 +475,13 @@ function snow_splash() {
 function norlab_splash() {
   n2st::norlab_splash "$@"
 }
+
+# ::::Main:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+  # This script is being run, ie: __name__="__main__"
+  echo -e "${MSG_ERROR_FORMAT}[ERROR]${MSG_END_FORMAT} This script must be sourced i.e.: $ source $(basename "$0")" 1>&2
+  exit 1
+else
+  # This script is being sourced, ie: __name__="__source__"
+  :
+fi

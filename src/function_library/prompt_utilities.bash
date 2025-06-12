@@ -24,6 +24,11 @@ set -o allexport
 source .env.msg_style
 set +o allexport
 
+# ....Load dependencies............................................................................
+if [[ -z "$( declare -f n2st::generate_padding )"  ]] || [[ -z "$( declare -f n2st::get_terminal_width_robust )"  ]]; then
+  source "./terminal_splash.bash" || exit 1
+fi
+
 
 # =================================================================================================
 # Print formatted message to prompt
@@ -113,7 +118,6 @@ function n2st::print_msg_error() {
   echo ""
 }
 
-
 # =================================================================================================
 # Draw horizontal line the entire width of the terminal
 # Source: https://web.archive.org/web/20230402083320/http://wiki.bash-hackers.org/snipplets/print_horizontal_line#a_line_across_the_entire_width_of_the_terminal
@@ -135,36 +139,11 @@ function n2st::draw_horizontal_line_across_the_terminal_window() {
   local terminal_width
   local pad
 
-  # Ref https://bash.cyberciti.biz/guide/$TERM_variable
-  if [[ -z ${TERM} ]]; then
-    tput_flag=("-T" "xterm-256color")
-  elif [[ ${TERM} == dumb ]]; then
-    # "dumb" is the one set on TeamCity Agent
-    tput_flag=("-T" "xterm-256color")
-#    unset tput_flag
-  else
-    tput_flag=("-T" "$TERM")
-  fi
+  terminal_width=$( n2st::get_terminal_width_robust 80 )
+  padding=$( n2st::generate_padding "${symbol}" "${terminal_width}" )
 
-  # (NICE TO HAVE) ToDo:
-  #     - var TERM should be setup in Dockerfile.dependencies
-  #     - print a warning message if TERM is not set
-
-  ## Original version
-  #printf '%*s\n' "${COLUMNS:-$(tput ${tput_flag} cols)}" '' | tr ' ' "${symbol}"
-
-  # Alt version
-  # shellcheck disable=SC2086
-  terminal_width="${COLUMNS:-$(tput "${tput_flag[@]}" cols)}"
-  pad=$(printf -- "${symbol}%.0s" $(seq "${terminal_width}"))
-  printf -- "${pad}\n"
-#  printf -- "%\n" "${pad}"
-
-#  # (CRITICAL) ToDo: on task end >> delete next bloc ↓↓
-#  echo "terminal_width=${terminal_width}"
-#  echo "seq $terminal_width = $(seq $terminal_width)"
-#  echo "$SHELL"
-#  ps -p $$
+#  echo -e "$padding"
+  printf -- "%s\n" "${padding}"
 }
 
 # =================================================================================================
@@ -331,3 +310,4 @@ function print_formated_file_preview_end() {
 function preview_file_in_promt() {
   n2st::preview_file_in_promt "$@"
 }
+
