@@ -150,11 +150,11 @@ function n2st::echo_centering_str() {
 
   # Try to use a UTF-8 locale for consistent character handling
   if locale -a 2>/dev/null | grep -q "C.UTF-8"; then
-      export LC_ALL="" LC_CTYPE="C.UTF-8"
+      export LC_ALL="" LC_CTYPE="C.UTF-8" 2>/dev/null
   elif locale -a 2>/dev/null | grep -q "en_US.UTF-8"; then
-      export LC_ALL="" LC_CTYPE="en_US.UTF-8"
+      export LC_ALL="" LC_CTYPE="en_US.UTF-8" 2>/dev/null
   else
-      export LC_ALL="" LC_CTYPE="C"
+      export LC_ALL="" LC_CTYPE="C" 2>/dev/null
   fi
 
   # ....Get terminal width.........................................................................
@@ -213,8 +213,8 @@ function n2st::echo_centering_str() {
 
   # ....Teardown...................................................................................
   # Restore original locale settings
-  export LC_CTYPE="${original_lc_ctype}"
-  export LC_ALL="${original_lc_all}"
+  export LC_CTYPE="${original_lc_ctype}" 2>/dev/null
+  export LC_ALL="${original_lc_all}" 2>/dev/null
 
   # The return value is only relevant for testing purposes.
   return 0
