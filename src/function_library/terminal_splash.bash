@@ -166,11 +166,11 @@ function n2st::echo_centering_str() {
 
 
   # ....Positional arguments.......................................................................
-  local text_pre=${remaining_args[0]:?'Missing a mandatory parameter error'}
-  local style="${remaining_args[1]:?'Missing a mandatory parameter error'}"
-  local pad_char="${remaining_args[2]:?'Missing a mandatory parameter error'}"
-  local fill_left="${remaining_args[3]:-""}"
-  local fill_right="${remaining_args[4]:-""}"
+  local text_pre=${remaining_args[1]:?'Missing a mandatory parameter error'}
+  local style="${remaining_args[2]:?'Missing a mandatory parameter error'}"
+  local pad_char="${remaining_args[3]:?'Missing a mandatory parameter error'}"
+  local fill_left="${remaining_args[4]:-""}"
+  local fill_right="${remaining_args[5]:-""}"
 
   # ....Pre-check and set default locale...........................................................
   # Save original locale settings
@@ -329,7 +329,8 @@ function n2st::snow_splash() {
   n2st::echo_centering_str "⠀⠙⣻⣿⣿⣧⠀⠀⢸⣿⠀⠀⢀⣿⣿⣿⣟⠉⠀⠀" "${snow_formatting}" "⠀"
   n2st::echo_centering_str "⠘⠛⠛⠉⠉⠙⠿⣿⣾⣿⣷⣿⠟⠉⠉⠙⠛⠛⠀⠀" "${snow_formatting}" "⠀"
   #n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" # Original
-  n2st::echo_centering_str --title "···•· ${title} ··•••" "${title_formatting}" "·" # Original
+#  n2st::echo_centering_str --title "···•· ${title} ··•••" "${title_formatting}" "·"
+  n2st::echo_centering_str --title " ${title} " "${title_formatting}" "·"
 #  n2st::echo_centering_str " ${title} " "${title_formatting}" "•"
 ##  n2st::echo_centering_str " ${title} " "${title_formatting}" ":"
   n2st::echo_centering_str "⢠⣶⣤⣄⣀⣤⣶⣿⢿⣿⢿⣿⣶⣄⣀⣤⣤⣶⠀⠀" "${snow_formatting}" "⠀"
