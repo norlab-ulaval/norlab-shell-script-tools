@@ -136,12 +136,41 @@ function n2st::echo_centering_str() {
   #     - var TERM should be setup in Dockerfile.dependencies.
   #     - print a warning message if TERM is not set
 
+  # ....Set env variables (pre cli)................................................................
+  declare -a remaining_args=()
+  local title=false
+
+  # ....cli..........................................................................................
+  while [ $# -gt 0 ]; do
+
+    case $1 in
+      --title)
+        title=true
+        shift
+        ;;
+      --) # no more option
+        shift
+        remaining_args=( "$@" )
+        break
+        ;;
+      *) # Default case
+        remaining_args=("$@")
+        break
+        ;;
+    esac
+
+  done
+
+  # ....Set env variables (post cli)...............................................................
+  # Add env var
+
+
   # ....Positional arguments.......................................................................
-  local text_pre=${1:?'Missing a mandatory parameter error'}
-  local style="${2:?'Missing a mandatory parameter error'}"
-  local pad_char="${3:?'Missing a mandatory parameter error'}"
-  local fill_left="${4:-""}"
-  local fill_right="${5:-""}"
+  local text_pre=${remaining_args[0]:?'Missing a mandatory parameter error'}
+  local style="${remaining_args[1]:?'Missing a mandatory parameter error'}"
+  local pad_char="${remaining_args[2]:?'Missing a mandatory parameter error'}"
+  local fill_left="${remaining_args[3]:-""}"
+  local fill_right="${remaining_args[4]:-""}"
 
   # ....Pre-check and set default locale...........................................................
   # Save original locale settings
@@ -172,6 +201,9 @@ function n2st::echo_centering_str() {
   local pad_char_len=${#pad_char}
 
   local adjusted_term_width=$(( term_width * pad_char_len ))
+  if [[ ${title} == true ]]; then
+    text_width=$(( text_width * pad_char_len ))
+  fi
 
 #  local adjusted_text_width=$(( text_width / pad_char_len ))
 #  local total_padding=$(( adjusted_term_width - adjusted_text_width - 1))
@@ -296,9 +328,10 @@ function n2st::snow_splash() {
   n2st::echo_centering_str "⢀⣤⡀⣿⣿⠀⠀⠉⣿⣿⡿⠁⠀⠀⣿⡟⣀⣤⠀⠀" "${snow_formatting}" "⠀"
   n2st::echo_centering_str "⠀⠙⣻⣿⣿⣧⠀⠀⢸⣿⠀⠀⢀⣿⣿⣿⣟⠉⠀⠀" "${snow_formatting}" "⠀"
   n2st::echo_centering_str "⠘⠛⠛⠉⠉⠙⠿⣿⣾⣿⣷⣿⠟⠉⠉⠙⠛⠛⠀⠀" "${snow_formatting}" "⠀"
-  # n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" # Original
+  #n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" # Original
+  n2st::echo_centering_str --title "···•· ${title} ··•••" "${title_formatting}" "·" # Original
 #  n2st::echo_centering_str " ${title} " "${title_formatting}" "•"
-  n2st::echo_centering_str " ${title} " "${title_formatting}" ":"
+##  n2st::echo_centering_str " ${title} " "${title_formatting}" ":"
   n2st::echo_centering_str "⢠⣶⣤⣄⣀⣤⣶⣿⢿⣿⢿⣿⣶⣄⣀⣤⣤⣶⠀⠀" "${snow_formatting}" "⠀"
   n2st::echo_centering_str "⠀⣨⣿⣿⣿⡟⠁⠀⢸⣿⠀⠀⠉⣿⣿⣿⣯⣀⠀⠀" "${snow_formatting}" "⠀"
   n2st::echo_centering_str "⠈⠛⠁⣿⣿⢀⠀⣠⣿⣿⣷⡀⠀⠈⣿⣧⠉⠛⢀⠀" "${snow_formatting}" "⠀"
@@ -383,9 +416,11 @@ function n2st::norlab_splash() {
     n2st::echo_centering_str "⠀⠀⠘⣿⣿⢡⡋⠙⠿⠀⣿⡀⢸⡟⠙⢷⣤⠀⣤⠞⠾⢿⡇⢰⡟⠀⠟⠉⢻⡟⣾⣿⠗⠀" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⠀⠀⢰⢁⣿⣿⠛⠀⣀⠈⠀⢸⡇⢸⣶⣄⠀⣤⠘⡀⢸⠃⠈⠀⣀⠀⠛⣿⣼⠸⡄⠀⠀" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⣶⣾⣿⣾⣿⣿⣿⠉⢀⣤⡶⠒⠀⠈⠛⢿⠀⠛⠚⠀⠀⠒⣶⣤⡀⢙⡿⣴⣿⣧⣿⣦⣤" "${snow_formatting}" "⠀"
-    # n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" # Original
+    #n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" # Original
+#    n2st::echo_centering_str --title "···•· ${title} ··•••" "${title_formatting}" "·"
+    n2st::echo_centering_str --title " ${title} " "${title_formatting}" "·"
 #    n2st::echo_centering_str " ${title} " "${title_formatting}" "•"
-    n2st::echo_centering_str " ${title} " "${title_formatting}" ":"
+#    n2st::echo_centering_str " ${title} " "${title_formatting}" ":"
     n2st::echo_centering_str "⠀⣿⣿⣏⣿⣿⣿⣿⡿⣿⣄⠀⠛⣿⡿⠛⠀⠀⠀⠒⣶⡮⠛⠢⠿⣛⣭⣿⣿⣿⣿⣿⣿⣿" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⠈⠉⣿⢹⣿⣿⠛⢶⣤⡀⠉⠉⠀⢰⣿⣿⠀⣿⣷⡀⠀⠉⠉⣀⣤⡾⠛⣿⣿⡏⡿⠛⠉" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⠀⠀⣨⣆⣿⣿⠟⠀⠀⣠⠀⢸⡇⠘⠉⣀⠀⡀⠉⠀⢸⡆⢰⡄⠀⠐⠿⣿⣿⣼⠀⠀⠀" "${snow_formatting}" "⠀"
@@ -418,9 +453,11 @@ function n2st::norlab_splash() {
     n2st::echo_centering_str "⠀⠀⠀⠀⡿⢀⣿⣿⣟⠛⠉⠀⣀⣀⡀⠀⠀⠸⣿⠀⢸⣿⣶⣤⠀⠀⣤⣶⢸⡇⠀⣿⠇⠀⠀⢀⣀⣀⠀⠉⠛⣿⢃⣿⡄⢿⠀⠀⠀⠀" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⢀⣀⣤⣼⡇⣸⣿⣿⣿⣦⣶⠿⠛⠉⠀⢀⣠⡀⠀⠀⠘⢿⣿⣿⠀⠀⣿⠏⡸⠃⠀⠀⢀⣄⡀⠀⠉⠛⠿⣶⣴⠇⣼⣿⣇⢸⣇⡀⠀⠀" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⣿⣿⣿⣿⠁⣿⣿⣿⣿⣿⣿⣄⣠⣴⡾⠟⠉⠀⢀⣤⣄⠀⠈⠙⠀⠀⠁⠀⠀⣠⣤⡀⠀⠉⠻⢷⣦⣄⣠⡿⢃⣾⣿⣿⣿⠀⣿⣿⣿⣶" "${snow_formatting}" "⠀"
-    # n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" # Original
+    #n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" # Original
+#    n2st::echo_centering_str --title "···•· ${title} ··•••" "${title_formatting}" "·"
+    n2st::echo_centering_str --title " ${title} " "${title_formatting}" "·"
 #    n2st::echo_centering_str " ${title} " "${title_formatting}" "•"
-    n2st::echo_centering_str " ${title} " "${title_formatting}" ":"
+#    n2st::echo_centering_str " ${title} " "${title_formatting}" ":"
     n2st::echo_centering_str "⣿⣿⣿⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⣏⡀⠀⠐⠾⣿⣿⣿⡿⠒⠀⠀⠀⠀⠠⢴⣶⣦⣍⠳⠦⣄⣼⡿⠟⣋⣴⣿⣿⣿⣿⣿⠀⣿⣿⣿⣿" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠿⣿⣿⣿⠀⣿⣿⣿⣿⣿⣿⠁⠉⠛⠿⣶⣤⡀⠀⠉⠁⠀⣠⣴⠀⠀⣦⣀⠀⠈⠉⠀⢀⣤⣶⠶⠒⠉⠈⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿" "${snow_formatting}" "⠀"
     n2st::echo_centering_str "⠀⠀⠈⢹⡇⢹⣿⣿⣿⠛⠛⠿⣶⣤⡀⠀⠉⠀⢀⠀⢰⣿⣿⣿⠀⠀⣿⣿⣿⠀⠀⡀⠀⠉⠀⢀⣤⣶⠿⠛⠻⣿⣿⣿⡏⢸⡟⠛⠉⠁" "${snow_formatting}" "⠀"
@@ -455,9 +492,11 @@ function n2st::norlab_splash() {
     n2st::echo_centering_str "⣿⣿⣿⣿⣿⣿⣿⡿⢠⠃⠀⠀⠉⣻⣿⣿⣤⣿⣿⠀⣿⠛⠿⣿⣿⣿⣿⣿⢸⣿⠀⣿⣟⣤⣿⣿⣟⠉⠀⢠⠻⡀⣴⣿⣿⣿⣿⣿⣿⣿" "${snow_formatting}" "⣿"
     n2st::echo_centering_str "⣿⣿⣿⣿⣿⣿⡿⠀⡟⠀⠀⠈⠟⠋⠁⣤⣿⣿⣿⣶⣿⠂⠀⠀⣿⣿⠀⣿⢸⣿⣶⣿⣿⣿⣄⠈⠙⠁⢀⠋⠀⣿⠈⣿⣿⣿⣿⣿⣿⣿" "${snow_formatting}" "⣿"
     n2st::echo_centering_str "⣿⣿⣿⣿⠀⠀⠀⢰⠁⠀⠀⠀⠀⠹⠟⠉⣀⣴⣾⡿⠛⠿⣿⣦⣿⣿⣿⣿⠟⠛⢿⣷⣤⡀⠉⠋⠀⣠⠋⠀⠀⢸⠀⠀⠀⠉⣿⣿⣿⣿" "${snow_formatting}" "⣿"
-    # n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" # Original
+    #n2st::echo_centering_str "···•· ${title} ··•••" "${title_formatting}" "·" # Original
+#    n2st::echo_centering_str --title "···•· ${title} ··•••" "${title_formatting}" "·"
+    n2st::echo_centering_str --title " ${title} " "${title_formatting}" "·"
 #    n2st::echo_centering_str " ${title} " "${title_formatting}" "•"
-    n2st::echo_centering_str "${title}" "${title_formatting}" " "
+#    n2st::echo_centering_str "${title}" "${title_formatting}" " "
     n2st::echo_centering_str "⣿⣿⣿⣿⠀⠀⠀⢸⠀⠀⠀⠀⠀⢀⡀⠈⠻⣿⣶⣄⠀⣀⣶⣿⣿⣿⣿⣦⣀⠀⣹⣦⣭⣥⣤⢖⠋⠀⠀⠀⠀⢸⠀⠀⠀⢸⣿⣿⣿⣿" "${snow_formatting}" "⣿"
     n2st::echo_centering_str "⣿⣿⣿⣿⣷⣶⣤⠀⡇⠀⠀⠀⡀⠉⠛⣿⣷⣦⣴⣿⣿⠛⠁⠀⣿⣿⠀⠉⢻⣿⣿⣤⣴⣾⡿⠛⠉⣀⠀⠀⠀⢸⠀⢀⣠⣼⣿⣿⣿⣿" "${snow_formatting}" "⣿"
     n2st::echo_centering_str "⣿⣿⣿⣿⣿⣿⣿⡆⢻⠀⠀⠈⠛⢿⣿⣾⣿⣿⣿⠀⣿⠀⣀⣴⣿⣿⣦⡀⢸⣿⠀⣿⡿⣿⣶⣿⠿⠛⠀⠀⠀⡟⣸⣿⣿⣿⣿⣿⣿⣿" "${snow_formatting}" "⣿"
