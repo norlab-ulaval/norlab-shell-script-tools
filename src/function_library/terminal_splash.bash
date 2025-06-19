@@ -137,7 +137,6 @@ function n2st::echo_centering_str() {
   #     - print a warning message if TERM is not set
 
   # ....Set env variables (pre cli)................................................................
-  declare -a remaining_args=()
   local title=false
 
   # ....cli..........................................................................................
@@ -148,29 +147,19 @@ function n2st::echo_centering_str() {
         title=true
         shift
         ;;
-      --) # no more option
-        shift
-        remaining_args=( "$@" )
-        break
-        ;;
       *) # Default case
-        remaining_args=("$@")
         break
         ;;
     esac
 
   done
 
-  # ....Set env variables (post cli)...............................................................
-  # Add env var
-
-
   # ....Positional arguments.......................................................................
-  local text_pre=${remaining_args[1]:?'Missing a mandatory parameter error'}
-  local style="${remaining_args[2]:?'Missing a mandatory parameter error'}"
-  local pad_char="${remaining_args[3]:?'Missing a mandatory parameter error'}"
-  local fill_left="${remaining_args[4]:-""}"
-  local fill_right="${remaining_args[5]:-""}"
+  local text_pre=${1:?'Missing a mandatory parameter error'}
+  local style="${2:?'Missing a mandatory parameter error'}"
+  local pad_char="${3:?'Missing a mandatory parameter error'}"
+  local fill_left="${4:-""}" # Deprecated. Kept for legacy support.
+  local fill_right="${5:-""}" # Deprecated. Kept for legacy support.
 
   # ....Pre-check and set default locale...........................................................
   # Save original locale settings
@@ -197,19 +186,22 @@ function n2st::echo_centering_str() {
   printf -v text -- "%b" "${text_pre}" 2>/dev/null
   [[ $? -ne 0 ]] && text="${text_pre}"  # Fallback
 
+  local side_padding=
+  local total_padding
+  local adjusted_term_width
+
   local text_width=${#text}
   local pad_char_len=${#pad_char}
 
-  local adjusted_term_width=$(( term_width * pad_char_len ))
+  adjusted_term_width=$(( term_width * pad_char_len ))
   if [[ ${title} == true ]]; then
     text_width=$(( text_width * pad_char_len ))
   fi
 
-#  local adjusted_text_width=$(( text_width / pad_char_len ))
-#  local total_padding=$(( adjusted_term_width - adjusted_text_width - 1))
-  local total_padding=$(( adjusted_term_width - text_width - 1))
-  total_padding=$(( total_padding - $(( total_padding % 2 )) ))
-  local side_padding=$((total_padding / 2))
+  total_padding=$(( adjusted_term_width - text_width))
+#  local total_padding=$(( adjusted_term_width - text_width -1))
+  total_padding=$(( total_padding + $(( total_padding % 2 )) ))
+  side_padding=$((total_padding / 2))
   side_padding=$(( side_padding / pad_char_len ))
 
   padding="$( n2st::generate_padding "${pad_char}" "${side_padding}" )"
@@ -229,10 +221,9 @@ function n2st::echo_centering_str() {
   #       ref task N2ST-2 fix: splash LC_TYPE related error
 
   local centered_str="${fill_left}${padding}${text}${padding}${fill_right}"
-#  if [[ ${#centered_str} -gt $adjusted_term_width ]]; then
-##    centered_str="${centered_str:0:$adjusted_term_width}"
-#    n2st::echo_centering_str "${text}" "${style}" " "
-#  fi
+  if [[ ${#centered_str} -gt $adjusted_term_width ]]; then
+    centered_str="${centered_str:0:$adjusted_term_width}"
+  fi
 
   # Alternative implementation
   echo -n -e  "${style}" 2>/dev/null

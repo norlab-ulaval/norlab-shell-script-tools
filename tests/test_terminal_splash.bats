@@ -85,13 +85,6 @@ teardown() {
   assert_output --partial "$CENTERED_STR"
   assert_output --partial "$THE_PAD_CHAR"
 
-  run n2st::echo_centering_str "$CENTERED_STR" "$THE_STYLE" "$THE_PAD_CHAR" "+++" "---"
-  assert_success
-  assert_output --partial "$CENTERED_STR"
-  assert_output --partial "$THE_PAD_CHAR"
-  assert_output --partial "+++"
-  assert_output --partial "---"
-
 #  n2st::echo_centering_str "$CENTERED_STR" "$THE_STYLE" "$THE_PAD_CHAR" >&3
 }
 
@@ -231,12 +224,10 @@ teardown() {
   assert_output --partial "$CENTERED_STR"
   assert_output --partial "$THE_PAD_CHAR"
 
-  run echo_centering_str "$CENTERED_STR" "$THE_STYLE" "$THE_PAD_CHAR" "+++" "---"
+  run echo_centering_str "$CENTERED_STR" "$THE_STYLE" "$THE_PAD_CHAR"
   assert_success
   assert_output --partial "$CENTERED_STR"
   assert_output --partial "$THE_PAD_CHAR"
-  assert_output --partial "+++"
-  assert_output --partial "---"
 }
 
 

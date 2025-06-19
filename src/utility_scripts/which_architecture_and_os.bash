@@ -2,10 +2,10 @@
 # =================================================================================================
 #
 # Utility script to check the host architecture plus OS type and set IMAGE_ARCH_AND_OS environment variable as either
-#       - IMAGE_ARCH_AND_OS=arm64\darwin
-#       - IMAGE_ARCH_AND_OS=x86\linux
-#       - IMAGE_ARCH_AND_OS=arm64\linux
-#       - IMAGE_ARCH_AND_OS=arm64\l4t
+#       - IMAGE_ARCH_AND_OS=darwin\arm64
+#       - IMAGE_ARCH_AND_OS=linux\x86
+#       - IMAGE_ARCH_AND_OS=linux\arm64
+#       - IMAGE_ARCH_AND_OS=l4t\arm64
 # depending on which architecture and OS type the script is running:
 #     - ARCH: aarch64, arm64, x86_64
 #     - OS: Linux, Darwin, Window
