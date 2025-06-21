@@ -399,12 +399,12 @@ function n2st::norlab_splash() {
   if [[ ${splash_type} == small ]]; then
 
 #    local line_style_top="⠁"
-#    local line_style_top="⠉"
-    local line_style_top="⎺"
+    local line_style_top="⠉"
+#    local line_style_top="⎺"
 #    local line_style_top="⠛"
 #    local line_style_bottom="⡀"
-#    local line_style_bottom="⣀"
-    local line_style_bottom="⎽"
+    local line_style_bottom="⣀"
+#    local line_style_bottom="⎽"
 #    local line_style_bottom="⣤"
     local line_formating="${snow_formatting}"
 #    local line_formating="${title_formatting}"
