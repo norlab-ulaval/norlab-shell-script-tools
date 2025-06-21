@@ -45,43 +45,43 @@ fi
 #   none
 # =================================================================================================
 function n2st::_print_msg_formater() {
-  local MSG_TYPE=${1}
-  local MSG=${2}
+  local msg_type=${1}
+  local msg=${2}
 
 
-  if [[ "${MSG_TYPE}" == "BASE" ]]; then
-      MSG_TYPE=${MSG_BASE}
-  elif [[ "${MSG_TYPE}" == "DONE" ]]; then
-      MSG_TYPE=${MSG_DONE}
-  elif [[ "${MSG_TYPE}" == "WARNING" ]]; then
-    MSG_TYPE=${MSG_WARNING}
-  elif [[ "${MSG_TYPE}" == "AWAITING_INPUT" ]]; then
-    MSG_TYPE=${MSG_AWAITING_INPUT}
+  if [[ "${msg_type}" == "BASE" ]]; then
+      msg_type=${MSG_BASE}
+  elif [[ "${msg_type}" == "DONE" ]]; then
+      msg_type=${MSG_DONE}
+  elif [[ "${msg_type}" == "WARNING" ]]; then
+    msg_type=${MSG_WARNING}
+  elif [[ "${msg_type}" == "AWAITING_INPUT" ]]; then
+    msg_type=${MSG_AWAITING_INPUT}
   else
-    echo "from ${FUNCNAME[1]} › ${FUNCNAME[0]}: Unrecognized msg type '${MSG_TYPE}' (!)"
+    echo "from ${FUNCNAME[1]} › ${FUNCNAME[0]}: Unrecognized msg type '${msg_type}' (!)"
     exit 1
   fi
 
 #  echo ""
-  echo -e "${MSG_TYPE} ${MSG}"
+  echo -e "${msg_type} ${msg}"
 #  echo ""
 }
 
 function n2st::print_msg() {
-    local MSG=${1}
-    n2st::_print_msg_formater "BASE" "${MSG}"
+    local msg=${1}
+    n2st::_print_msg_formater "BASE" "${msg}"
 }
 function n2st::print_msg_done() {
-    local MSG=${1}
-    n2st::_print_msg_formater "DONE" "${MSG}"
+    local msg=${1}
+    n2st::_print_msg_formater "DONE" "${msg}"
 }
 function n2st::print_msg_warning() {
-    local MSG=${1}
-    n2st::_print_msg_formater "WARNING" "${MSG}"
+    local msg=${1}
+    n2st::_print_msg_formater "WARNING" "${msg}"
 }
 function n2st::print_msg_awaiting_input() {
-    local MSG=${1}
-    n2st::_print_msg_formater "AWAITING_INPUT" "${MSG}"
+    local msg=${1}
+    n2st::_print_msg_formater "AWAITING_INPUT" "${msg}"
 }
 
 # =================================================================================================
@@ -100,10 +100,10 @@ function n2st::print_msg_awaiting_input() {
 #   none
 # =================================================================================================
 function n2st::print_msg_error_and_exit() {
-  local ERROR_MSG=$1
+  local error_msg=$1
 
   echo ""
-  echo -e "${MSG_ERROR}: ${ERROR_MSG}" 1>&2
+  echo -e "${MSG_ERROR}: ${error_msg}" 1>&2
   # Note: The >&2 sends the echo output to standard error
   echo "Exiting now."
   echo ""
@@ -111,10 +111,10 @@ function n2st::print_msg_error_and_exit() {
 }
 
 function n2st::print_msg_error() {
-  local ERROR_MSG=$1
+  local error_msg=$1
 
   echo ""
-  echo -e "${MSG_ERROR}: ${ERROR_MSG}" 1>&2
+  echo -e "${MSG_ERROR}: ${error_msg}" 1>&2
   echo ""
 }
 
@@ -123,59 +123,66 @@ function n2st::print_msg_error() {
 # Source: https://web.archive.org/web/20230402083320/http://wiki.bash-hackers.org/snipplets/print_horizontal_line#a_line_across_the_entire_width_of_the_terminal
 #
 # Usage:
-#   $ n2st::draw_horizontal_line_across_the_terminal_window [<symbol>]
+#   $ n2st::draw_horizontal_line_across_the_terminal_window [<symbol>] [<style>]
 #
 # Globals:
 #   Read 'TERM' and 'COLUMNS' if available
 # Arguments:
-#   [<symbol>] Symbol (a single character) for the line, default to '='
+#   [<symbol>]      Symbol (a single character) for the line (default to '=')
+#   [<style>]       Formating style (default to MSG_BASE_FORMAT)
 # Outputs:
-#   The screen wide line
+#   Show the terminal wide line
 # Returns:
 #   none
 # =================================================================================================
 function n2st::draw_horizontal_line_across_the_terminal_window() {
   local symbol="${1:-=}"
+  local style="${2:-${MSG_BASE_FORMAT}}"
   local terminal_width
   local padding
 
   terminal_width=$( n2st::get_terminal_width_robust 80 )
   padding=$( n2st::generate_padding "${symbol}" "${terminal_width}" )
-
+  echo -n -e  "${style}" 2>/dev/null
 #  printf -- "%s\n" "${padding}"
   echo -e "$padding"
+  echo -n -e  "${MSG_END_FORMAT}" 2>/dev/null
 }
 
 # =================================================================================================
 # Print a formatted script header or footer
 #
 # Usage:
-#   $ n2st::print_formated_script_header "<script name>" [<symbol>]
-#   $ n2st::print_formated_script_footer "<script name>" [<symbol>]
+#   $ n2st::print_formated_script_header "<script name>" [<symbol>] [<style>]
+#   ...
+#   $ n2st::print_formated_script_footer "<script name>" [<symbol>] [<style>]
 #
 # Arguments:
 #   <script name>   The name of the script that is executing the function. Will be print in the header
 #   [<symbol>]      Symbole for the line, default to '='
+#   [<style>]       Formating style (default to MSG_BASE_FORMAT)
 # Outputs:
 #   Print formated string to stdout
 # Returns:
 #   none
 # =================================================================================================
 function n2st::print_formated_script_header() {
-  local SCRIPT_NAME="${1}"
+  local script_name="${1}"
   local symbol="${2:-=}"
+  local style="${3:-${MSG_BASE_FORMAT}}"
   echo
-  n2st::draw_horizontal_line_across_the_terminal_window "${symbol}"
-  echo -e "Starting ${MSG_DIMMED_FORMAT}${SCRIPT_NAME}${MSG_END_FORMAT}"
+  n2st::draw_horizontal_line_across_the_terminal_window "${symbol}" "${style}"
+  echo -e "Starting ${MSG_DIMMED_FORMAT}${script_name}${MSG_END_FORMAT}"
   echo
 }
 
 function n2st::print_formated_script_footer() {
-  local SCRIPT_NAME="${1}"
+  local script_name="${1}"
   local symbol="${2:-=}"
+  local style="${3:-${MSG_BASE_FORMAT}}"
   echo
-  echo -e "Completed ${MSG_DIMMED_FORMAT}${SCRIPT_NAME}${MSG_END_FORMAT}"
-  n2st::draw_horizontal_line_across_the_terminal_window "${symbol}"
+  echo -e "Completed ${MSG_DIMMED_FORMAT}${script_name}${MSG_END_FORMAT}"
+  n2st::draw_horizontal_line_across_the_terminal_window "${symbol}" "${style}"
   echo
 }
 
@@ -184,22 +191,24 @@ function n2st::print_formated_script_footer() {
 # Print formated 'back to script' message
 #
 # Usage:
-#   $ n2st::print_formated_back_to_script_msg "<script name>" [<symbol>]
+#   $ n2st::print_formated_back_to_script_msg "<script name>" [<symbol>] [<style>]
 #
 # Arguments:
 #   <script name>   The name of the script that is executing the function. Will be print in the header
 #   [<symbol>]      Symbole for the line, default to '='
+#   [<style>]       Formating style (default to MSG_BASE_FORMAT)
 # Outputs:
 #   Print formated string to stdout
 # Returns:
 #   none
 # =================================================================================================
 function n2st::print_formated_back_to_script_msg() {
-  local SCRIPT_NAME="${1}"
+  local script_name="${1}"
   local symbol="${2:-=}"
+  local style="${3:-${MSG_BASE_FORMAT}}"
   echo
-  n2st::draw_horizontal_line_across_the_terminal_window "${symbol}"
-  echo -e "Back to ${MSG_DIMMED_FORMAT}${SCRIPT_NAME}${MSG_END_FORMAT}"
+  n2st::draw_horizontal_line_across_the_terminal_window "${symbol}" "${style}"
+  echo -e "Back to ${MSG_DIMMED_FORMAT}${script_name}${MSG_END_FORMAT}"
   echo
 }
 
@@ -219,11 +228,11 @@ function n2st::print_formated_back_to_script_msg() {
 #   none
 # =================================================================================================
 function n2st::print_formated_file_preview_begin() {
-  local FILE_NAME="${1}"
+  local file_name="${1}"
   echo
   echo -e "${MSG_DIMMED_FORMAT}"
   n2st::draw_horizontal_line_across_the_terminal_window .
-  echo "${FILE_NAME} <<< EOF"
+  echo "${file_name} <<< EOF"
 }
 
 function n2st::print_formated_file_preview_end() {
@@ -248,11 +257,11 @@ function n2st::print_formated_file_preview_end() {
 #   none
 # =================================================================================================
 function n2st::preview_file_in_promt() {
-  local TMP_FILE_PATH="${1}"
+  local tmp_file_path="${1}"
 
-  n2st::print_formated_file_preview_begin "${TMP_FILE_PATH}"
+  n2st::print_formated_file_preview_begin "${tmp_file_path}"
   echo
-  more "${TMP_FILE_PATH}"
+  more "${tmp_file_path}"
   echo
   n2st::print_formated_file_preview_end
 
