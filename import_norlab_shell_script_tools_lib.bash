@@ -25,23 +25,12 @@ MSG_END_FORMAT="\033[0m"
 
 function n2st::source_lib() {
 
-  # ....Setup......................................................................................
-  local tmp_cwd
-  tmp_cwd=$(pwd)
-
   # ....Find path to script........................................................................
-  # Note: can handle both sourcing cases
-  #   i.e. from within a script or from an interactive terminal session
-  local script_path
-  local target_path
-  # Check if running interactively
-  if [[ $- == *i* ]]; then
-    # Case: running in an interactive session
-    target_path=$(realpath .)
-  else
-    # Case: running in an non-interactive session
-    script_path="$(realpath -q "${BASH_SOURCE[0]:-.}")"
-    target_path="$(dirname "${script_path}")"
+  target_path=$( git rev-parse --show-toplevel )
+  # Check if it was sourced from whitin the N2ST repository
+  if [[ "$( basename "${target_path}" .git)" != "$(basename "$(pwd)" )"  ]]; then
+    echo -e "${MSG_ERROR_FORMAT}[NBS error]${MSG_END_FORMAT} This script must be sourced from whitin the N2ST repository. cwd: $PWD" 1>&2
+    return 1
   fi
 
   # ....Load environment variables from file.......................................................
@@ -65,7 +54,7 @@ function n2st::source_lib() {
   export N2ST_VERSION
 
   # ....Teardown...................................................................................
-  cd "${tmp_cwd}" || { echo "Return to original dir error" 1>&2 && exit 1; }
+  cd "${target_path}" || { echo "Return to original dir error" 1>&2 && exit 1; }
 }
 
 # ::::Main:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
