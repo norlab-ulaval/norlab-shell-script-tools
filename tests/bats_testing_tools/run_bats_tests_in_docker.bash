@@ -97,8 +97,9 @@ PROJECT_GIT_NAME=$(basename "${PROJECT_GIT_REMOTE_URL}" .git)
 CONTAINER_TAG=$(echo "n2st-bats-test-code-isolation/${PROJECT_GIT_NAME}" | tr '[:upper:]' '[:lower:]' )
 
 # ....Pre-condition................................................................................
-if [[ "$(basename "$REPO_ROOT")" != "${SUPER_PROJECT_GIT_ROOT_NAME}" ]]; then
-  echo -e "\n[\033[1;31mERROR\033[0m] $0 must be executed from the project root!\nCurrent wordir: $(pwd)" 1>&2
+if [[ "$(basename "${REPO_ROOT}")" != "${SUPER_PROJECT_GIT_ROOT_NAME}" ]]; then
+  echo -e "\n[\033[1;31mERROR\033[0m] $0 must be executed from the project root!\nCurrent wordir: $(pwd)\n
+REPO_ROOT: ${REPO_ROOT}\nSUPER_PROJECT_GIT_ROOT_NAME: ${SUPER_PROJECT_GIT_ROOT_NAME}" 1>&2
   echo '(press any key to exit)'
   read -r -n 1
   exit 1
