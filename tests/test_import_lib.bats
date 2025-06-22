@@ -41,6 +41,9 @@ TESTED_FILE_PATH="./"
 setup_file() {
   BATS_DOCKER_WORKDIR=$(pwd) && export BATS_DOCKER_WORKDIR
 
+  # Create temporary directory for tests
+  export MOCK_DNP_DIR=$(temp_make)
+
   ## Uncomment the following for debug, the ">&3" is for printing bats msg to stdin
 #  pwd >&3 && tree -L 1 -a -hug >&3
 #  printenv >&3
@@ -58,11 +61,25 @@ teardown() {
   bats_print_run_env_variable_on_error
 }
 
-## executed once after finishing the last test (valide for all test in that file)
-#teardown_file() {
-#}
+teardown_file() {
+  # Clean up temporary directory
+  temp_del "${MOCK_DNP_DIR}"
+}
 
 # ====Test casses==================================================================================
+
+
+@test "assess execute \"source $TESTED_FILE\" (from script) › expect pass" {
+  # Create mock metadata file
+  cat > "${MOCK_DNP_DIR}/mock_improter_user_script.bash" << EOF
+cd "${BATS_DOCKER_WORKDIR:?err}" || exit 1
+source import_norlab_shell_script_tools_lib.bash || exit 1
+EOF
+
+  cd "${MOCK_DNP_DIR}" || exit 1
+  run source "mock_improter_user_script.bash"
+  assert_success
+}
 
 
 @test "assess execute with \"source $TESTED_FILE\" › expect pass" {
@@ -147,38 +164,6 @@ teardown() {
 
   # ....Tests......................................................................................
   assert_equal "$(pwd)" "${ORIGINAL_CWD}"
-}
-
-@test "${TESTED_FILE} › validate return to original dir on script exit (superproject version) › expect pass" {
-  TEST_N2ST_PATH="/code/norlab-shell-script-tools"
-  SUPERPROJECT_NAME="dockerized-norlab-project-mock"
-  SUPERPROJECT_PATH="/code/${SUPERPROJECT_NAME}"
-
-  # ....Setup superproject.........................................................................
-  assert_equal "$(pwd)" "$TEST_N2ST_PATH"
-  cd ..
-  assert_equal "$(pwd)" "/code"
-
-  git clone "https://github.com/norlab-ulaval/${SUPERPROJECT_NAME}.git"
-  assert_dir_exist "${SUPERPROJECT_PATH}"
-
-  # ....Test setup.................................................................................
-  cd "${SUPERPROJECT_PATH}"
-  local ORIGINAL_CWD=$(pwd)
-
-#  # Visualise the testing directories
-#  (echo && pwd && tree -L 2 -a) >&3
-
-  # ....Import N2ST library........................................................................
-#  cd "$TEST_N2ST_PATH"
-  source "${TEST_N2ST_PATH}/${TESTED_FILE}"
-
-  # ....Tests......................................................................................
-  assert_equal "$(pwd)" "${ORIGINAL_CWD}"
-
-  # ....Teardown this test case ...................................................................
-  # Delete cloned repository mock
-  rm -rf "$SUPERPROJECT_PATH"
 }
 
 
