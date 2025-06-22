@@ -39,9 +39,10 @@ N2ST_PATH="${N2ST_BATS_TESTING_TOOLS_ABS_PATH}/../.."
 test -d "${N2ST_PATH}" || exit 1
 
 # ....Source project shell-scripts dependencies....................................................
-pushd "$(pwd)" >/dev/null || exit 1
-source "${N2ST_PATH}"/import_norlab_shell_script_tools_lib.bash || exit 1
-popd >/dev/null || exit 1
+{
+  cd "${N2ST_PATH}" || exit 1
+  source import_norlab_shell_script_tools_lib.bash || exit 1
+}
 
 # ....Set env variables (pre cli)................................................................
 declare -a REMAINING_ARGS
