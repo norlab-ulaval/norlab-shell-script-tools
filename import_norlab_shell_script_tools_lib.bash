@@ -14,27 +14,38 @@
 #   cd <my/superproject/root>/utilities/norlab-shell-script-tools
 #   source import_norlab_shell_script_tools_lib.bash
 #
+# Note:
+#   To assess non-interactive session behavior from the command line, execute:
+#     bash -c "source import_norlab_shell_script_tools_lib.bash"
+#
 # =================================================================================================
 
-MSG_DIMMED_FORMAT="\033[1;2m"
 MSG_ERROR_FORMAT="\033[1;31m"
 MSG_END_FORMAT="\033[0m"
 
 function n2st::source_lib() {
 
   # ....Setup......................................................................................
-  # Note: Use local var approach for dir handling in lib import script has its more robust in case
-  #       of nested error (instead of the pushd approach).
-  local TMP_CWD
-  TMP_CWD=$(pwd)
+  local tmp_cwd
+  tmp_cwd=$(pwd)
 
+  # ....Find path to script........................................................................
   # Note: can handle both sourcing cases
   #   i.e. from within a script or from an interactive terminal session
-  _PATH_TO_SCRIPT="$(realpath "${BASH_SOURCE[0]:-'.'}")"
-  _REPO_ROOT="$(dirname "${_PATH_TO_SCRIPT}")"
+  local script_path
+  local target_path
+  # Check if running interactively
+  if [[ $- == *i* ]]; then
+    # Case: running in an interactive session
+    target_path=$(realpath .)
+  else
+    # Case: running in an non-interactive session
+    script_path="$(realpath -q "${BASH_SOURCE[0]:-.}")"
+    target_path="$(dirname "${script_path}")"
+  fi
 
   # ....Load environment variables from file.......................................................
-  cd "${_REPO_ROOT}" || { echo "${_REPO_ROOT} unreachable" 1>&2 && exit 1; }
+  cd "${target_path}" || { echo "${target_path} unreachable" 1>&2 && exit 1; }
   set -o allexport
   source .env.n2st
   set +o allexport
@@ -42,6 +53,7 @@ function n2st::source_lib() {
   # ....Begin......................................................................................
   cd "${N2ST_PATH:?'[ERROR] env var not set!'}/src/function_library" || { echo "${N2ST_PATH} unreachable" 1>&2 && exit 1; }
   for each_file in "$(pwd)"/*.bash; do
+    # shellcheck disable=SC1090
     source "${each_file}" || { echo "${each_file} unexpected error" 1>&2 && exit 1; }
   done
 
@@ -53,11 +65,11 @@ function n2st::source_lib() {
   export N2ST_VERSION
 
   # ....Teardown...................................................................................
-  cd "${TMP_CWD}" || { echo "Return to original dir error" 1>&2 && exit 1; }
+  cd "${tmp_cwd}" || { echo "Return to original dir error" 1>&2 && exit 1; }
 }
 
 # ::::Main:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
   # This script is being run, ie: __name__="__main__"
   echo -e "${MSG_ERROR_FORMAT}[ERROR]${MSG_END_FORMAT} This script must be sourced i.e.: $ source $(basename "$0")" 1>&2
   exit 1

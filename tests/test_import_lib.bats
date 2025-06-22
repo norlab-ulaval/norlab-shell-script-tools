@@ -66,9 +66,26 @@ teardown() {
 
 
 @test "assess execute with \"source $TESTED_FILE\" › expect pass" {
-  run source "$TESTED_FILE"
+  run source "${TESTED_FILE}"
   assert_success
 }
+
+
+@test "assess execute \"source ${TESTED_FILE}\" in interactive session › expect pass" {
+  run bash -i -c "source ${TESTED_FILE}"
+  assert_success
+}
+
+@test "assess execute with \"bash ${TESTED_FILE}\" › expect fail" {
+  # ....Import N2ST library........................................................................
+  run bash "${TESTED_FILE}"
+
+  # ....Tests......................................................................................
+  assert_failure
+  assert_output --regexp "[ERROR]".*"This script must be sourced i.e.:".*"source".*"$TESTED_FILE"
+}
+
+
 
 @test "${TESTED_FILE} › check if .env.n2st was properly sourced › expect pass" {
   # ....Pre-condition..............................................................................
@@ -240,14 +257,5 @@ teardown() {
   # ....Teardown this test case ...................................................................
   # Delete cloned repository mock
   rm -rf "$SUPERPROJECT_PATH"
-}
-
-@test "assess execute with \"bash $TESTED_FILE\" › expect fail" {
-  # ....Import N2ST library........................................................................
-  run bash "$TESTED_FILE"
-
-  # ....Tests......................................................................................
-  assert_failure
-  assert_output --regexp "[ERROR]".*"This script must be sourced i.e.:".*"source".*"$TESTED_FILE"
 }
 
