@@ -26,6 +26,7 @@ MSG_END_FORMAT="\033[0m"
 function n2st::source_lib() {
 
   # ....Find path to script........................................................................
+  local target_path
   target_path=$( git rev-parse --show-toplevel )
   # Check if it was sourced from within the N2ST repository
   if [[ "$( basename "${target_path}" .git)" != "$(basename "$(pwd)" )"  ]]; then
