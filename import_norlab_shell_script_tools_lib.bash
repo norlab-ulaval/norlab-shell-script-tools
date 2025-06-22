@@ -25,12 +25,41 @@ MSG_END_FORMAT="\033[0m"
 
 function n2st::source_lib() {
 
+  # ....Setup......................................................................................
+  local debug_log=false
+  local tmp_cwd
+  tmp_cwd=$(pwd)
+  local script_path
+  local target_path
+
   # ....Find path to script........................................................................
-  target_path=$( git rev-parse --show-toplevel )
-  # Check if it was sourced from within the N2ST repository
-  if [[ "$( basename "${target_path}" .git)" != "$(basename "$(pwd)" )"  ]]; then
-    echo -e "${MSG_ERROR_FORMAT}[NBS error]${MSG_END_FORMAT} This script must be sourced from within the N2ST repository. cwd: $PWD" 1>&2
-    return 1
+  if [[ -z ${N2ST_PATH} ]]; then
+    # Note: can handle both sourcing cases
+    #   i.e. from within a script or from an interactive terminal session
+    # Check if running interactively
+    if [[ $- == *i* ]]; then
+      # Case: running in an interactive session
+      target_path=$(realpath .)
+    else
+      # Case: running in an non-interactive session
+      script_path="$(realpath -q "${BASH_SOURCE[0]:-.}")"
+      target_path="$(dirname "${script_path}")"
+    fi
+
+    if [[ ${debug_log} == true ]]; then
+      echo "
+      BASH_SOURCE: ${BASH_SOURCE[*]}
+
+      tmp_cwd: ${tmp_cwd}
+      script_path: ${script_path}
+      target_path: ${target_path}
+
+      realpath: $(realpath .)
+      \$0: $0
+      "  >&3
+    fi
+  else
+    target_path="${N2ST_PATH}"
   fi
 
   # ....Load environment variables from file.......................................................
@@ -54,7 +83,7 @@ function n2st::source_lib() {
   export N2ST_VERSION
 
   # ....Teardown...................................................................................
-  cd "${target_path}" || { echo "Return to original dir error" 1>&2 && exit 1; }
+  cd "${tmp_cwd}" || { echo "Return to original dir error" 1>&2 && exit 1; }
 }
 
 # ::::Main:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
