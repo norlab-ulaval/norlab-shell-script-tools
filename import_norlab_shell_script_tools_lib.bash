@@ -27,9 +27,9 @@ function n2st::source_lib() {
 
   # ....Find path to script........................................................................
   target_path=$( git rev-parse --show-toplevel )
-  # Check if it was sourced from whitin the N2ST repository
+  # Check if it was sourced from within the N2ST repository
   if [[ "$( basename "${target_path}" .git)" != "$(basename "$(pwd)" )"  ]]; then
-    echo -e "${MSG_ERROR_FORMAT}[NBS error]${MSG_END_FORMAT} This script must be sourced from whitin the N2ST repository. cwd: $PWD" 1>&2
+    echo -e "${MSG_ERROR_FORMAT}[NBS error]${MSG_END_FORMAT} This script must be sourced from within the N2ST repository. cwd: $PWD" 1>&2
     return 1
   fi
 
