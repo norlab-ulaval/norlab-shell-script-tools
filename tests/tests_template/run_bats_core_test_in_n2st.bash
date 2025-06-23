@@ -29,34 +29,31 @@
 #   '<image-distro>'                  ubuntu or alpine (default ubuntu)
 #
 # Globals:
-#   Read N2ST_PATH    Default to "./utilities/norlab-shell-script-tools"
+#   Read N2ST_PATH    Default to "utilities/norlab-shell-script-tools"
 #
 # =================================================================================================
 params=( "$@" )
-
-set -e            # exit on error
-set -o nounset    # exit on unbound variable
-set -o pipefail   # exit if errors within pipes
 
 if [[ -z ${params[0]} ]]; then
   # Set to default bats tests directory if none specified
   params="tests/"
 fi
 
-function n2st::teardown() {
+# ....Setup......................................................................................
+superproject_path=$(git rev-parse --show-toplevel)
+N2ST_PATH=${N2ST_PATH:-"utilities/norlab-shell-script-tools"}
+
+function n2st::bats_tests_teardown_callback() {
   exit_code=$?
   cd "${superproject_path:?err}" || exit 1
   # Add any teardown logic here
   exit ${exit_code:1}
 }
-trap n2st::teardown EXIT
+trap n2st::bats_tests_teardown_callback EXIT
 
-# ....Project root logic.........................................................................
-superproject_path=$(git rev-parse --show-toplevel)
-N2ST_PATH=${N2ST_PATH:-"./utilities/norlab-shell-script-tools"}
 
 # ....Execute N2ST run_bats_tests_in_docker.bash.................................................
-cd "$superproject_path"
+cd "${superproject_path:?err}" || exit 1
 
 bash "${N2ST_PATH:?err}/tests/bats_testing_tools/run_bats_tests_in_docker.bash" "${params[@]}"
 
