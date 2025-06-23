@@ -19,7 +19,8 @@
 #
 # =================================================================================================
 bats_path=/usr/lib/bats
-error_prefix="[\033[1;31mN2ST ERROR\033[0m]"
+error_prefix="\033[1;31m[N2ST error]\033[0m"
+
 if [[ -d ${bats_path} ]]; then
   # ....Bats-core recommended helper functions.....................................................
   load "${bats_path}/bats-support/load"
@@ -32,7 +33,7 @@ if [[ -d ${bats_path} ]]; then
   # You can add your own helper functions, just uncomment this line and add them to this directory⬇︎
   #load "${SRC_CODE_PATH}/tests/tests_bats/bats_testing_tools/bats_helper_functions_local"
 else
-  echo -e "\n{error_prefix} $0 path to bats-core helper library unreachable at \"${bats_path}\"!"
+  echo -e "\n${error_prefix} $0 path to bats-core helper library unreachable at \"${bats_path}\"!"
   echo '(press any key to exit)'
   read -r -n 1
   exit 1
