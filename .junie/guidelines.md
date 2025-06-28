@@ -4,13 +4,10 @@
 ## General Requirements:
 - Don't repeat yourself: 
   - Use already implemented code whenever possible.
-  - Leverage functionality provided by submodule such as _N2ST_ and _NBS_ library whenever possible.
   
 ## Repository Organization
 - `src/` contain repository source code
 - `tests/` contain tests files
-- `tests/tests_bats/` contain N2ST bats framework files that are mainly used for unit-testing
-- `utilities/` contain external libraries such as N2ST and NBS
 
 ## Version Control
 - Never `git add` or `git commit` changes, all changes require explicit code review and acceptance by the code owner.   
@@ -51,13 +48,15 @@
 All instructions in sections _General Testing Strategy_ plus the following:
 - All new scripts or functionalities need to have (either or both):
   - **Unit-tests**: 
-    - Use [N2ST](https://github.com/norlab-ulaval/norlab-shell-script-tools) bats tests tools for unit-test (See `tests/run_bats_core_test_in_n2st.bash` script) and a corresponding bats unit-test `.bats` file in the `tests/tests_bats/` directory. N2ST Bats tests are running in a docker container in complete isolation with a copy of the source code.
+    - Use bats tests tools for unit-test (See `tests/run_bats_core_test_in_n2st.bash` script) and a corresponding bats unit-test `.bats` file in the `tests/tests_bats/` directory. N2ST Bats tests are running in a docker container in complete isolation with a copy of the source code.
+    - Execute all bats tests in the `tests/` directory using
+      ```bash
+      # From repository root
+      bash tests/bats_testing_tools/run_bats_tests_in_docker.bash tests
+      ```
   - **Integration tests**: 
-    - Those tests are divided in two categories: 
-      - Dryrun: either make use of a `--dry-run` flag implemented in the script or make use of the docker `--dry-run` flag;  
-      - Test: all other integration test case that are not dryrun.
-    - Use [NBS](https://github.com/norlab-ulaval/norlab-build-system) tests tools for integration-test (See `tests/run_all_dryrun_and_tests_script.bash` script) and a corresponding `test_*` or `dryrun_*` script in the `tests/tests_dryrun_and_tests_scripts/` directory.
-    - New integration test script must go in the `tests/tests_dryrun_and_tests_scripts/` directory.
+    - Does tests follow the patern `test_*.bash`.
+    - New integration test script must go in the `tests/` directory.
 - Their should be at least one test file (`.bats` and/or `.bash`) per corresponding source code file.
 
 
@@ -66,7 +65,7 @@ All instructions in sections _General Mocking Instruction_ plus the following:
 - Never mock the functions that are tested in the tested script.
 - You can mock shell core command an docker command.
 - You can mock `docker [OPTIONS|COMMAND]` commands and `git [OPTIONS|COMMAND]` commands.
-- Avoid mocking N2ST functions, at the exception of those in `${N2ST_PATH}/src/function_library/prompt_utilities.bash`. For example, instead of re-implementing `n2st::seek_and_modify_string_in_file`, just load the real one and test that the content of the file at `file_path` has been updated? You can find the real one in `${N2ST_PATH}/src/function_library/general_utilities.bash`.
+- Avoid mocking N2ST functions when they are not the main protagonist, at the exception of those in `${N2ST_PATH}/src/function_library/prompt_utilities.bash`. For example, instead of re-implementing `n2st::seek_and_modify_string_in_file`, just load the real one and test that the content of the file at `file_path` has been updated? You can find the real one in `${N2ST_PATH}/src/function_library/general_utilities.bash`.
 - Avoid mocking the `read` command. Instead use `echo 'y'` or `echo 'N'` for piping a keyboard input to the function who use the `read` command which in turn expect a single character, example: `run bash -c "echo 'y' | <the-tested-function>"`. Alternatively, use the `yes [n]` shell command which optionaly send [y|Y|yes] n time, example: `run bash -c "yes 2 | <the-tested-function>"`.
 
 ### Instructions On Bats Tests
@@ -84,7 +83,10 @@ Bats helper library documentation:
 
 ### Shell Script specific Instructions On Tests Execution
 All instructions in sections _General Instruction On Tests Execution_ plus the following:
-- Don't directly execute `.bats` files, instead execute from the repository root `bash ./tests/run_bats_core_test_in_n2st.bash tests/tests_bats/<bats-file-name>.bats`.
+- Don't directly execute `.bats` files, instead execute from the repository root
+  ```bash
+  bash tests/bats_testing_tools/run_bats_tests_in_docker.bash tests/<bats-file-name>.bats
+  ```
 - Don't set tests script in executable mode, instead execute them with `bash <the-script-name>.bash`. 
 
 
