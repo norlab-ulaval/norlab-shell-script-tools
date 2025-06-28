@@ -1,0 +1,21 @@
+# An .aiignore file follows the same syntax as a .gitignore file.
+# .gitignore documentation: https://git-scm.com/docs/gitignore
+
+# ....Junie related................................................................................
+/.junie/iceboxed_plans/
+/.junie/scratch.md
+/.junie/recipes.md
+
+# ....repository structure related.................................................................
+/artifact/
+
+# ....General file type............................................................................
+venv/
+__pycache__/
+*.benchmarks/
+*.pytest_cache/
+.idea/
+.DS_Store
+
+**/video/*.meta.json
+*.mp4
