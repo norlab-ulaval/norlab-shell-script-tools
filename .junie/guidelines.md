@@ -11,8 +11,8 @@
 - Always put plan ready for review in the `.junie/plans` directory.
 
 ### Coding instructions
-- Don't repeat yourself, Use already implemented code whenever possible.
-- Path management: use the env var `N2ST_PATH` and others define in `.env.n2st`.
+- Don't repeat yourself, use already implemented code whenever possible.
+- Path management: each script can optionally use env var `N2ST_PATH` and others define in `.env.n2st`.
 
 ### Version Control Instructions
 - Never `git add` or `git commit` changes, all changes require explicit code review and acceptance by the code owner.
