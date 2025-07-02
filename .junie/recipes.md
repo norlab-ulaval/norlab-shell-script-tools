@@ -34,7 +34,7 @@ Create at least one test case per new command argument and/or options, update cu
 Test relevant option and arguments combination.
 Check if it introduce any breaking change in the code base by running both unit-tests and integration tests.
 Propose source code change if relevant.
-Update Markdown documention accordingly. 
+Update Markdown documentation accordingly.
 Execute all unit-tests and all integration tests before submitting.
 
 ## Modify proposed tests solutions 
