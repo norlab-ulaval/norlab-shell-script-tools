@@ -40,7 +40,9 @@ to speed up shell script development and improve code reliability.**
 [//]: # ( ==== Badges ================================================ )
 [![semantic-release: conventional commits](https://img.shields.io/badge/semantic--release-conventional_commits-453032?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 <img alt="GitHub release (with filter)" src="https://img.shields.io/github/v/release/norlab-ulaval/norlab-shell-script-tools">
-<a href="http://132.203.26.125:8111"><img src="https://img.shields.io/static/v1?label=JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity" /></a>
+
+<a href="http://132.203.26.125:8111"><img src="https://img.shields.io/static/v1?label=JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity"></a>
+<img src="https://img.shields.io/static/v1?label=JetBrains TeamCity&message=CI/CD&color=green?style=plastic&logo=teamcity">
 
 <br>
 
@@ -62,7 +64,7 @@ Just clone the *norlab-shell-script-tools* as a submodule in your project reposi
 _superproject_), in an arbitrary directory eg.: `my-project/utilities/`.
 
 Procedure
-```bash
+```shell
 cd <my-project>
 mkdir utilities
 
@@ -85,7 +87,7 @@ git commit -m 'Added norlab-shell-script-tools submodule to repository'
 
 To **clone** your repository and its submodule at the same time, use
 
-```bash
+```shell
 git clone --recurse-submodules
 ```
 
@@ -106,14 +108,14 @@ Notes:
 
 To set the submodule to **point to a different branch**, use
 
-```bash
+```shell
 cd <the/submodule/directory>
 git checkout the_submodule_feature_branch_name
 ```
 
 and use the `--recurse-submodules` flag when switching branch in your main project
 
-```bash
+```shell
 cd <your/project/root>
 git checkout --recurse-submodules the_feature_branch_name
 ```
@@ -208,7 +210,7 @@ Note: `N2ST` functions are prefixed with `n2st`, i.e.: `n2st::<function_name>`
 Assuming that the superproject (i.e. the project which have cloned `N2ST` as a
 submodule) as the following structure, `tests/` would be containing all the `.bats` files
 
-```shell
+```text
 myCoolSuperProject
 ┣━━ src/
 ┣━━ tests/
@@ -258,6 +260,13 @@ See `tests/tests_template/run_bats_core_test_in_n2st.bash` for details.
 - [Git Tools - Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
 - [Git Submodules: Tips for JetBrains IDEs](https://www.stevestreeting.com/2022/09/20/git-submodules-tips-for-jetbrains-ides/)
 - [Git submodule tutorial – from zero to hero](https://www.augmentedmind.de/2020/06/07/git-submodule-tutorial/)
+- On [gitsubmodules](https://git-scm.com/docs/gitsubmodules)
+
+#### Git command
+
+- [git-rm](https://git-scm.com/docs/git-rm)
+- [git-submodule](https://git-scm.com/docs/git-submodule#_name)
+
 
 ### Bats shell script testing framework references
 
