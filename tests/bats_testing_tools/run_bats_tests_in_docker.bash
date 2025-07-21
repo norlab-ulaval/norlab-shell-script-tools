@@ -121,7 +121,9 @@ if [[ -z ${BUILDX_BUILDER} ]]; then
   n2st::set_which_architecture_and_os
   n2st::print_msg "Current image architecture and os: $IMAGE_ARCH_AND_OS"
   if [[ $IMAGE_ARCH_AND_OS == 'darwin/arm64' ]]; then
-    export BUILDX_BUILDER=desktop-linux
+    # Note: Do nothing since the new macOs docker context/builder behavior produce error when
+    # setting BUILDX_BUILDER to desktop-linux/default. See issue NMO-742 for details.
+    :
   else
     export BUILDX_BUILDER=default
   fi
