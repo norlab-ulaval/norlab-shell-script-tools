@@ -29,11 +29,14 @@ source ./prompt_utilities.bash
 # Show docker command and execute it. Just enclose the command with argument in quote.
 #
 # Usage:
-#   $ n2st::show_and_execute_docker "<docker command with argument>"
+#   $ n2st::show_and_execute_docker "<docker command with argument>" [MOCK_DOCKER [FAIL_TC_BUILD_ON_ERROR]]
 #
 #   Example usage:
 #   $ n2st::show_and_execute_docker "run --name IamBuildSystemTester -t -i --rm lpm.ubuntu20.buildsystem.test"
 #
+# Options
+#   MOCK_DOCKER                     Set to 'true' to mock the docker command (default to 'false')
+#   FAIL_TC_BUILD_ON_ERROR          Set to 'true' to send a TeamCity service message that fail the build (default to 'true)
 # Globals:
 #   Read 'IS_TEAMCITY_RUN'
 # Outputs:
@@ -44,12 +47,15 @@ source ./prompt_utilities.bash
 function n2st::show_and_execute_docker() {
   local FULL_DOCKER_COMMAND=$1
   local MOCK_DOCKER=${2:-false}
+  local FAIL_TC_BUILD_ON_ERROR=${3:-true}
   unset DOCKER_EXIT_CODE
 
   if [ -f /.dockerenv ] && [[ $MOCK_DOCKER = false ]]; then
     echo
     n2st::print_msg_warning "Skipping the execution of Docker command\n
-      ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}\n\nsince the script is executed inside a docker container ... and starting Docker daemon inside a container is complicated to setup and overkill for our testing case."
+      ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}\n\nsince the script is
+executed inside a docker container ... and nesting virtualization is a huge overhead and frankly
+overkill for our testing case."
     DOCKER_EXIT_CODE=0
   else
     n2st::print_msg "Execute command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}"
@@ -72,7 +78,11 @@ function n2st::show_and_execute_docker() {
     else
       if [[ ${IS_TEAMCITY_RUN} == true ]]; then
         # Report message to build log
-        echo -e "##teamcity[message text='${MSG_BASE_TEAMCITY} ${FAILURE_MSG}' errorDetails='$DOCKER_EXIT_CODE' status='ERROR']"
+        if [[ ${FAIL_TC_BUILD_ON_ERROR} == true ]]; then
+          echo -e "##teamcity[message text='${MSG_BASE_TEAMCITY} ${FAILURE_MSG}' errorDetails='$DOCKER_EXIT_CODE' status='ERROR']"
+        else
+          echo -e "##teamcity[message text='${MSG_BASE_TEAMCITY} ${FAILURE_MSG}' status='FAILURE']"
+        fi
       else
         n2st::print_msg_error "${FAILURE_MSG}"
       fi
