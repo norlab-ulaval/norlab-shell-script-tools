@@ -48,6 +48,21 @@ function n2st::set_is_teamcity_run_environment_variable() {
   export IS_TEAMCITY_RUN
 }
 
+# =================================================================================================
+# Escape string for TeamCity Service Message compliance
+# Ref: https://www.jetbrains.com/help/teamcity/service-messages.html#Escaped+Values
+#
+# Usage:
+#   echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${THE_MSG}")']"
+#
+# Note:
+# - Uses only standard POSIX features that work on both Ubuntu and macOS
+# =================================================================================================
+function n2st::teamcity_service_msg_str_formater() {
+  local input="$1"
+  printf '%s' "$input" | sed -e 's/|/||/g' -e 's/\[/|[/g' -e 's/\]/|]/g' -e "s/'/|'/g"
+}
+
 
 # =================================================================================================
 # Send TeamCity blockOpened/blockClosed service message
@@ -78,11 +93,12 @@ function n2st::teamcity_service_msg_blockOpened() {
   if [[ ${CURRENT_BLOCK_SERVICE_MSG} ]]; then
     n2st::print_msg_error_and_exit "The TeamCity bloc service message ${MSG_DIMMED_FORMAT}${CURRENT_BLOCK_SERVICE_MSG}${MSG_END_FORMAT} was not closed using function ${MSG_DIMMED_FORMAT}n2st::teamcity_service_msg_blockClosed${MSG_END_FORMAT}."
   else
-    export CURRENT_BLOCK_SERVICE_MSG="${THE_MSG}"
+    export CURRENT_BLOCK_SERVICE_MSG
+    CURRENT_BLOCK_SERVICE_MSG="$(n2st::teamcity_service_msg_str_formater "${THE_MSG}")"
   fi
 
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
-    echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} ${THE_MSG}']"
+    echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${THE_MSG}")']"
   else
     echo && n2st::print_msg "${THE_MSG}" && echo
   fi
@@ -95,6 +111,41 @@ function n2st::teamcity_service_msg_blockClosed() {
   # Reset the variable since the bloc is closed
   unset CURRENT_BLOCK_SERVICE_MSG
 }
+
+# =================================================================================================
+# Send TeamCity blockOpened/blockClosed service message (explicit blockClosed msg version)
+#   or print the message to console when executed outside a TeamCity Agent run.
+#
+# Usage:
+#   $ n2st::teamcity_service_msg_blockOpened_v2 "<theMessage>"
+#   $ ... many steps ...
+#   $ n2st::teamcity_service_msg_blockClosed_v2 "<theMessage>"
+#
+# Globals:
+#   Read        'IS_TEAMCITY_RUN'
+#   Read|write  'CURRENT_BLOCK_SERVICE_MSG'
+# Outputs:
+#   Output either
+#     - a TeamCity blockOpened/blockClosed service message
+#     - or print to console
+#
+# Reference:
+#   - TeamCity doc: https://www.jetbrains.com/help/teamcity/service-messages.html#Blocks+of+Service+Messages
+# =================================================================================================
+function n2st::teamcity_service_msg_blockOpened_v2() {
+  local THE_MSG=$1
+  if [[ ${IS_TEAMCITY_RUN} == true ]]; then
+    echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${THE_MSG}")']"
+  fi
+}
+
+function n2st::teamcity_service_msg_blockClosed_v2() {
+  local THE_MSG=$1
+  if [[ ${IS_TEAMCITY_RUN} == true ]]; then
+    echo -e "##teamcity[blockClosed name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${THE_MSG}")']"
+  fi
+}
+
 
 # =================================================================================================
 # Send TeamCity compilationStarted/compilationFinished service message
