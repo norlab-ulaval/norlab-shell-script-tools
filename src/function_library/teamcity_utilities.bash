@@ -139,7 +139,7 @@ function n2st::teamcity_service_msg_blockOpened_v2() {
   fi
 }
 
-function n2st::teamcity_service_msg_blockClosed_custom_v2() {
+function n2st::teamcity_service_msg_blockClosed_v2() {
   local THE_MSG=$1
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
     echo -e "##teamcity[blockClosed name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${THE_MSG}")']"
