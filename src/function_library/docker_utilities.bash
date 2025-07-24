@@ -53,9 +53,7 @@ function n2st::show_and_execute_docker() {
   if [ -f /.dockerenv ] && [[ $MOCK_DOCKER = false ]]; then
     echo
     n2st::print_msg_warning "Skipping the execution of Docker command\n
-      ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}\n\nsince the script is
-executed inside a docker container ... and nesting virtualization is a huge overhead and frankly
-overkill for our testing case."
+      ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}\n\nsince the script is executed inside a docker container ... and nesting virtualization is a huge overhead and frankly overkill for our testing case."
     DOCKER_EXIT_CODE=0
   else
     n2st::print_msg "Execute command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT}"
