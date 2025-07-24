@@ -68,7 +68,8 @@ function n2st::seek_and_modify_string_in_file() {
 # Usage:
 #   $ n2st::set_which_python3_version
 #   3.12
-#   $ echo "${PYTHON3_VERSION}"
+#   do something else...
+#   $ echo $PYTHON3_VERSION
 #   3.12
 #
 # Globals:
@@ -95,7 +96,8 @@ function n2st::set_which_python3_version() {
 # Usage:
 #   $ n2st::set_which_architecture_and_os
 #   linux\arm64
-#   $ echo "${IMAGE_ARCH_AND_OS}"
+#   do something else...
+#   $ echo "$IMAGE_ARCH_AND_OS"
 #   linux\arm64
 #
 # Globals:
