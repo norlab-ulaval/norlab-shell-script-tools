@@ -75,7 +75,6 @@ function n2st::seek_and_modify_string_in_file() {
 # Globals:
 #   write 'PYTHON3_VERSION'
 # =================================================================================================
-# (NICE TO HAVE) ToDo: extend unit-test
 function n2st::set_which_python3_version() {
     PYTHON3_VERSION=$(python3 -c 'import sys; version=sys.version_info; print(f"{version.major}.{version.minor}")') || return 1
     export PYTHON3_VERSION
@@ -106,7 +105,6 @@ function n2st::set_which_python3_version() {
 # Returns:
 #   exit 1 in case of unsupported processor architecture
 # =================================================================================================
-# (NICE TO HAVE) ToDo: extend unit-test
 # (NICE TO HAVE) ToDo: assessment >> check the convention used by docker >> os[/arch[/variant]]
 #       linux/arm64/v8
 #       darwin/arm64/v8
@@ -114,19 +112,21 @@ function n2st::set_which_python3_version() {
 #     ref: https://docs.docker.com/compose/compose-file/05-services/#platform
 function n2st::set_which_architecture_and_os() {
   if [[ $(uname -m) == "aarch64" ]]; then
-    if [[ -n $(uname -r | grep tegra) ]]; then
+    if uname -r | grep -q "tegra" 2>/dev/null; then
       export IMAGE_ARCH_AND_OS='l4t/arm64'
     elif [[ $(uname) == "Linux" ]]; then
         export IMAGE_ARCH_AND_OS='linux/arm64'
     else
-      echo -e "${MSG_ERROR} Unsupported OS for aarch64 processor" 1>&2
+      n2st::print_msg_error "Unsupported OS for aarch64 processor"
+      return 1
     fi
   elif [[ $(uname -m) == "arm64" ]] && [[ $(uname) == "Darwin" ]]; then
     export IMAGE_ARCH_AND_OS='darwin/arm64'
   elif [[ $(uname -m) == "x86_64" ]] && [[ $(uname) == "Linux" ]]; then
     export IMAGE_ARCH_AND_OS='linux/x86'
   else
-    n2st::print_msg_error "Unsupported processor architecture" || return 1
+    n2st::print_msg_error "Unsupported processor architecture"
+    return 1
   fi
   echo "${IMAGE_ARCH_AND_OS}"
   return 0
