@@ -103,21 +103,165 @@ teardown() {
   assert_output --partial "${MODIFIED_STR}"
 }
 
+
+# ....n2st::set_which_python3_version ok...........................................................
 @test "n2st::set_which_python3_version ok" {
+  function python3() {
+    # Mock python3 command for outputing python3 version
+    echo "3.10"
+  }
+  export -f python3
+
   run n2st::set_which_python3_version
   assert_success
+  assert_output "3.10"
 
   n2st::set_which_python3_version
   assert_not_empty "$PYTHON3_VERSION"
-  # assert_equal "$PYTHON3_VERSION" "3.10" # Note: the container base image is "ubuntu:lates" -> the python verison will change
+  assert_equal "$PYTHON3_VERSION" "3.10"
 }
 
-@test "n2st::set_which_architecture_and_os ok" {
+# ....n2st::set_which_architecture_and_os..........................................................
+@test "n2st::set_which_architecture_and_os › darwin/arm64 case ok" {
+  function uname() {
+    # Mock uname command for darwin/arm64 case
+    case "$1" in
+    "-m")
+      echo "arm64"
+      return
+      ;;
+    *)
+      echo "Darwin"
+      return
+      ;;
+    esac
+  }
+  export -f uname
+
   run n2st::set_which_architecture_and_os
   assert_success
+  assert_output "darwin/arm64"
 
   n2st::set_which_architecture_and_os
   assert_not_empty "$IMAGE_ARCH_AND_OS"
+  assert_equal "$IMAGE_ARCH_AND_OS" "darwin/arm64"
+}
+
+@test "n2st::set_which_architecture_and_os › linux/x86 case ok" {
+  function uname() {
+    # Mock uname command for linux/x86_64 case
+    case "$1" in
+    "-m")
+      echo "x86_64"
+      return
+      ;;
+    *)
+      echo "Linux"
+      return
+      ;;
+    esac
+  }
+  export -f uname
+
+  run n2st::set_which_architecture_and_os
+  assert_success
+  assert_output "linux/x86"
+
+  n2st::set_which_architecture_and_os
+  assert_not_empty "$IMAGE_ARCH_AND_OS"
+  assert_equal "$IMAGE_ARCH_AND_OS" "linux/x86"
+}
+
+@test "n2st::set_which_architecture_and_os › linux/arm64 case ok" {
+  function uname() {
+    # Mock uname command for linux/arm64 case
+    case "$1" in
+    "-m")
+      echo "aarch64"
+      return
+      ;;
+    *)
+      echo "Linux"
+      return
+      ;;
+    esac
+  }
+  export -f uname
+
+  run n2st::set_which_architecture_and_os
+  assert_success
+  assert_output "linux/arm64"
+
+  n2st::set_which_architecture_and_os
+  assert_not_empty "$IMAGE_ARCH_AND_OS"
+  assert_equal "$IMAGE_ARCH_AND_OS" "linux/arm64"
+}
+
+@test "n2st::set_which_architecture_and_os › Jetson case ok" {
+  function uname() {
+    # Mock uname command for Jetson case
+    case "$1" in
+    "-m")
+      echo "aarch64"
+      return
+      ;;
+    "-r")
+      echo "tegra"
+      return
+      ;;
+    esac
+  }
+  export -f uname
+
+  run n2st::set_which_architecture_and_os
+  assert_success
+  assert_output "l4t/arm64"
+
+  n2st::set_which_architecture_and_os
+  assert_not_empty "$IMAGE_ARCH_AND_OS"
+  assert_equal "$IMAGE_ARCH_AND_OS" "l4t/arm64"
+}
+
+@test "n2st::set_which_architecture_and_os › Unsuported OS/aarch64 case expect failure" {
+  function uname() {
+    # Mock uname command for Unsuported OS/aarch64 case
+    case "$1" in
+    "-m")
+      echo "aarch64"
+      return
+      ;;
+    *)
+      echo "Window"
+      return
+      ;;
+    esac
+  }
+  export -f uname
+
+  run n2st::set_which_architecture_and_os
+  assert_failure
+  assert_output --partial "Unsupported OS for aarch64 processor"
+}
+
+@test "n2st::set_which_architecture_and_os › Unsuported ARCH case expect failure" {
+  function uname() {
+    # Mock uname command for Unsuported ARCH case
+    case "$1" in
+    "-m")
+      echo "unsuported_aarch"
+      return
+      ;;
+    *)
+      echo "Window"
+      return
+      ;;
+    esac
+  }
+  export -f uname
+
+  run n2st::set_which_architecture_and_os
+  assert_failure
+  assert_output --partial "Unsupported processor architecture"
 }
 
 # ====legacy API support testing===================================================================
