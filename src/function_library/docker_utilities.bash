@@ -64,6 +64,7 @@ function n2st::show_and_execute_docker() {
 
     SUCCESS_MSG="Command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT} completed successfully and exited docker."
     FAILURE_MSG="Command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT} exited with error (DOCKER_EXIT_CODE=${DOCKER_EXIT_CODE})!"
+    WARNING_MSG="Warning command ${MSG_DIMMED_FORMAT}$ docker ${FULL_DOCKER_COMMAND}${MSG_END_FORMAT} exited with error (DOCKER_EXIT_CODE=${DOCKER_EXIT_CODE})!"
 
     if [[ ${DOCKER_EXIT_CODE} == 0 ]]; then
       # ToDo: assessment >> consider adding the logic to check "if run in teamcity" inside this function instead of relying on the IS_TEAMCITY_RUN env variable
@@ -79,7 +80,7 @@ function n2st::show_and_execute_docker() {
         if [[ ${FAIL_TC_BUILD_ON_ERROR} == true ]]; then
           echo -e "##teamcity[message text='${MSG_BASE_TEAMCITY} ${FAILURE_MSG}' errorDetails='$DOCKER_EXIT_CODE' status='ERROR']"
         else
-          echo -e "##teamcity[message text='${MSG_BASE_TEAMCITY} ${FAILURE_MSG}' status='FAILURE']"
+          echo -e "##teamcity[message text='${MSG_BASE_TEAMCITY} ${WARNING_MSG}' status='WARNING']"
         fi
       else
         n2st::print_msg_error "${FAILURE_MSG}"
