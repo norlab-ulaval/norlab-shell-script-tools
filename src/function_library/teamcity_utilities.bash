@@ -53,7 +53,7 @@ function n2st::set_is_teamcity_run_environment_variable() {
 # Ref: https://www.jetbrains.com/help/teamcity/service-messages.html#Escaped+Values
 #
 # Usage:
-#   echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${THE_MSG}")']"
+#   echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${the_msg}")']"
 #
 # Note:
 # - Uses only standard POSIX features that work on both Ubuntu and macOS
@@ -89,18 +89,18 @@ function n2st::teamcity_service_msg_str_formater() {
 # (NICE TO HAVE) ToDo: refactor (ref task NMO-341 refactor `n2st::teamcity_service_msg_blockOpened`  to use dynamic env variable name so that we can nest fct call)
 # =================================================================================================
 function n2st::teamcity_service_msg_blockOpened() {
-  local THE_MSG=$1
+  local the_msg=$1
   if [[ ${CURRENT_BLOCK_SERVICE_MSG} ]]; then
     n2st::print_msg_error_and_exit "The TeamCity bloc service message ${MSG_DIMMED_FORMAT}${CURRENT_BLOCK_SERVICE_MSG}${MSG_END_FORMAT} was not closed using function ${MSG_DIMMED_FORMAT}n2st::teamcity_service_msg_blockClosed${MSG_END_FORMAT}."
   else
     export CURRENT_BLOCK_SERVICE_MSG
-    CURRENT_BLOCK_SERVICE_MSG="$(n2st::teamcity_service_msg_str_formater "${THE_MSG}")"
+    CURRENT_BLOCK_SERVICE_MSG="$(n2st::teamcity_service_msg_str_formater "${the_msg}")"
   fi
 
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
-    echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${THE_MSG}")']"
+    echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${the_msg}")']"
   else
-    echo && n2st::print_msg "${THE_MSG}" && echo
+    n2st::print_msg "${the_msg}"
   fi
 }
 
@@ -133,16 +133,18 @@ function n2st::teamcity_service_msg_blockClosed() {
 #   - TeamCity doc: https://www.jetbrains.com/help/teamcity/service-messages.html#Blocks+of+Service+Messages
 # =================================================================================================
 function n2st::teamcity_service_msg_blockOpened_v2() {
-  local THE_MSG=$1
+  local the_msg=$1
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
-    echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${THE_MSG}")']"
+    echo -e "##teamcity[blockOpened name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${the_msg}")']"
+  else
+    n2st::print_msg "${the_msg}"
   fi
 }
 
 function n2st::teamcity_service_msg_blockClosed_v2() {
-  local THE_MSG=$1
+  local the_msg=$1
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
-    echo -e "##teamcity[blockClosed name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${THE_MSG}")']"
+    echo -e "##teamcity[blockClosed name='${MSG_BASE_TEAMCITY} $(n2st::teamcity_service_msg_str_formater "${the_msg}")']"
   fi
 }
 
@@ -171,17 +173,17 @@ function n2st::teamcity_service_msg_blockClosed_v2() {
 # ToDo: assessment >> consider adding the logic to check "if run in teamcity" inside this function instead of relying on the IS_TEAMCITY_RUN env variable
 # =================================================================================================
 function n2st::teamcity_service_msg_compilationStarted() {
-  local THE_MSG=$1
+  local the_msg=$1
   if [[ ${CURRENT_COMPILATION_SERVICE_MSG_COMPILER} ]]; then
     n2st::print_msg_error_and_exit "The TeamCity compilation service message ${MSG_DIMMED_FORMAT}${CURRENT_COMPILATION_SERVICE_MSG_COMPILER}${MSG_END_FORMAT} was not closed using function ${MSG_DIMMED_FORMAT}n2st::teamcity_service_msg_compilationFinished${MSG_END_FORMAT}."
   else
-    export CURRENT_COMPILATION_SERVICE_MSG_COMPILER="${THE_MSG}"
+    export CURRENT_COMPILATION_SERVICE_MSG_COMPILER="${the_msg}"
   fi
 
   if [[ ${IS_TEAMCITY_RUN} == true ]]; then
-    echo -e "##teamcity[compilationStarted compiler='${MSG_BASE_TEAMCITY} ${THE_MSG}']"
+    echo -e "##teamcity[compilationStarted compiler='${MSG_BASE_TEAMCITY} ${the_msg}']"
   else
-    echo && n2st::print_msg "${THE_MSG}" && echo
+    n2st::print_msg "${the_msg}"
   fi
 }
 
