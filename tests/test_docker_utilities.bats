@@ -114,7 +114,7 @@ teardown() {
   mock_docker_command_exit_error
   assert_exist "/.dockerenv"
   run n2st::show_and_execute_docker "${DOCKER_CMD}" true
-  assert_success
+  assert_failure
   assert_output --regexp "\]".*"Execute command".*"docker".*"${DOCKER_CMD}".*
   assert_output --regexp "\#\#teamcity\[message text='".*"\|\]".*"Command".*"docker".*"${DOCKER_CMD}".*"exited with error \(DOCKER_EXIT_CODE=1\)\!".*"' errorDetails='1' status='ERROR'\]"
 #  bats_print_run_env_variable
@@ -125,7 +125,7 @@ teardown() {
   mock_docker_command_exit_error
   assert_exist "/.dockerenv"
   run n2st::show_and_execute_docker "${DOCKER_CMD}" true
-  assert_success
+  assert_failure
   assert_output --regexp "\]".*"Execute command".*"docker".*"${DOCKER_CMD}".*
   assert_output --regexp .*"\]".*"Command".*"docker".*"${DOCKER_CMD}".*"exited with error \(DOCKER_EXIT_CODE=1\)\!".*
 #  bats_print_run_env_variable
