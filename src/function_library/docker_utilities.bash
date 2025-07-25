@@ -89,7 +89,9 @@ function n2st::show_and_execute_docker() {
 
   fi
 
+  # Note: keep DOCKER_EXIT_CODE for retro compatibility
   export DOCKER_EXIT_CODE
+  return $DOCKER_EXIT_CODE
 }
 
 
