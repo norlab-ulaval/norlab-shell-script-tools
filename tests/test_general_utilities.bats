@@ -104,7 +104,26 @@ teardown() {
 }
 
 
-# ....n2st::set_which_python3_version ok...........................................................
+# ....n2st::[set_]which_python3_version ok...........................................................
+@test "n2st::which_python3_version ok" {
+  function python3() {
+    # Mock python3 command for outputing python3 version
+    echo "3.10"
+  }
+  export -f python3
+
+  unset PYTHON3_VERSION
+
+  run n2st::which_python3_version
+  assert_success
+  assert_output "3.10"
+
+  unset PYTHON3_VERSION
+
+  n2st::which_python3_version
+  assert_empty "$PYTHON3_VERSION"
+}
+
 @test "n2st::set_which_python3_version ok" {
   function python3() {
     # Mock python3 command for outputing python3 version
@@ -112,16 +131,21 @@ teardown() {
   }
   export -f python3
 
+  unset PYTHON3_VERSION
+
   run n2st::set_which_python3_version
   assert_success
-  assert_output "3.10"
+  assert_output ""
+
+  unset PYTHON3_VERSION
 
   n2st::set_which_python3_version
   assert_not_empty "$PYTHON3_VERSION"
   assert_equal "$PYTHON3_VERSION" "3.10"
 }
 
-# ....n2st::set_which_architecture_and_os..........................................................
+# ....n2st::[set_]which_architecture_and_os..........................................................
+
 @test "n2st::set_which_architecture_and_os › darwin/arm64 case ok" {
   function uname() {
     # Mock uname command for darwin/arm64 case
@@ -138,10 +162,16 @@ teardown() {
   }
   export -f uname
 
-  run n2st::set_which_architecture_and_os
+  unset IMAGE_ARCH_AND_OS
+  run n2st::which_architecture_and_os
   assert_success
   assert_output "darwin/arm64"
 
+  run n2st::set_which_architecture_and_os
+  assert_success
+  assert_output ""
+
+  unset IMAGE_ARCH_AND_OS
   n2st::set_which_architecture_and_os
   assert_not_empty "$IMAGE_ARCH_AND_OS"
   assert_equal "$IMAGE_ARCH_AND_OS" "darwin/arm64"
@@ -163,10 +193,16 @@ teardown() {
   }
   export -f uname
 
-  run n2st::set_which_architecture_and_os
+  unset IMAGE_ARCH_AND_OS
+  run n2st::which_architecture_and_os
   assert_success
   assert_output "linux/x86"
 
+  run n2st::set_which_architecture_and_os
+  assert_success
+  assert_output ""
+
+  unset IMAGE_ARCH_AND_OS
   n2st::set_which_architecture_and_os
   assert_not_empty "$IMAGE_ARCH_AND_OS"
   assert_equal "$IMAGE_ARCH_AND_OS" "linux/x86"
@@ -188,10 +224,16 @@ teardown() {
   }
   export -f uname
 
-  run n2st::set_which_architecture_and_os
+  unset IMAGE_ARCH_AND_OS
+  run n2st::which_architecture_and_os
   assert_success
   assert_output "linux/arm64"
 
+  run n2st::set_which_architecture_and_os
+  assert_success
+  assert_output ""
+
+  unset IMAGE_ARCH_AND_OS
   n2st::set_which_architecture_and_os
   assert_not_empty "$IMAGE_ARCH_AND_OS"
   assert_equal "$IMAGE_ARCH_AND_OS" "linux/arm64"
@@ -213,10 +255,16 @@ teardown() {
   }
   export -f uname
 
-  run n2st::set_which_architecture_and_os
+  unset IMAGE_ARCH_AND_OS
+  run n2st::which_architecture_and_os
   assert_success
   assert_output "l4t/arm64"
 
+  run n2st::set_which_architecture_and_os
+  assert_success
+  assert_output ""
+
+  unset IMAGE_ARCH_AND_OS
   n2st::set_which_architecture_and_os
   assert_not_empty "$IMAGE_ARCH_AND_OS"
   assert_equal "$IMAGE_ARCH_AND_OS" "l4t/arm64"
@@ -238,7 +286,7 @@ teardown() {
   }
   export -f uname
 
-  run n2st::set_which_architecture_and_os
+  run n2st::which_architecture_and_os
   assert_failure
   assert_output --partial "Unsupported OS for aarch64 processor"
 }
@@ -259,7 +307,7 @@ teardown() {
   }
   export -f uname
 
-  run n2st::set_which_architecture_and_os
+  run n2st::which_architecture_and_os
   assert_failure
   assert_output --partial "Unsupported processor architecture"
 }
