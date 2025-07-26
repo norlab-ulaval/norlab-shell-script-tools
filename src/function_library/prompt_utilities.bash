@@ -90,6 +90,8 @@ function n2st::print_msg_awaiting_input() {
 # Usage:
 #     $ n2st::print_msg_error_and_exit "<error msg string>"
 #   or
+#     $ n2st::print_msg_error_and_return "<error msg string>"
+#   or
 #     $ n2st::print_msg_error "<error msg string>"
 #
 # Arguments:
@@ -110,7 +112,25 @@ function n2st::print_msg_error_and_exit() {
   exit 1
 }
 
+function n2st::print_msg_error_and_return() {
+  local error_msg=$1
+
+  echo ""
+  echo -e "${MSG_ERROR}: ${error_msg}" 1>&2
+  # Note: The >&2 sends the echo output to standard error
+  echo "Exiting function now."
+  echo ""
+  return 1
+}
+
 function n2st::print_msg_error() {
+  local error_msg=$1
+
+  echo -e "${MSG_ERROR}: ${error_msg}" 1>&2
+}
+
+function n2st::print_msg_error_vspaced() {
+  # For backward compatibility
   local error_msg=$1
 
   echo ""

@@ -63,11 +63,25 @@ function n2st::seek_and_modify_string_in_file() {
 }
 
 # =================================================================================================
-# Print to stdout the current python version (major.minor) and set PYTHON3_VERSION env variable.
+# Print to stdout the current python version (major.minor).
 #
 # Usage:
 #   $ n2st::set_which_python3_version
 #   3.12
+#
+# =================================================================================================
+function n2st::which_python3_version() {
+    local python3_version
+    python3_version=$(python3 -c 'import sys; version=sys.version_info; print(f"{version.major}.{version.minor}")') || return 1
+    echo "${python3_version}"
+    return 0
+}
+
+# =================================================================================================
+# Fetch the current python version (major.minor) and set PYTHON3_VERSION env variable.
+#
+# Usage:
+#   $ n2st::set_which_python3_version
 #   do something else...
 #   $ echo $PYTHON3_VERSION
 #   3.12
@@ -75,15 +89,60 @@ function n2st::seek_and_modify_string_in_file() {
 # Globals:
 #   write 'PYTHON3_VERSION'
 # =================================================================================================
+declare -x PYTHON3_VERSION
 function n2st::set_which_python3_version() {
-    PYTHON3_VERSION=$(python3 -c 'import sys; version=sys.version_info; print(f"{version.major}.{version.minor}")') || return 1
+    PYTHON3_VERSION=$(n2st::which_python3_version) || return 1
     export PYTHON3_VERSION
-    echo "${PYTHON3_VERSION}"
     return 0
 }
 
 # =================================================================================================
-# Check the host architecture plus OS type and set IMAGE_ARCH_AND_OS environment variable to:
+# Print to stdout the host 'ARCH\OS' type:
+#  - darwin\arm64
+#  - linux\x86
+#  - linux\arm64
+#  - l4t\arm64
+# with:
+#  - Host OS being one of 'Linux', 'L4T' or 'Darwin'
+#  - Host ARCH being one of 'aarch64', 'arm64' or 'x86_64'
+#
+# Usage:
+#   $ n2st::which_architecture_and_os
+#   linux\arm64
+#
+# Returns:
+#   1 in case of unsupported processor architecture, 0 otherwise.
+# =================================================================================================
+# (NICE TO HAVE) ToDo: assessment >> check the convention used by docker >> os[/arch[/variant]]
+#       linux/arm64/v8
+#       darwin/arm64/v8
+#       l4t/arm64/v8
+#     ref: https://docs.docker.com/compose/compose-file/05-services/#platform
+function n2st::which_architecture_and_os() {
+  local image_arch_and_os
+  if [[ $(uname -m) == "aarch64" ]]; then
+    if uname -r | grep -q "tegra" 2>/dev/null; then
+      image_arch_and_os='l4t/arm64'
+    elif [[ $(uname) == "Linux" ]]; then
+        image_arch_and_os='linux/arm64'
+    else
+      n2st::print_msg_error "Unsupported OS for aarch64 processor"
+      return 1
+    fi
+  elif [[ $(uname -m) == "arm64" ]] && [[ $(uname) == "Darwin" ]]; then
+    image_arch_and_os='darwin/arm64'
+  elif [[ $(uname -m) == "x86_64" ]] && [[ $(uname) == "Linux" ]]; then
+    image_arch_and_os='linux/x86'
+  else
+    n2st::print_msg_error "Unsupported processor architecture"
+    return 1
+  fi
+  echo "${image_arch_and_os}"
+  return 0
+}
+
+# =================================================================================================
+# Check the host 'ARCH\OS' type and set the IMAGE_ARCH_AND_OS environment variable to:
 #  - darwin\arm64
 #  - linux\x86
 #  - linux\arm64
@@ -94,7 +153,6 @@ function n2st::set_which_python3_version() {
 #
 # Usage:
 #   $ n2st::set_which_architecture_and_os
-#   linux\arm64
 #   do something else...
 #   $ echo "$IMAGE_ARCH_AND_OS"
 #   linux\arm64
@@ -103,32 +161,12 @@ function n2st::set_which_python3_version() {
 #   write 'IMAGE_ARCH_AND_OS'
 #
 # Returns:
-#   exit 1 in case of unsupported processor architecture
+#   1 in case of unsupported processor architecture, 0 otherwize.
 # =================================================================================================
-# (NICE TO HAVE) ToDo: assessment >> check the convention used by docker >> os[/arch[/variant]]
-#       linux/arm64/v8
-#       darwin/arm64/v8
-#       l4t/arm64/v8
-#     ref: https://docs.docker.com/compose/compose-file/05-services/#platform
+declare -x IMAGE_ARCH_AND_OS
 function n2st::set_which_architecture_and_os() {
-  if [[ $(uname -m) == "aarch64" ]]; then
-    if uname -r | grep -q "tegra" 2>/dev/null; then
-      export IMAGE_ARCH_AND_OS='l4t/arm64'
-    elif [[ $(uname) == "Linux" ]]; then
-        export IMAGE_ARCH_AND_OS='linux/arm64'
-    else
-      n2st::print_msg_error "Unsupported OS for aarch64 processor"
-      return 1
-    fi
-  elif [[ $(uname -m) == "arm64" ]] && [[ $(uname) == "Darwin" ]]; then
-    export IMAGE_ARCH_AND_OS='darwin/arm64'
-  elif [[ $(uname -m) == "x86_64" ]] && [[ $(uname) == "Linux" ]]; then
-    export IMAGE_ARCH_AND_OS='linux/x86'
-  else
-    n2st::print_msg_error "Unsupported processor architecture"
-    return 1
-  fi
-  echo "${IMAGE_ARCH_AND_OS}"
+  IMAGE_ARCH_AND_OS=$(n2st::which_architecture_and_os) || return 1
+  export IMAGE_ARCH_AND_OS
   return 0
 }
 
