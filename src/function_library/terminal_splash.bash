@@ -294,8 +294,8 @@ function n2st::echo_centering_str() {
 #
 # =================================================================================================
 function n2st::snow_splash() {
-  local title=${1:-'NorLab'}
-  local optional_url=${2:-'https://github.com/norlab-ulaval'}
+  local title=${1:-"NorLab"}
+  local optional_url=${2:-"https://github.com/norlab-ulaval"}
 
   # Formatting
   #   - 1=Bold/bright
@@ -375,8 +375,8 @@ function n2st::snow_splash() {
 #
 # =================================================================================================
 function n2st::norlab_splash() {
-  local title=${1:-'NorLab'}
-  local optional_url=${2:-'https://github.com/norlab-ulaval'}
+  local title=${1:-"NorLab"}
+  local optional_url=${2:-"https://github.com/norlab-ulaval"}
   local splash_type=${3:-negative} # Option: small, negative or big
 
 
