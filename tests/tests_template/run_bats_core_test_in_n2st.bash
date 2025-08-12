@@ -47,7 +47,7 @@ function n2st::bats_tests_teardown_callback() {
   exit_code=$?
   cd "${superproject_path:?err}" || exit 1
   # Add any teardown logic here
-  exit ${exit_code:1}
+  exit ${exit_code:-1}
 }
 trap n2st::bats_tests_teardown_callback EXIT
 
