@@ -121,6 +121,7 @@ function source_dotenv_project() {
 
   # ....Tests......................................................................................
   assert_not_empty "${MSG_EMPH_FORMAT}"
+  assert_not_empty "${MSG_HIGHLIGHT_FORMAT}"
   assert_not_empty "${MSG_DIMMED_FORMAT}"
   assert_not_empty "${MSG_BASE_FORMAT}"
   assert_not_empty "${MSG_ERROR_FORMAT}"
@@ -147,6 +148,7 @@ function source_dotenv_project() {
   # shellcheck disable=SC2125
   local ESCAPE_CHAR="\033\[".*
   assert_regex "${MSG_EMPH_FORMAT}" "${ESCAPE_CHAR}"
+  assert_regex "${MSG_HIGHLIGHT_FORMAT}" "${ESCAPE_CHAR}"
   assert_regex "${MSG_DIMMED_FORMAT}" "${ESCAPE_CHAR}"
   assert_regex "${MSG_BASE_FORMAT}" "${ESCAPE_CHAR}"
   assert_regex "${MSG_ERROR_FORMAT}" "${ESCAPE_CHAR}"

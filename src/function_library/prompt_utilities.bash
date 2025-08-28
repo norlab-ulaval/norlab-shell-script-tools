@@ -105,7 +105,7 @@ function n2st::print_msg_error_and_exit() {
   local error_msg=$1
 
   echo ""
-  echo -e "${MSG_ERROR}: ${error_msg}" 1>&2
+  echo -e "${MSG_ERROR} ${error_msg}" 1>&2
   # Note: The >&2 sends the echo output to standard error
   echo "Exiting now."
   echo ""
@@ -116,7 +116,7 @@ function n2st::print_msg_error_and_return() {
   local error_msg=$1
 
   echo ""
-  echo -e "${MSG_ERROR}: ${error_msg}" 1>&2
+  echo -e "${MSG_ERROR} ${error_msg}" 1>&2
   # Note: The >&2 sends the echo output to standard error
   echo "Exiting function now."
   echo ""
@@ -126,7 +126,7 @@ function n2st::print_msg_error_and_return() {
 function n2st::print_msg_error() {
   local error_msg=$1
 
-  echo -e "${MSG_ERROR}: ${error_msg}" 1>&2
+  echo -e "${MSG_ERROR} ${error_msg}" 1>&2
 }
 
 function n2st::print_msg_error_vspaced() {
@@ -134,7 +134,7 @@ function n2st::print_msg_error_vspaced() {
   local error_msg=$1
 
   echo ""
-  echo -e "${MSG_ERROR}: ${error_msg}" 1>&2
+  echo -e "${MSG_ERROR} ${error_msg}" 1>&2
   echo ""
 }
 
