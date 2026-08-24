@@ -55,7 +55,7 @@ jobs:
       - name: Install semantic-release additional plugins (semantic-release-replace-plugin)
         run: npm install semantic-release-replace-plugin -D
       - name: Install semantic-release additional plugins (conventional-changelog-conventionalcommits for commit-analyzer preset)
-        run: npm install conventional-changelog-conventionalcommits -D
+        run: npm install conventional-changelog-conventionalcommits@7 -D
       - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
         run: npm audit signatures
       - name: Release
